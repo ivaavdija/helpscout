@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Helpdesk Platform Review · OTT Support</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Lora:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f7f5f2;
+  --white:#fff;
+  --border:#e6e2db;
+  --border2:#ccc9c1;
+  --text:#18170f;
+  --muted:#6f6c63;
+  --light:#a8a59d;
+  --green:#0a6b56;
+  --green-bg:#edf7f4;
+  --green-border:#b3ddd5;
+  --amber:#8a5c00;
+  --amber-bg:#fef9ed;
+  --red:#9b2b2b;
+  --red-bg:#fdf2f2;
+  --pill-bg:#ede9e2;
+}
+html{font-size:16px;background:var(--bg)}
+body{font-family:'Inter',sans-serif;font-weight:400;color:var(--text);line-height:1.6;padding-bottom:80px}
+.container{max-width:900px;margin:0 auto;padding:0 24px}
+
+/* HEADER */
+.page-header{padding:48px 0 32px;border-bottom:1px solid var(--border)}
+.eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--light);margin-bottom:12px}
+.page-header h1{font-family:'Lora',serif;font-size:36px;font-weight:400;line-height:1.2;color:var(--text);margin-bottom:16px}
+.page-header h1 em{font-style:italic;color:var(--green)}
+.meta-strip{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.meta-pill{font-size:12px;background:var(--pill-bg);color:var(--muted);padding:4px 12px;border-radius:20px;border:1px solid var(--border)}
+
+/* SECTION */
+.section{padding:40px 0;border-bottom:1px solid var(--border)}
+.section-label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--light);margin-bottom:20px}
+
+/* REQUIREMENTS */
+.req-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.req-item{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start}
+.req-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;margin-top:1px}
+.req-icon.ok{background:var(--green-bg)}
+.req-icon.gap{background:var(--red-bg)}
+.req-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px}
+.req-note{font-size:12px;color:var(--muted);line-height:1.5}
+
+/* PRICING */
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.price-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:24px;position:relative;transition:box-shadow .2s}
+.price-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.06)}
+.price-card.rec{border:2px solid var(--green)}
+.price-card.rec::before{content:'Recommended';position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--green);color:#fff;font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:3px 12px;border-radius:20px;white-space:nowrap}
+.card-tag{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--light);margin-bottom:12px}
+.card-name{font-family:'Lora',serif;font-size:22px;color:var(--text);margin-bottom:2px}
+.card-plan{font-size:12px;color:var(--muted);margin-bottom:16px}
+.card-price{font-size:32px;font-weight:300;color:var(--text);line-height:1}
+.card-price sup{font-size:16px;font-weight:400;vertical-align:super}
+.card-price span{font-size:13px;color:var(--muted)}
+.card-annual{font-size:12px;color:var(--muted);margin:6px 0 14px}
+.card-saving{font-size:12px;font-weight:500;padding:4px 10px;border-radius:6px;display:inline-block;margin-bottom:14px}
+.saving-green{background:var(--green-bg);color:var(--green)}
+.saving-neutral{background:var(--pill-bg);color:var(--muted)}
+.card-pills{display:flex;flex-wrap:wrap;gap:6px}
+.card-pill{font-size:11px;padding:3px 8px;border-radius:5px;border:1px solid var(--border)}
+.pill-ok{background:var(--green-bg);border-color:var(--green-border);color:var(--green)}
+.pill-gap{background:var(--red-bg);border-color:#f5c6c6;color:var(--red)}
+
+/* FEATURE TABLE */
+.feat-col-headers{display:grid;grid-template-columns:1fr 130px 130px 130px;padding:8px 0 10px;border-bottom:2px solid var(--border2)}
+.feat-col-h{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);text-align:center;font-weight:500}
+.feat-col-h:first-child{text-align:left}
+.feat-col-h.hi{color:var(--green)}
+
+.feat-category{margin-top:0}
+.cat-header{display:flex;align-items:center;justify-content:space-between;padding:14px 0 10px;cursor:pointer;user-select:none;border-bottom:1px solid var(--border);transition:color .15s}
+.cat-header:hover .cat-title{color:var(--green)}
+.cat-title{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.cat-arrow{font-size:10px;color:var(--light);transition:transform .25s;display:inline-block}
+.cat-arrow.open{transform:rotate(0deg)}
+.cat-arrow.closed{transform:rotate(-90deg)}
+.cat-rows{overflow:hidden;transition:max-height .3s ease}
+
+.feat-row{display:grid;grid-template-columns:1fr 130px 130px 130px;align-items:center;padding:0;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s}
+.feat-row:hover{background:#faf9f7}
+.feat-row:last-child{border-bottom:none}
+.feat-cell{padding:11px 8px 11px 0;font-size:13px;color:var(--text)}
+.feat-cell:not(:first-child){text-align:center;padding:11px 8px}
+.feat-name-wrap{display:flex;align-items:center;gap:8px}
+.exp-arrow{font-size:9px;color:var(--light);transition:transform .2s;flex-shrink:0}
+.feat-row.open .exp-arrow{transform:rotate(90deg)}
+
+.feat-detail{display:none;border-bottom:1px solid var(--border);background:#fdfcfb}
+.feat-detail.visible{display:grid;grid-template-columns:1fr 130px 130px 130px}
+.d-cell{padding:10px 8px 14px 32px;font-size:12px;color:var(--muted);line-height:1.55}
+.d-cell:not(:first-child){padding:10px 8px 14px;text-align:center;font-size:12px}
+.d-cell strong{color:var(--text);font-weight:500;display:block;margin-bottom:2px}
+
+.ok-i{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--green-bg);color:var(--green);font-size:11px;font-weight:600}
+.warn-i{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--amber-bg);color:var(--amber);font-size:13px;font-weight:400}
+.no-i{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--red-bg);color:var(--red);font-size:13px;font-weight:400}
+
+/* EXPAND ALL */
+.expand-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.expand-btn{font-size:12px;color:var(--green);cursor:pointer;background:none;border:none;padding:0;font-family:'Inter',sans-serif;text-decoration:underline;text-underline-offset:3px}
+.expand-btn:hover{color:var(--text)}
+
+/* RECOMMENDATION */
+.rec-box{background:var(--white);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.rec-top{background:var(--green);padding:28px 32px;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center}
+.rec-label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:8px}
+.rec-name{font-family:'Lora',serif;font-size:30px;color:#fff;margin-bottom:2px}
+.rec-sub{font-size:13px;color:rgba(255,255,255,.7)}
+.rec-price-big{font-size:40px;font-weight:300;color:#fff;line-height:1;text-align:right}
+.rec-price-big sup{font-size:18px;vertical-align:super}
+.rec-price-big span{font-size:14px;color:rgba(255,255,255,.6)}
+.rec-save-tag{font-size:12px;background:rgba(255,255,255,.18);color:#fff;padding:3px 10px;border-radius:20px;margin-top:8px;display:inline-block}
+.rec-body{padding:28px 32px}
+.rec-reasons{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.reason{display:flex;gap:12px;align-items:flex-start}
+.rdot{width:6px;height:6px;background:var(--green);border-radius:50%;flex-shrink:0;margin-top:7px}
+.reason-text{font-size:13px;color:var(--muted);line-height:1.6}
+.reason-text strong{color:var(--text);font-weight:500;display:block;margin-bottom:2px}
+.alt-note{padding:16px 20px;background:var(--bg);border-radius:10px;font-size:13px;color:var(--muted);line-height:1.6;border:1px solid var(--border)}
+.alt-note strong{color:var(--text);font-weight:500}
+
+@media(max-width:640px){
+  .pricing-grid,.rec-reasons{grid-template-columns:1fr}
+  .feat-col-headers,.feat-row,.feat-detail.visible{grid-template-columns:1fr 80px 80px 80px}
+  .rec-top{grid-template-columns:1fr}
+  h1{font-size:28px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="page-header">
+    <div class="eyebrow">Helpdesk platform review · April 2026</div>
+    <h1>Help Scout alternatives<br>for <em>OTT customer support</em></h1>
+    <div class="meta-strip">
+      <span class="meta-pill">5 support agents</span>
+      <span class="meta-pill">7 OTT platforms</span>
+      <span class="meta-pill">Email + embeddable widget per site</span>
+      <span class="meta-pill">Stripe integration required</span>
+      <span class="meta-pill">Current spend ~$125/mo</span>
+    </div>
+  </div>
+
+  <!-- REQUIREMENTS -->
+  <div class="section">
+    <div class="section-label">What we need</div>
+    <div class="req-grid">
+      <div class="req-item">
+        <div class="req-icon ok">📥</div>
+        <div>
+          <div class="req-title">Separate inbox per brand</div>
+          <div class="req-note">Each OTT platform has its own email, signature, and response templates</div>
+        </div>
+      </div>
+      <div class="req-item">
+        <div class="req-icon ok">💳</div>
+        <div>
+          <div class="req-title">Stripe integration</div>
+          <div class="req-note">Billing and subscription data visible inside the ticket</div>
+        </div>
+      </div>
+      <div class="req-item">
+        <div class="req-icon gap">🔗</div>
+        <div>
+          <div class="req-title">Jira integration</div>
+          <div class="req-note">Currently blocked on Help Scout Standard — need to escalate platform bugs and access issues to dev teams</div>
+        </div>
+      </div>
+      <div class="req-item">
+        <div class="req-icon gap">⚙️</div>
+        <div>
+          <div class="req-title">Advanced automation</div>
+          <div class="req-note">Structured workflows for access issues, PPV, refunds across 7 brands — Help Scout Standard is too limited</div>
+        </div>
+      </div>
+      <div class="req-item">
+        <div class="req-icon gap">📊</div>
+        <div>
+          <div class="req-title">Custom reporting</div>
+          <div class="req-note">Per-brand volume, CSAT, agent performance — all locked behind Help Scout Plus (+$100/mo)</div>
+        </div>
+      </div>
+      <div class="req-item">
+        <div class="req-icon ok">🌐</div>
+        <div>
+          <div class="req-title">Widget on each OTT site</div>
+          <div class="req-note">Embeddable contact form + knowledge base on all 7 streaming platforms</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRICING -->
+  <div class="section">
+    <div class="section-label">Pricing — 5 agents, annual billing</div>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="card-tag">Current</div>
+        <div class="card-name">Help Scout</div>
+        <div class="card-plan">Standard plan</div>
+        <div class="card-price"><sup>$</sup>125<span>/mo</span></div>
+        <div class="card-annual">$1,500 / year</div>
+        <div class="card-saving saving-neutral">Baseline</div>
+        <div class="card-pills">
+          <span class="card-pill pill-ok">Widget ✓</span>
+          <span class="card-pill pill-ok">Stripe ✓</span>
+          <span class="card-pill pill-gap">No Jira</span>
+          <span class="card-pill pill-gap">No custom reports</span>
+          <span class="card-pill pill-gap">Basic automation</span>
+        </div>
+      </div>
+      <div class="price-card">
+        <div class="card-tag">Alternative</div>
+        <div class="card-name">Freshdesk</div>
+        <div class="card-plan">Growth plan</div>
+        <div class="card-price"><sup>$</sup>75<span>/mo</span></div>
+        <div class="card-annual">$900 / year</div>
+        <div class="card-saving saving-green">Saves $600/yr</div>
+        <div class="card-pills">
+          <span class="card-pill pill-ok">Widget ✓</span>
+          <span class="card-pill pill-ok">Stripe ✓</span>
+          <span class="card-pill pill-ok">Jira ✓</span>
+          <span class="card-pill pill-gap">Reports need Pro plan</span>
+          <span class="card-pill pill-ok">CSAT ✓</span>
+        </div>
+      </div>
+      <div class="price-card rec">
+        <div class="card-tag">Recommended</div>
+        <div class="card-name">Zoho Desk</div>
+        <div class="card-plan">Professional plan</div>
+        <div class="card-price"><sup>$</sup>115<span>/mo</span></div>
+        <div class="card-annual">$1,380 / year</div>
+        <div class="card-saving saving-green">Saves $120/yr · fixes all gaps</div>
+        <div class="card-pills">
+          <span class="card-pill pill-ok">Widget ✓</span>
+          <span class="card-pill pill-ok">Stripe ✓</span>
+          <span class="card-pill pill-ok">Jira ✓</span>
+          <span class="card-pill pill-ok">Custom reports ✓</span>
+          <span class="card-pill pill-ok">CSAT ✓</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURE COMPARISON -->
+  <div class="section">
+    <div class="expand-bar">
+      <div class="section-label" style="margin-bottom:0">Feature comparison</div>
+      <button class="expand-btn" id="expand-all-btn" onclick="toggleAll()">Expand all</button>
+    </div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:20px">Click any row to see detail. Click a category to collapse it.</p>
+
+    <div class="feat-col-headers">
+      <div class="feat-col-h">Feature</div>
+      <div class="feat-col-h">Help Scout</div>
+      <div class="feat-col-h">Freshdesk</div>
+      <div class="feat-col-h hi">Zoho Desk</div>
+    </div>
+
+    <!-- INBOXES & TICKETING -->
+    <div class="feat-category">
+      <div class="cat-header" onclick="toggleCat(this)">
+        <span class="cat-title">Inboxes &amp; ticketing</span>
+        <span class="cat-arrow open">▼</span>
+      </div>
+      <div class="cat-rows">
+        <div class="feat-row" onclick="toggleRow(this)">
+          <div class="feat-cell"><div class="feat-name-wrap"><span class="exp-arrow">▶</span>Ticket / conversation IDs</div></div>
+          <div class="feat-cell"><span class="ok-i">✓</span></div>
+          <div class="feat-cell"><span class="ok-i">✓</span></div>
+          <div class="feat-cell"><span class="ok-i">✓</span></div>
+        </div>
+        <div class="feat-detail">
+          <div class="d-cell">All three assign IDs to every ticket or conversation. Help Scout calls them "conversation IDs"; Freshdesk and Zoho use numbered ticket IDs with status, priority, and type fields.</div>
+          <div class="d-cell">Full ticket IDs, status and priority fields.</div>
+          <div class="d-cell">Full ticket IDs with status, priority, type and department.</div>
+        </div>
+
+        <div class="feat-row" onclick="toggleRow(this)">
+          <div class="feat-cell"><div class="feat-name-wrap"><span class="exp-arrow">▶</span>Separate inbox per OTT brand</div></div>
+          <div class="feat-cell"><span class="warn-i">△</span></div>
+          <div class="feat-cell"><span class="ok-i">✓</span></div>
+          <div class="feat-cell"><span class="ok-i">✓</span></div>
+        </div>
+        <div class="feat-detail">
+          <div class="d-cell"><strong>Extra cost on Help Scout.</strong> Additional inboxes are +$10/mo each. With 7 OTT brands that could add $70/mo on top of the base plan price.</div>
+          <div class="d-cell">Unlimited inboxes included on Growth — no extra charge.</div>
+          <div class="d-cell"><strong>Departments system.</strong> Each OTT brand gets its own department with a separate email address, settings, and widget — managed from one shared workspace.</div>
+        </div>
+
+        <div class="feat-row" onclick="toggleRow(this)">
+          <div class="feat-cell"><div class="feat-name-wrap"><span class="exp-arrow">▶</span>Branded responses per inbox</div></div>
+          <div class="feat-cell"><span class="warn-i">△</span></div>
+          <div class="feat-cell"><span class="ok-i">✓</span></div>
+          <div class="feat-cell"><span class="ok-i">✓</span></div>
+        </div>
+        <div class="feat-detail">
+          <div class="d-cell"><strong>Manual workaround only.</strong> Saved replies exist but nothing enforces the right brand — agents can easily use the wrong template or signature.</div>
+          <div class="d-cell">Per-inbox email templates and signatures. Agents see the correct brand context when replying.</div>
+          <div class="d-cell"><strong>Full brand control per department.</strong> Own email identity, reply templates, and help portal per OTT brand — enforced at the system level.</div>
+        </div>
+
+        <div class="feat-row" onclick="toggleRow(this)">
+          <div class="feat-cell"><div class="feat-name-wrap"><span class="exp-arrow">▶</span>Shared inbox, no forced assignment</div></div>
+          <div class="feat-cell"><span class="ok-i">✓</span></div>
+          <div class="feat-cell"><span class="ok-i">✓</span></div>
+          <div class="feat-cell"><span class="ok-i">✓</span></div>
+        </div>
+        <div class="feat-detail">
+          <div class="d-cell">All three support an open inbox model where agents pick up tickets as they arrive. No forced assignment needed.</div>
+          <div class="d-cell">Same open inbox model on Growth.</div>
+          <div class="d-cell">Same — agents see all incoming tickets and self-assign or leave open.</div>
+        </div>
+
+        <div class="feat-row" onclick="toggleRow(this)">
+          <div class="feat-cell"><div class="feat-name-wrap"><span class="exp-arrow">▶</span>Saved replies &amp; tags</div></div>
+          <div class="feat-cell"><span class="ok-i">✓</span></div>
+          <div class="feat-cell"><span class="ok-i">✓</span></div>
+          <div class="feat-cell"><span class="ok-i">✓</span></div>
+        </div>
+        <div class="feat-detail">
+          <div class="d-cell">Unlimited saved replies and tags on all Help Scout plans including Standard.</div>
+          <div class="d-cell">Called "canned responses" — same functionality, unlimited on Growth.</div>
+          <div class="d-cell">Reply templates can be scoped per department so each brand has its own separate set.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INTEGRATIONS -->
+    <div class="feat-category">
+      <div class="cat-header" onclick="toggleCat(this)">
+        <span class="cat-title">Integrations</span>
+        <span class="cat-arrow open">▼</span>
+      </div>
+      <div class="cat-rows">
+        <div class="feat-row" onclick="toggleRow(this)">
+          <div class="feat-cell"><div class="feat-name-wrap"><span class="exp-arrow">▶</span>Stripe</div></div>
+          <div class="feat-cell"><span class="ok-i">✓</span></div>
+          <div class="feat-cell"><span class="ok-i">✓</span></div>
+          <div class="feat-cell"><span class="ok-i">✓</span></div>
+        </div>
+        <div class="feat-detail">
+          <div class="d-cell">Native integration — subscription and payment data appear in the ticket sidebar on all plans.</div>
+          <div class="d-cell"><strong>Native marketplace app.</strong> Stripe customer data, subscription status, and recent charges visible directly in the ticket sidebar.</div>
+          <div class="d-cell">Connected via Zoho Flow. Works reliably but slightly less native-feeling than Freshdesk's direct app.</div>
+        </div>
+
+        <div class="feat-row" onclick="toggleRow(this)">
+          <div class="feat-cell"><div class="feat-name-wrap"><span class="exp-arrow">▶</span>Jira — escalations to dev teams</div></div>
+          <div class="feat-cell"><span class="no-i">✗</span></div>
+          <div class="feat-cell"><span class="ok-i">✓</span></div>
+          <div class="feat-cell"><span class="ok-i">✓</span></div>
+        </div>
+        <div class="feat-detail">
+          <div class="d-cell"><strong>Blocked on Standard.</strong> Only available on Help Scout Plus — upgrading for 5 agents would cost an extra $100/mo.</div>
+          <div class="d-cell">Available as a marketplace app on Growth. Create and link Jira issues directly from a ticket without switching tools.</div>
+          <div class="d-cell"><strong>Built in — no add-on needed.</strong> Native Jira integration included on Professional. Create, link, and track issues from within the ticket view.</div>
+        </div>
+
+        <div class="feat-row" onclick="toggleRow(this)">
+          <div class="feat-cell"><div class="feat-name-wrap"><span class="exp-arrow">▶</span>Embeddable widget on OTT sites</div></div>
+          <div class="feat-cell"><span class="ok-i">✓</span></div>
+          <div class="feat-cell"><span class="ok-i">✓</span></div>
+          <div class="feat-cell"><span class="ok-i">✓</span></div>
+        </div>
+        <div class="feat-detail">
+          <div class="d-cell">Beacon widget — contact form + knowledge base search. Unlimited Beacons across all plans, one per site.</div>
+          <div class="d-cell">Freshdesk widget — contact form + knowledge base. Simple JS snippet swap, one per inbox.</div>
+          <div class="d-cell">ASAP widget — contact form + knowledge base + optional live chat. One per department, so each OTT brand gets its own branded widget.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUTOMATION -->
+    <div class="feat-category">
+      <div class="cat-header" onclick="toggleCat(this)">
+        <span class="cat-title">Automation &amp; workflows</span>
+        <span class="cat-arrow open">▼</span>
+      </div>
+      <div class="cat-rows">
+        <div class="feat-row" onclick="toggleRow(this)">
+          <div class="feat-cell"><div class="feat-name-wrap"><span class="exp-arrow">▶</span>Workflow automation</div></div>
+          <div class="feat-cell"><span class="warn-i">△</span></div>
+          <div class="feat-cell"><span class="ok-i">✓</span></div>
+          <div class="feat-cell"><span class="ok-i">✓</span></div>
+        </div>
+        <div class="feat-detail">
+          <div class="d-cell"><strong>Basic only on Standard.</strong> Limited triggers and conditions. Advanced workflows — needed for PPV, access issues, and refund flows — require Plus plan.</div>
+          <div class="d-cell">Solid event-based and time-based automation rules on Growth. Good for routing, auto-tagging, and escalation triggers.</div>
+          <div class="d-cell"><strong>Blueprint automation.</strong> Visual step-by-step process builder — enforces how access issues, PPV disputes, and refunds are handled. Agents cannot skip steps, ensuring consistency across all 7 brands.</div>
+        </div>
+
+        <div class="feat-row" onclick="toggleRow(this)">
+          <div class="feat-cell"><div class="feat-name-wrap"><span class="exp-arrow">▶</span>SLA tracking</div></div>
+          <div class="feat-cell"><span class="warn-i">△</span></div>
+          <div class="feat-cell"><span class="ok-i">✓</span></div>
+          <div class="feat-cell"><span class="ok-i">✓</span></div>
+        </div>
+        <div class="feat-detail">
+          <div class="d-cell"><strong>One basic SLA policy only.</strong> Cannot set different response targets per brand or inbox on Standard.</div>
+          <div class="d-cell">Multiple SLA policies with business hours. Can set different response targets per inbox.</div>
+          <div class="d-cell">Multi-level SLA per department — each OTT brand can have its own first response and resolution time targets.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REPORTING -->
+    <div class="feat-category">
+      <div class="cat-header" onclick="toggleCat(this)">
+        <span class="cat-title">Reporting &amp; analytics</span>
+        <span class="cat-arrow open">▼</span>
+      </div>
+      <div class="cat-rows">
+        <div class="feat-row" onclick="toggleRow(this)">
+          <div class="feat-cell"><div class="feat-name-wrap"><span class="exp-arrow">▶</span>Custom reports &amp; dashboards</div></div>
+          <div class="feat-cell"><span class="no-i">✗</span></div>
+          <div class="feat-cell"><span class="warn-i">△</span></div>
+          <div class="feat-cell"><span class="ok-i">✓</span></div>
+        </div>
+        <div class="feat-detail">
+          <div class="d-cell"><strong>Not on Standard.</strong> Only a basic dashboard. Custom reports require Help Scout Plus — an extra $100/mo for 5 agents.</div>
+          <div class="d-cell"><strong>Pro plan only.</strong> Custom reports require Freshdesk Pro at $49/user/mo — $245/mo total for 5 agents, over budget.</div>
+          <div class="d-cell"><strong>Included on Professional.</strong> Custom reports, dashboards, and per-department breakdown all available without any upgrade.</div>
+        </div>
+
+        <div class="feat-row" onclick="toggleRow(this)">
+          <div class="feat-cell"><div class="feat-name-wrap"><span class="exp-arrow">▶</span>CSAT surveys</div></div>
+          <div class="feat-cell"><span class="no-i">✗</span></div>
+          <div class="feat-cell"><span class="ok-i">✓</span></div>
+          <div class="feat-cell"><span class="ok-i">✓</span></div>
+        </div>
+        <div class="feat-detail">
+          <div class="d-cell"><strong>Plus plan only.</strong> Customer satisfaction surveys are not available on Help Scout Standard.</div>
+          <div class="d-cell">Included on Growth — automatic post-ticket satisfaction rating sent to customers.</div>
+          <div class="d-cell">Included on Professional — can be configured per department and OTT brand.</div>
+        </div>
+
+        <div class="feat-row" onclick="toggleRow(this)">
+          <div class="feat-cell"><div class="feat-name-wrap"><span class="exp-arrow">▶</span>Per-brand reporting</div></div>
+          <div class="feat-cell"><span class="no-i">✗</span></div>
+          <div class="feat-cell"><span class="warn-i">△</span></div>
+          <div class="feat-cell"><span class="ok-i">✓</span></div>
+        </div>
+        <div class="feat-detail">
+          <div class="d-cell">No breakdown by inbox or brand — all tickets reported together. Custom segmentation requires Plus plan.</div>
+          <div class="d-cell">Can filter reports by inbox on Growth, but limited depth. Full custom reports by brand require Pro.</div>
+          <div class="d-cell"><strong>Native per-department reporting.</strong> Ticket volume, response times, and CSAT can be viewed separately per OTT brand.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RECOMMENDATION -->
+  <div class="section" style="border-bottom:none;padding-bottom:0">
+    <div class="section-label">Recommendation</div>
+    <div class="rec-box">
+      <div class="rec-top">
+        <div>
+          <div class="rec-label">Recommended platform</div>
+          <div class="rec-name">Zoho Desk</div>
+          <div class="rec-sub">Professional plan · 5 agents · annual billing</div>
+        </div>
+        <div>
+          <div class="rec-price-big"><sup>$</sup>115<span>/mo</span></div>
+          <div class="rec-save-tag">Saves $120/yr vs current</div>
+        </div>
+      </div>
+      <div class="rec-body">
+        <div class="rec-reasons">
+          <div class="reason">
+            <div class="rdot"></div>
+            <div class="reason-text">
+              <strong>Fixes all three gaps on this plan</strong>
+              Jira, custom reporting, and advanced automation are all included — no upgrade needed, unlike both Help Scout and Freshdesk.
+            </div>
+          </div>
+          <div class="reason">
+            <div class="rdot"></div>
+            <div class="reason-text">
+              <strong>Best multi-brand setup</strong>
+              Each OTT platform gets its own department with a separate email identity, branded templates, widget, and SLA — all from one shared workspace.
+            </div>
+          </div>
+          <div class="reason">
+            <div class="rdot"></div>
+            <div class="reason-text">
+              <strong>Blueprint automation for OTT flows</strong>
+              Visual workflow builder enforces consistent handling of access issues, PPV disputes, and refunds across all 7 brands — fewer errors, easier to train new agents.
+            </div>
+          </div>
+          <div class="reason">
+            <div class="rdot"></div>
+            <div class="reason-text">
+              <strong>Slightly cheaper than current</strong>
+              $115/mo vs $125/mo — and that gap widens if we are currently paying extra inbox add-on fees on Help Scout (+$10/mo per inbox).
+            </div>
+          </div>
+        </div>
+        <div class="alt-note">
+          <strong>Freshdesk Growth ($75/mo)</strong> is a valid alternative if cost is the priority — it fixes Jira and saves $600/yr. The tradeoff: custom reporting is locked behind the Pro plan ($245/mo), and the multi-brand setup is less structured than Zoho's department system.
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function toggleRow(row) {
+  const wasOpen = row.classList.contains('open');
+  row.classList.toggle('open', !wasOpen);
+  const detail = row.nextElementSibling;
+  if (detail && detail.classList.contains('feat-detail')) {
+    detail.classList.toggle('visible', !wasOpen);
+  }
+  updateExpandBtn();
+}
+
+function toggleCat(header) {
+  const rows = header.nextElementSibling;
+  const arrow = header.querySelector('.cat-arrow');
+  const isOpen = arrow.classList.contains('open');
+  if (isOpen) {
+    rows.style.maxHeight = rows.scrollHeight + 'px';
+    requestAnimationFrame(() => { rows.style.maxHeight = '0px'; });
+    arrow.classList.replace('open', 'closed');
+  } else {
+    rows.style.maxHeight = rows.scrollHeight + 'px';
+    setTimeout(() => { rows.style.maxHeight = 'none'; }, 320);
+    arrow.classList.replace('closed', 'open');
+  }
+}
+
+function toggleAll() {
+  const allRows = document.querySelectorAll('.feat-row');
+  const allDetails = document.querySelectorAll('.feat-detail');
+  const btn = document.getElementById('expand-all-btn');
+  const anyOpen = document.querySelector('.feat-row.open');
+  if (anyOpen) {
+    allRows.forEach(r => r.classList.remove('open'));
+    allDetails.forEach(d => d.classList.remove('visible'));
+    btn.textContent = 'Expand all';
+  } else {
+    allRows.forEach(r => r.classList.add('open'));
+    allDetails.forEach(d => d.classList.add('visible'));
+    btn.textContent = 'Collapse all';
+    document.querySelectorAll('.cat-rows').forEach(r => { r.style.maxHeight = 'none'; });
+    document.querySelectorAll('.cat-arrow').forEach(a => { a.classList.replace('closed','open'); });
+  }
+}
+
+function updateExpandBtn() {
+  const btn = document.getElementById('expand-all-btn');
+  if (!btn) return;
+  const anyOpen = document.querySelector('.feat-row.open');
+  btn.textContent = anyOpen ? 'Collapse all' : 'Expand all';
+}
+
+document.querySelectorAll('.cat-rows').forEach(r => { r.style.maxHeight = 'none'; });
+</script>
+</body>
+</html>

@@ -1,0 +1,812 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fandom Labs — Beacon Form Design</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f4f6f9;color:#1a1a2e;font-size:15px;line-height:1.6}
+
+.page{max-width:960px;margin:0 auto;padding:32px 24px 80px}
+
+/* HEADER */
+.header{background:#0f172a;border-radius:12px;padding:32px 36px;margin-bottom:28px}
+.header h1{font-size:26px;font-weight:800;color:#ffffff;margin-bottom:8px;letter-spacing:-.3px}
+.header p{color:#94a3b8;font-size:16px;line-height:1.6;max-width:580px}
+.header-pills{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.pill{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:6px 14px;font-size:13px;color:#cbd5e1;font-weight:600}
+
+/* TABS */
+.tabs{display:flex;gap:4px;background:#e8ecf0;border-radius:10px;padding:4px;margin-bottom:28px;flex-wrap:wrap}
+.tab{padding:10px 18px;border-radius:7px;border:none;background:transparent;color:#64748b;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s}
+.tab:hover{color:#334155}
+.tab.active{background:#fff;color:#0f172a;box-shadow:0 1px 4px rgba(0,0,0,.1)}
+
+.section{display:none}.section.active{display:block}
+
+/* CARDS */
+.card{background:#fff;border-radius:12px;border:1px solid #dde3eb;padding:28px 30px;margin-bottom:20px}
+.card-title{font-size:18px;font-weight:800;color:#0f172a;margin-bottom:6px}
+.card-desc{font-size:14px;color:#64748b;margin-bottom:22px;line-height:1.6}
+.section-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#94a3b8;margin:28px 0 12px}
+
+/* NOTICE BOXES */
+.notice{border-radius:8px;padding:14px 18px;margin-bottom:20px;font-size:14px;line-height:1.6;border-left:4px solid;display:flex;gap:12px}
+.notice-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.notice-blue{background:#eff6ff;border-color:#3b82f6;color:#1e3a8a}
+.notice-green{background:#f0fdf4;border-color:#22c55e;color:#14532d}
+.notice-amber{background:#fffbeb;border-color:#f59e0b;color:#78350f}
+
+/* PROTOTYPE */
+.proto-layout{display:grid;grid-template-columns:340px 1fr;gap:24px;align-items:start}
+.beacon-mockup{background:#f8f9fb;border-radius:14px;border:1px solid #dde3eb;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.06)}
+.beacon-top{background:#4a6cf7;padding:22px 20px;text-align:center}
+.beacon-top h3{font-size:18px;font-weight:700;color:#fff;margin-bottom:4px}
+.beacon-top p{font-size:13px;color:rgba(255,255,255,.75)}
+.beacon-form{padding:20px}
+.bf-label{font-size:13px;font-weight:600;color:#374151;margin-bottom:5px;display:flex;align-items:center;gap:8px}
+.req{font-size:11px;font-weight:700;background:#fef2f2;color:#dc2626;border:1px solid #fecaca;padding:1px 6px;border-radius:4px}
+.opt{font-size:11px;font-weight:700;background:#fffbeb;color:#d97706;border:1px solid #fde68a;padding:1px 6px;border-radius:4px}
+.cond{font-size:11px;font-weight:700;background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;padding:1px 6px;border-radius:4px}
+.bf-field{margin-bottom:14px}
+.bf-input,.bf-select,.bf-textarea{width:100%;padding:9px 12px;border:1px solid #d1d5db;border-radius:8px;background:#fff;font-size:13px;color:#111827;font-family:inherit;outline:none}
+.bf-input:focus,.bf-select:focus{border-color:#4a6cf7;box-shadow:0 0 0 2px rgba(74,108,247,.12)}
+.bf-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236b7280' d='M6 8L0 0h12z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;cursor:pointer}
+.bf-textarea{min-height:70px;resize:vertical}
+.cond-field{background:#eff6ff;border:1px solid #bfdbfe;border-left:3px solid #2563eb;border-radius:0 8px 8px 0;padding:12px 14px;margin-bottom:14px}
+.cond-tag{display:inline-block;font-size:10px;font-weight:700;color:#2563eb;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px}
+.bf-submit{width:100%;padding:11px;background:#4a6cf7;border:none;border-radius:8px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px}
+.bf-submit:hover{background:#3a5ce6}
+.attach-box{border:2px dashed #d1d5db;border-radius:8px;padding:14px;text-align:center;font-size:12px;color:#9ca3af;cursor:pointer;margin-bottom:14px}
+
+/* AGENT PREVIEW */
+.agent-preview{display:none}
+.ap-card{background:#fff;border-radius:10px;border:1px solid #dde3eb;overflow:hidden;margin-bottom:14px}
+.ap-head{background:#0f172a;padding:10px 16px;font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px}
+.ap-row{display:flex;border-bottom:1px solid #f1f5f9;font-size:13px}
+.ap-row:last-child{border-bottom:none}
+.ap-k{padding:9px 14px;width:130px;color:#64748b;font-weight:500;border-right:1px solid #f1f5f9;background:#fafbfc;flex-shrink:0;font-size:13px}
+.ap-v{padding:9px 14px;font-weight:700;color:#0f172a;font-size:13px}
+.ap-v.blue{color:#2563eb}
+.ap-v.tag{font-family:monospace;font-size:12px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:4px;display:inline-block;padding:2px 8px;color:#334155;font-weight:600}
+
+.how-it-works{display:flex;flex-direction:column;gap:12px}
+.hw-item{display:flex;gap:14px;align-items:flex-start;padding:14px;background:#f8f9fb;border-radius:10px;border:1px solid #e8ecf0}
+.hw-n{width:28px;height:28px;background:#0f172a;border-radius:50%;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hw-body strong{display:block;font-size:14px;font-weight:700;color:#0f172a;margin-bottom:3px}
+.hw-body span{font-size:13px;color:#475569;line-height:1.5}
+
+/* TABLES */
+.tbl-wrap{overflow-x:auto;border-radius:10px;border:1px solid #dde3eb}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:11px 14px;background:#0f172a;color:#e2e8f0;font-weight:600;font-size:12px;letter-spacing:.3px;white-space:nowrap}
+td{padding:10px 14px;border-bottom:1px solid #f1f5f9;vertical-align:top;line-height:1.5;color:#334155}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#f8f9fb}
+.cat-row td{background:#f1f5f9;font-weight:700;color:#0f172a;border-top:2px solid #dde3eb;font-size:13px;padding:8px 14px}
+.i-Q{background:#fffbeb;color:#d97706;border:1px solid #fde68a}
+.i-R{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
+.i-I{background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe}
+.i-F{background:#fdf4ff;color:#9333ea;border:1px solid #e9d5ff}
+.i-chip{font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;display:inline-block;white-space:nowrap}
+.tag-mono{font-family:monospace;font-size:12px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:4px;padding:2px 7px;color:#334155;display:inline-block}
+
+/* FIELDS */
+.fields-list{display:flex;flex-direction:column;gap:8px}
+.field-row{display:grid;grid-template-columns:200px 90px 90px 1fr;gap:12px;padding:12px 14px;border-radius:9px;border:1px solid #e8ecf0;background:#f8f9fb;align-items:start;font-size:13px}
+.field-row:nth-child(even){background:#fff}
+.field-name{font-weight:700;color:#0f172a;font-size:14px}
+.field-type{color:#64748b;font-size:12px;margin-top:2px}
+.f-req{font-size:11px;font-weight:700;padding:3px 8px;border-radius:5px;display:inline-block;white-space:nowrap}
+.f-r{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+.f-o{background:#fffbeb;color:#d97706;border:1px solid #fde68a}
+.f-a{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
+.f-src{font-size:11px;padding:3px 8px;border-radius:4px;background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;display:inline-block;font-weight:600;white-space:nowrap}
+.field-vals{font-size:12px;color:#475569;line-height:1.8}
+.fv{display:inline-block;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:3px;padding:1px 6px;margin:1px 2px 1px 0;font-size:11px;color:#334155;font-weight:500}
+
+/* WORKFLOWS */
+.wf-list{display:flex;flex-direction:column;gap:10px}
+.wf-item{border:1px solid #e8ecf0;border-radius:10px;overflow:hidden}
+.wf-item-head{background:#f1f5f9;padding:12px 16px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}
+.wf-pri{font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px;white-space:nowrap}
+.p1{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+.p2{background:#fff7ed;color:#ea580c;border:1px solid #fed7aa}
+.p3{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
+.wf-if{font-size:13px;font-weight:600;color:#0f172a}
+.wf-then{background:#fff;padding:10px 16px;font-size:13px;color:#334155;line-height:1.6;border-top:1px solid #e8ecf0}
+.wf-then-item{display:flex;gap:8px;padding:3px 0}
+.wf-arrow{color:#94a3b8;flex-shrink:0;font-weight:700}
+
+/* TAGS */
+.tags-layout{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.tag-group{border-radius:10px;border:1px solid #dde3eb;overflow:hidden}
+.tg-head{padding:12px 16px;font-size:13px;font-weight:700;color:#fff;letter-spacing:.2px}
+.tg-body{padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.tg-item{display:flex;gap:12px;align-items:flex-start}
+.tg-name{font-family:monospace;font-size:13px;font-weight:700;flex-shrink:0;min-width:130px}
+.tg-desc{font-size:13px;color:#475569;line-height:1.5}
+
+/* CONFIG */
+.config-steps{display:flex;flex-direction:column;gap:12px}
+.cs{display:flex;gap:16px;padding:16px 18px;background:#fff;border-radius:10px;border:1px solid #dde3eb}
+.cs-num{width:32px;height:32px;background:#0f172a;border-radius:50%;color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cs-body strong{display:block;font-size:15px;font-weight:700;color:#0f172a;margin-bottom:4px}
+.cs-body p{font-size:13px;color:#475569;line-height:1.6}
+.cs-body code{font-family:monospace;font-size:12px;background:#f1f5f9;border:1px solid #e2e8f0;padding:2px 6px;border-radius:4px;color:#334155}
+
+/* LIFECYCLE */
+.lc-list{display:flex;flex-direction:column;gap:8px}
+.lc-item{display:flex;border-radius:9px;overflow:hidden;border:1px solid #dde3eb}
+.lc-when{width:180px;flex-shrink:0;padding:14px 16px;background:#eff6ff;border-right:1px solid #bfdbfe;display:flex;flex-direction:column;justify-content:center}
+.lc-stage{font-size:13px;font-weight:700;color:#1d4ed8;margin-bottom:2px}
+.lc-who{font-size:11px;color:#93c5fd;font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.lc-actions{flex:1;padding:12px 16px;background:#fff}
+.lc-action{font-size:13px;color:#334155;padding:3px 0;border-bottom:1px solid #f8fafc;display:flex;gap:8px;line-height:1.5}
+.lc-action:last-child{border-bottom:none}
+.lc-dot{color:#94a3b8;flex-shrink:0;margin-top:1px}
+
+@media(max-width:700px){.proto-layout{grid-template-columns:1fr}.tags-layout{grid-template-columns:1fr}.field-row{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="header">
+  <h1>Beacon Form Design</h1>
+  <p>Native Help Scout Beacon configuration. Everything here is set up directly in Help Scout — no code, no API, no external tools.</p>
+  <div class="header-pills">
+    <div class="pill">8 categories</div>
+    <div class="pill">12 custom fields</div>
+    <div class="pill">22 tags</div>
+    <div class="pill">100% native HS</div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="show('form',this)">Form</button>
+  <button class="tab" onclick="show('mapping',this)">Category Mapping</button>
+  <button class="tab" onclick="show('fields',this)">Custom Fields</button>
+  <button class="tab" onclick="show('workflows',this)">Workflows</button>
+  <button class="tab" onclick="show('tags',this)">Tags</button>
+  <button class="tab" onclick="show('lifecycle',this)">Lifecycle</button>
+  <button class="tab" onclick="show('setup',this)">Setup Guide</button>
+</div>
+
+<!-- FORM -->
+<div class="section active" id="section-form">
+  <div class="notice notice-blue">
+    <div class="notice-icon">i</div>
+    <div>Help Scout Beacon supports one level of conditional logic — a field can show or hide based on one other field's value. This form is designed around that constraint. Each conditional field has its own single condition tied to the Category dropdown.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Beacon Contact Form</div>
+    <div class="card-desc">Click through to see how conditional fields appear when different categories are selected.</div>
+
+    <div class="proto-layout">
+      <div>
+        <div class="beacon-mockup">
+          <div class="beacon-top">
+            <h3>How can we help?</h3>
+            <p>We usually respond within a few hours</p>
+          </div>
+          <div class="beacon-form">
+
+            <div class="bf-field">
+              <div class="bf-label">Contact email <span class="req">Required</span></div>
+              <input class="bf-input" type="email" placeholder="your@email.com">
+            </div>
+
+            <div class="bf-field">
+              <div class="bf-label">Subscription email <span class="opt">Optional</span></div>
+              <input class="bf-input" type="email" placeholder="Email used to sign up (if different)">
+            </div>
+
+            <div class="bf-field">
+              <div class="bf-label">What do you need help with? <span class="req">Required</span></div>
+              <select class="bf-select" id="cat-sel" onchange="onCat()">
+                <option value="">Select a category</option>
+                <option value="account">Account and Access</option>
+                <option value="subscriptions">Subscriptions and Plans</option>
+                <option value="billing">Billing and Payments</option>
+                <option value="streaming">Streaming and Playback</option>
+                <option value="apps">Apps and Devices</option>
+                <option value="content">Content and Schedule</option>
+                <option value="regional">Regional Availability</option>
+                <option value="general">General and Feedback</option>
+              </select>
+            </div>
+
+            <div id="cond-specifics"></div>
+            <div id="cond-device" style="display:none">
+              <div class="cond-field">
+                <span class="cond-tag">Conditional — shows for Streaming and Apps</span>
+                <div class="bf-label">Which device are you using?</div>
+                <select class="bf-select">
+                  <option>iPhone or iPad</option><option>Android phone or tablet</option>
+                  <option>Web browser</option><option>Apple TV</option>
+                  <option>Android TV or Google TV</option><option>Roku</option>
+                  <option>Amazon Fire TV</option><option>Samsung Smart TV</option>
+                  <option>LG Smart TV</option><option>Other smart TV</option>
+                  <option>Chromecast or AirPlay</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="cond-plan" style="display:none">
+              <div class="cond-field">
+                <span class="cond-tag">Conditional — shows for Billing and Subscriptions</span>
+                <div class="bf-label" style="margin-bottom:4px">How did you subscribe?</div>
+                <select class="bf-select" style="margin-bottom:10px">
+                  <option>Direct (card on website)</option><option>Apple App Store</option>
+                  <option>Google Play</option><option>PayPal</option><option>Not sure</option>
+                </select>
+                <div class="bf-label" style="margin-bottom:4px">Plan or pass type</div>
+                <select class="bf-select">
+                  <option>Monthly subscription</option><option>Annual subscription</option>
+                  <option>PPV or single event</option><option>Tournament pass</option>
+                  <option>Bundle</option><option>Free trial</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="cond-geo" style="display:none">
+              <div class="cond-field">
+                <span class="cond-tag">Conditional — shows for Regional Availability</span>
+                <div class="bf-label" style="margin-bottom:4px">Your current country</div>
+                <input class="bf-input" type="text" placeholder="e.g. Spain, USA" style="margin-bottom:10px">
+                <div class="bf-label" style="margin-bottom:4px">Are you using a VPN?</div>
+                <select class="bf-select"><option>No</option><option>Yes</option><option>Not sure</option></select>
+              </div>
+            </div>
+
+            <div id="cond-event" style="display:none">
+              <div class="cond-field">
+                <span class="cond-tag">Conditional — shows for Content and Streaming</span>
+                <div class="bf-label" style="margin-bottom:4px">Event or match name</div>
+                <input class="bf-input" type="text" placeholder="e.g. EHF Champions League Final">
+              </div>
+            </div>
+
+            <div class="bf-field">
+              <div class="bf-label">Tell us more <span class="opt">Optional</span></div>
+              <textarea class="bf-textarea" id="free-txt" placeholder="Describe what happened..."></textarea>
+            </div>
+
+            <div class="attach-box">Attach a screenshot or file</div>
+            <button class="bf-submit" onclick="this.textContent='Sent';setTimeout(()=>this.textContent='Send a message',2000)">Send a message</button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="how-it-works">
+          <div class="hw-item">
+            <div class="hw-n">1</div>
+            <div class="hw-body"><strong>Category sets everything</strong><span>The category dropdown controls which conditional fields appear below it. Device fields appear for Streaming and Apps. Plan fields appear for Billing and Subscriptions.</span></div>
+          </div>
+          <div class="hw-item">
+            <div class="hw-n">2</div>
+            <div class="hw-body"><strong>Specifics are one dropdown per category</strong><span>Each category has its own dropdown with relevant options. This is one level of conditional logic — which is all Help Scout Beacon supports natively.</span></div>
+          </div>
+          <div class="hw-item">
+            <div class="hw-n">3</div>
+            <div class="hw-body"><strong>Workflows do the work on arrival</strong><span>When the ticket lands in Help Scout, a Workflow reads the form fields and auto-applies the correct tag, sets custom fields, and fires an auto-reply if applicable.</span></div>
+          </div>
+        </div>
+
+        <div class="agent-preview" id="agent-preview">
+          <div style="font-size:12px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;margin-top:20px">Auto-populated on the ticket</div>
+          <div class="ap-card">
+            <div class="ap-head">Agent sees on opening</div>
+            <div class="ap-row"><div class="ap-k">Category</div><div class="ap-v blue" id="ap-cat">—</div></div>
+            <div class="ap-row"><div class="ap-k">Intent</div><div class="ap-v blue" id="ap-intent">—</div></div>
+            <div class="ap-row"><div class="ap-k">Tag applied</div><div class="ap-v"><span class="ap-v tag" id="ap-tag">—</span></div></div>
+            <div class="ap-row"><div class="ap-k">Auto-reply</div><div class="ap-v" id="ap-reply" style="font-size:13px;color:#64748b">—</div></div>
+            <div class="ap-row"><div class="ap-k">Agent fills</div><div class="ap-v" style="font-size:13px;color:#dc2626">Account Match + Resolution</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAPPING -->
+<div class="section" id="section-mapping">
+  <div class="card">
+    <div class="card-title">Category Mapping</div>
+    <div class="card-desc">Every option in each category's specifics dropdown, with the intent it maps to and the tag that gets applied automatically via Workflow.</div>
+    <div class="tbl-wrap" style="max-height:640px;overflow-y:auto">
+      <table>
+        <thead style="position:sticky;top:0;z-index:3">
+          <tr><th style="min-width:140px">Category</th><th style="min-width:260px">Customer sees</th><th>Intent</th><th style="min-width:140px">Tag applied</th><th style="min-width:120px">Auto-reply?</th></tr>
+        </thead>
+        <tbody id="map-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- FIELDS -->
+<div class="section" id="section-fields">
+  <div class="card">
+    <div class="card-title">Custom Fields</div>
+    <div class="card-desc">All 12 fields across the ticket lifecycle. Beacon pre-fills where possible. Agents fill the rest.</div>
+
+    <div class="section-label">Beacon — filled by customer</div>
+    <div class="fields-list" id="fields-beacon"></div>
+
+    <div class="section-label">On open — agent fills</div>
+    <div class="fields-list" id="fields-open"></div>
+
+    <div class="section-label">During handling — agent fills when relevant</div>
+    <div class="fields-list" id="fields-during"></div>
+
+    <div class="section-label">At close — agent fills</div>
+    <div class="fields-list" id="fields-close"></div>
+  </div>
+</div>
+
+<!-- WORKFLOWS -->
+<div class="section" id="section-workflows">
+  <div class="notice notice-green">
+    <div class="notice-icon">+</div>
+    <div>All workflows are built in Help Scout — Manage — Workflows — New Automatic Workflow. No external tools needed.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Auto-populate fields on arrival</div>
+    <div class="card-desc">Run on every Beacon ticket. Maps form selections to custom fields.</div>
+    <div class="wf-list" id="wf-auto"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Auto-replies and deflection</div>
+    <div class="card-desc">Fired when specific options are selected. Reduces agent handling for common queries.</div>
+    <div class="wf-list" id="wf-reply"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Routing and priority</div>
+    <div class="wf-list" id="wf-route"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Data quality rules</div>
+    <div class="wf-list" id="wf-quality"></div>
+  </div>
+</div>
+
+<!-- TAGS -->
+<div class="section" id="section-tags">
+  <div class="card">
+    <div class="card-title">22 Approved Tags</div>
+    <div class="card-desc">Tags carry specific symptoms and operational flags only. Everything else lives in custom fields. Any tag not on this list is a stray — delete it in the monthly audit.</div>
+    <div class="tags-layout" id="tags-body"></div>
+  </div>
+</div>
+
+<!-- LIFECYCLE -->
+<div class="section" id="section-lifecycle">
+  <div class="card">
+    <div class="card-title">Field Lifecycle</div>
+    <div class="card-desc">Fields are updated throughout the ticket. This is what makes the data useful for reporting.</div>
+    <div class="lc-list" id="lc-body"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">When the topic changes mid-conversation</div>
+    <div class="card-desc">Customer starts with a streaming issue, then asks for a refund, then asks to cancel.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+      <div style="padding:16px;border-radius:10px;border:2px solid #fecaca;background:#fef2f2">
+        <div style="font-size:12px;font-weight:700;color:#dc2626;margin-bottom:6px">Do not do this</div>
+        <div style="font-size:14px;font-weight:700;color:#0f172a;margin-bottom:6px">Update Category</div>
+        <div style="font-size:13px;color:#475569">Loses the original root cause from all reports.</div>
+      </div>
+      <div style="padding:16px;border-radius:10px;border:2px solid #fde68a;background:#fffbeb">
+        <div style="font-size:12px;font-weight:700;color:#d97706;margin-bottom:6px">Sometimes OK</div>
+        <div style="font-size:14px;font-weight:700;color:#0f172a;margin-bottom:6px">Update Subcategory only</div>
+        <div style="font-size:13px;color:#475569">Works for minor shifts within the same topic.</div>
+      </div>
+      <div style="padding:16px;border-radius:10px;border:2px solid #bbf7d0;background:#f0fdf4">
+        <div style="font-size:12px;font-weight:700;color:#16a34a;margin-bottom:6px">Recommended</div>
+        <div style="font-size:14px;font-weight:700;color:#0f172a;margin-bottom:6px">Keep Category, add tag</div>
+        <div style="font-size:13px;color:#475569">Keep Category = Streaming. Add tag <code style="font-family:monospace;font-size:12px;background:#dcfce7;padding:1px 5px;border-radius:3px">refund request</code>. Root cause preserved, new action captured.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SETUP -->
+<div class="section" id="section-setup">
+  <div class="card">
+    <div class="card-title">Setup Guide</div>
+    <div class="card-desc">Follow these steps in order to configure the full system in Help Scout.</div>
+
+    <div class="section-label">Step 1 — Create custom fields</div>
+    <div class="notice notice-amber"><div class="notice-icon">!</div><div>Path: Help Scout — Manage — Mailboxes — select mailbox — Custom Fields — Add a Custom Field</div></div>
+    <div id="setup-fields"></div>
+
+    <div class="section-label" style="margin-top:28px">Step 2 — Configure the Beacon form</div>
+    <div class="notice notice-amber"><div class="notice-icon">!</div><div>Path: Help Scout — Manage — Beacons — select beacon — Contact — Form Fields</div></div>
+    <div class="config-steps" id="setup-beacon"></div>
+
+    <div class="section-label" style="margin-top:28px">Step 3 — Seed all 22 tags</div>
+    <div class="config-steps">
+      <div class="cs"><div class="cs-num">1</div><div class="cs-body"><strong>Apply each tag to a test ticket</strong><p>Tags only exist in Help Scout once they have been applied to a conversation. Open any test ticket and apply all 22 tags from the approved list. This makes them available in Workflows and Reports.</p></div></div>
+      <div class="cs"><div class="cs-num">2</div><div class="cs-body"><strong>Verify in Tags Report</strong><p>Go to Help Scout — Reports — Tags. All 22 should be visible. This is your baseline for the monthly audit.</p></div></div>
+    </div>
+
+    <div class="section-label" style="margin-top:28px">Step 4 — Build workflows</div>
+    <div class="notice notice-amber"><div class="notice-icon">!</div><div>Path: Help Scout — Manage — Workflows — New Automatic Workflow</div></div>
+    <div class="config-steps" id="setup-workflows"></div>
+
+    <div class="section-label" style="margin-top:28px">Monthly governance</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Check</th><th>How to find it</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td style="font-weight:700">Blank resolutions</td><td>Status = Closed AND Resolution = blank</td><td>Workflow should catch these. Audit any that slipped through.</td></tr>
+          <tr><td style="font-weight:700">Stray tags</td><td>Reports — Tags — filter for tags not on the approved 22</td><td>Bulk delete via migration CSV sent to HS support.</td></tr>
+          <tr><td style="font-weight:700">Refunds without reason</td><td>Resolution = Refunded AND Refund Reason = blank</td><td>Backfill from conversation. Coach agent.</td></tr>
+          <tr><td style="font-weight:700">Wrong-email rate</td><td>Account Match = Wrong Email divided by total tickets</td><td>If rising, flag to product team — login UX issue.</td></tr>
+          <tr><td style="font-weight:700">Forgotten escalations</td><td>Status = Pending AND Escalation URL filled AND age over 7 days</td><td>Agent reviews and chases external team.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+</div>
+<script>
+const CATS = {
+  account:{label:"Account and Access",hsField:"Account & Access",specific:"What is your account issue?",
+    opts:[
+      {t:"I cannot log in or access my account",i:"I",tag:"login failed",reply:false},
+      {t:"I forgot my password",i:"R",tag:"login failed",reply:true},
+      {t:"Password reset email is not arriving",i:"I",tag:"login failed",reply:false},
+      {t:"My account has been locked",i:"I",tag:"account locked",reply:false},
+      {t:"I need to change my email address",i:"R",tag:null,reply:false},
+      {t:"I want to delete my account",i:"R",tag:null,reply:false},
+      {t:"I think I have multiple accounts",i:"I",tag:"wrong email",reply:false},
+      {t:"Someone may be accessing my account",i:"I",tag:"fraud",reply:false}
+    ]},
+  subscriptions:{label:"Subscriptions and Plans",hsField:"Subscriptions",specific:"What is your subscription question?",
+    opts:[
+      {t:"What plans or passes are available?",i:"Q",tag:null,reply:false},
+      {t:"I want to cancel my subscription",i:"R",tag:"cancellation request",reply:true},
+      {t:"How do I cancel? Step by step",i:"Q",tag:null,reply:true},
+      {t:"I want to upgrade or change my plan",i:"R",tag:null,reply:false},
+      {t:"I was charged on renewal unexpectedly",i:"I",tag:"refund request",reply:false},
+      {t:"I cancelled but was still charged",i:"I",tag:"refund request",reply:false},
+      {t:"I bought an event pass but cannot access it",i:"I",tag:"streaming issue",reply:false},
+      {t:"I want a refund for an event pass",i:"R",tag:"refund request",reply:false}
+    ]},
+  billing:{label:"Billing and Payments",hsField:"Billing & Payments",specific:"What is your billing issue?",
+    opts:[
+      {t:"My payment was declined",i:"I",tag:"payment failed",reply:false},
+      {t:"3D Secure or bank authentication failed",i:"I",tag:"payment failed",reply:false},
+      {t:"I was charged twice for the same thing",i:"I",tag:"duplicate charge",reply:false},
+      {t:"The amount charged was different from expected",i:"I",tag:null,reply:false},
+      {t:"I want to request a refund",i:"R",tag:"refund request",reply:false},
+      {t:"I need an invoice or receipt",i:"R",tag:null,reply:false},
+      {t:"I want to update my payment method",i:"R",tag:null,reply:false}
+    ]},
+  streaming:{label:"Streaming and Playback",hsField:"Streaming",specific:"What streaming problem are you having?",
+    opts:[
+      {t:"Video is buffering or freezing",i:"I",tag:"buffering",reply:false},
+      {t:"Black screen — video will not load",i:"I",tag:"black screen",reply:false},
+      {t:"No audio or audio is out of sync",i:"I",tag:"no audio",reply:false},
+      {t:"Video quality is poor or pixelated",i:"I",tag:"quality issue",reply:false},
+      {t:"Live stream is not showing",i:"I",tag:"stream missing",reply:false},
+      {t:"Live stream stopped during the event",i:"I",tag:"black screen",reply:false},
+      {t:"Player shows an error code",i:"I",tag:"streaming issue",reply:false}
+    ]},
+  apps:{label:"Apps and Devices",hsField:"Apps & Devices",specific:"What is the app or device problem?",
+    opts:[
+      {t:"App keeps crashing",i:"I",tag:"app crash",reply:false},
+      {t:"App is very slow or freezing",i:"I",tag:"app crash",reply:false},
+      {t:"App will not install or update",i:"I",tag:null,reply:false},
+      {t:"Chromecast or AirPlay is not working",i:"I",tag:"casting issue",reply:false},
+      {t:"Smart TV app has issues",i:"I",tag:"casting issue",reply:false},
+      {t:"Is my device supported?",i:"Q",tag:null,reply:false}
+    ]},
+  content:{label:"Content and Schedule",hsField:"Content & Schedule",specific:"What is your content question?",
+    opts:[
+      {t:"A match I expected is not on the platform",i:"I",tag:"stream missing",reply:false},
+      {t:"Replay or VOD is not available",i:"Q",tag:"replay missing",reply:false},
+      {t:"The replay is missing or wrong",i:"I",tag:"replay missing",reply:false},
+      {t:"What leagues or sports do you cover?",i:"Q",tag:null,reply:false},
+      {t:"Commentary is in the wrong language",i:"I",tag:null,reply:false}
+    ]},
+  regional:{label:"Regional Availability",hsField:"Geo Restriction",specific:"What regional issue are you having?",
+    opts:[
+      {t:"I am getting a geo-restriction error",i:"I",tag:"geo blocked",reply:false},
+      {t:"I am getting a VPN detected error",i:"I",tag:"vpn detected",reply:false},
+      {t:"I am travelling and cannot access my subscription",i:"I",tag:"geo blocked",reply:false},
+      {t:"A match is blacked out in my area",i:"I",tag:"geo blocked",reply:false},
+      {t:"I cannot subscribe from my country",i:"I",tag:"geo blocked",reply:false}
+    ]},
+  general:{label:"General and Feedback",hsField:"General",specific:"What would you like to share?",
+    opts:[
+      {t:"Feature request or improvement idea",i:"F",tag:null,reply:false},
+      {t:"Positive feedback",i:"F",tag:null,reply:false},
+      {t:"General complaint",i:"F",tag:null,reply:false},
+      {t:"General question",i:"Q",tag:null,reply:false},
+      {t:"Business or partnership enquiry",i:"Q",tag:null,reply:false}
+    ]}
+};
+const IL = {Q:"Question",R:"Request",I:"Issue",F:"Feedback"};
+
+// PROTOTYPE
+function onCat(){
+  const v = document.getElementById('cat-sel').value;
+  document.getElementById('cond-specifics').innerHTML='';
+  ['cond-device','cond-plan','cond-geo','cond-event'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('agent-preview').style.display='none';
+  if(!v||!CATS[v]) return;
+  const cat = CATS[v];
+  const el = document.createElement('div');
+  el.className='cond-field';
+  el.innerHTML=`<span class="cond-tag">Conditional — shows for ${cat.label}</span>
+    <div class="bf-label" style="margin-bottom:4px">${cat.specific}</div>
+    <select class="bf-select" id="spec-sel" onchange="onSpec('${v}',this.value)">
+      <option value="">Select an option</option>
+      ${cat.opts.map((o,i)=>`<option value="${i}">${o.t}</option>`).join('')}
+    </select>`;
+  document.getElementById('cond-specifics').appendChild(el);
+  if(v==='streaming'||v==='apps') document.getElementById('cond-device').style.display='block';
+  if(v==='billing'||v==='subscriptions') document.getElementById('cond-plan').style.display='block';
+  if(v==='regional') document.getElementById('cond-geo').style.display='block';
+  if(v==='content'||v==='streaming') document.getElementById('cond-event').style.display='block';
+  const phs={streaming:"Which event? Does it happen on all content or just one?",apps:"When does it happen? After opening, during login, or playback?",billing:"Please provide dates and amounts if relevant.",regional:"Which content are you trying to watch?",account:"What error do you see?",subscriptions:"Any additional details.",content:"Which match or event?",general:"Tell us more."};
+  document.getElementById('free-txt').placeholder = phs[v]||'Describe what happened...';
+}
+function onSpec(catKey,idx){
+  if(idx==='') return;
+  const opt = CATS[catKey].opts[parseInt(idx)];
+  const cat = CATS[catKey];
+  document.getElementById('ap-cat').textContent = cat.hsField;
+  document.getElementById('ap-intent').textContent = IL[opt.i]||opt.i;
+  document.getElementById('ap-tag').textContent = opt.tag||'No tag — data in fields';
+  document.getElementById('ap-reply').textContent = opt.reply?'Yes — auto-reply sent':'No — agent handles';
+  document.getElementById('agent-preview').style.display='block';
+}
+
+// MAPPING
+function buildMapping(){
+  let html='';
+  Object.entries(CATS).forEach(([,cat])=>{
+    html+=`<tr class="cat-row"><td colspan="5">${cat.label}</td></tr>`;
+    cat.opts.forEach(o=>{
+      html+=`<tr>
+        <td style="color:#64748b;font-size:12px">${cat.label}</td>
+        <td>${o.t}</td>
+        <td><span class="i-chip i-${o.i}">${IL[o.i]}</span></td>
+        <td>${o.tag?`<span class="tag-mono">${o.tag}</span>`:'<span style="color:#94a3b8">field only</span>'}</td>
+        <td style="font-size:12px;color:${o.reply?'#16a34a':'#94a3b8'}">${o.reply?'Auto-reply sent':'No'}</td>
+      </tr>`;
+    });
+  });
+  document.getElementById('map-body').innerHTML=html;
+}
+
+// FIELDS
+function buildFields(){
+  const stages={
+    beacon:[
+      {n:"Contact Email",t:"Email",r:"r",src:"Customer",v:"Standard Help Scout Beacon field"},
+      {n:"Account Email",t:"Email",r:"o",src:"Customer",v:"If different from contact email. Label: Email linked to your subscription"},
+      {n:"Category",t:"Dropdown",r:"r",src:"Customer",v:"Account and Access · Subscriptions and Plans · Billing and Payments · Streaming and Playback · Apps and Devices · Content and Schedule · Regional Availability · General and Feedback"},
+      {n:"Category Specifics",t:"Dropdown",r:"r",src:"Customer",v:"One conditional dropdown per category. Shows only when that category is selected."},
+      {n:"Device",t:"Dropdown",r:"o",src:"Customer",v:"Conditional — shows for Streaming and Apps · iPhone / iPad · Android · Web Browser · Apple TV · Android TV · Roku · Fire TV · Samsung TV · LG TV · Other Smart TV · Chromecast"},
+      {n:"Purchase Platform",t:"Dropdown",r:"o",src:"Customer",v:"Conditional — shows for Billing and Subscriptions · Direct (Stripe) · Apple App Store · Google Play · PayPal · Not sure"},
+      {n:"Plan Type",t:"Dropdown",r:"o",src:"Customer",v:"Conditional — shows for Billing and Subscriptions · Monthly · Annual · PPV · Tournament pass · Bundle · Free trial"},
+      {n:"Country",t:"Text",r:"o",src:"Customer",v:"Conditional — shows for Regional Availability"},
+      {n:"VPN Active",t:"Dropdown",r:"o",src:"Customer",v:"Conditional — shows for Regional Availability · Yes · No · Not sure"},
+      {n:"Event Name",t:"Text",r:"o",src:"Customer",v:"Conditional — shows for Content and Streaming"}
+    ],
+    open:[
+      {n:"Account Match Status",t:"Dropdown",r:"r",src:"Agent",v:"Matched Direct · Matched Via Account Email · Wrong Email Used · No Account Found · Multiple Accounts"},
+      {n:"Severity",t:"Dropdown",r:"o",src:"Agent",v:"Low · Medium · High · Critical"}
+    ],
+    during:[
+      {n:"Subscription Type",t:"Dropdown",r:"o",src:"Agent or Beacon",v:"Monthly · Annual · PPV · Tournament pass · Bundle · In-app iOS · In-app Android"},
+      {n:"Payment Source",t:"Dropdown",r:"o",src:"Agent or Beacon",v:"Direct Stripe · Apple App Store · Google Play · PayPal · Unknown"},
+      {n:"Live Event Related",t:"Yes or No",r:"o",src:"Agent",v:"Yes · No"},
+      {n:"Refund Reason",t:"Dropdown",r:"o",src:"Agent",v:"Charged after cancellation · Duplicate charge · Event cancelled · Streaming failure · Geo restriction · Purchase mistake · Goodwill"},
+      {n:"Escalation URL",t:"Text",r:"o",src:"Agent",v:"Paste Slack thread, Jira ticket, or incident doc link. Internal only."}
+    ],
+    close:[
+      {n:"Resolution",t:"Dropdown",r:"r",src:"Agent",v:"Resolved Answered · Resolved Action Taken · Refunded Full · Refunded Partial · Credit Added · Escalated Pending · Resolved Platform Fix · No Response Closed · Duplicate Contact"},
+      {n:"Refund Outcome",t:"Dropdown",r:"o",src:"Agent",v:"Approved Full · Approved Partial · Declined · Credit Offered"}
+    ]
+  };
+  const rc={r:'f-r',o:'f-o',a:'f-a'};
+  Object.entries(stages).forEach(([key,fields])=>{
+    document.getElementById('fields-'+key).innerHTML = fields.map((f,i)=>`
+      <div class="field-row">
+        <div><div class="field-name">${f.n}</div><div class="field-type">${f.t}</div></div>
+        <div><span class="f-req ${rc[f.r]||'f-o'}">${f.r==='r'?'Required':'Optional'}</span></div>
+        <div><span class="f-src">${f.src}</span></div>
+        <div class="field-vals">${f.v.split('·').map(v=>`<span class="fv">${v.trim()}</span>`).join('')}</div>
+      </div>`).join('');
+  });
+}
+
+// WORKFLOWS
+function buildWorkflows(){
+  const auto=[
+    {if:"Any Beacon ticket arrives — Category field filled",then:["Set Issue Category custom field from Beacon value"],pri:"p3"},
+    {if:"Any Beacon ticket arrives — Specifics field filled",then:["Set Ticket Intent custom field","Apply anchor tag via workflow"],pri:"p3"},
+    {if:"Device field filled in Beacon",then:["Set Device custom field from Beacon value"],pri:"p3"},
+    {if:"Purchase Platform or Plan Type filled in Beacon",then:["Set Payment Source and Subscription Type custom fields"],pri:"p3"},
+    {if:"Account Email field filled AND differs from Contact Email",then:["Add internal note: Account email provided by customer — check this email"],pri:"p3"}
+  ];
+  const reply=[
+    {if:"Tag = login failed AND Specifics = I forgot my password",then:["Send password reset guide saved reply","Set Status to Pending"],pri:"p2"},
+    {if:"Tag = cancellation request added",then:["Send cancellation self-serve guide","Set Status to Pending"],pri:"p2"},
+    {if:"Status = Pending AND no reply for 5 days",then:["Send closing notice","Set Resolution to No Response Closed","Set Status to Closed"],pri:"p3"}
+  ];
+  const route=[
+    {if:"Tag = live urgent added",then:["Set Severity to Critical","Assign to senior agent"],pri:"p1"},
+    {if:"Tag = known incident added",then:["Set Status to Pending","Send holding reply"],pri:"p1"},
+    {if:"Tag = fraud added",then:["Apply tag: internal","Do not send auto-reply — agent handles manually"],pri:"p1"},
+    {if:"Tag = vip added",then:["Assign to senior agent"],pri:"p1"},
+    {if:"Tag = refund request",then:["Add to Refund queue saved view"],pri:"p2"},
+    {if:"Tag = duplicate charge",then:["Add to Billing queue saved view"],pri:"p2"}
+  ];
+  const quality=[
+    {if:"Status changes to Closed AND Resolution is blank",then:["Reopen ticket","Add note: Fill Resolution before closing"],pri:"p2"},
+    {if:"Tag = proactive followup added",then:["Set 3-day follow-up reminder"],pri:"p3"}
+  ];
+  const priL={p1:"High priority",p2:"Medium",p3:"Routine"};
+  const priC={p1:"p1",p2:"p2",p3:"p3"};
+  const render=(items,id)=>{
+    document.getElementById(id).innerHTML = items.map(w=>`
+      <div class="wf-item">
+        <div class="wf-item-head">
+          <div class="wf-if">IF: ${w.if}</div>
+          <span class="wf-pri ${priC[w.pri]}">${priL[w.pri]}</span>
+        </div>
+        <div class="wf-then">${w.then.map(t=>`<div class="wf-then-item"><span class="wf-arrow">+</span><span>${t}</span></div>`).join('')}</div>
+      </div>`).join('');
+  };
+  render(auto,'wf-auto');render(reply,'wf-reply');render(route,'wf-route');render(quality,'wf-quality');
+}
+
+// TAGS
+function buildTags(){
+  const groups=[
+    {title:"Symptom tags",color:"#0369a1",tags:[
+      {n:"black screen",d:"Video area shows no picture"},
+      {n:"buffering",d:"Playback stops with a loading spinner"},
+      {n:"no audio",d:"Silent or out of sync sound"},
+      {n:"quality issue",d:"Pixelated or lower than expected"},
+      {n:"stream missing",d:"Live event not showing on platform"},
+      {n:"replay missing",d:"VOD not available after event"},
+      {n:"casting issue",d:"Chromecast, AirPlay, or Smart TV failing"},
+      {n:"app crash",d:"App closes or freezes unexpectedly"},
+      {n:"login failed",d:"Cannot authenticate into account"},
+      {n:"duplicate charge",d:"Two charges for the same product"},
+      {n:"geo blocked",d:"Access denied due to geographic restriction"},
+      {n:"vpn detected",d:"Platform blocked VPN or proxy"},
+      {n:"payment failed",d:"Transaction declined at checkout"},
+      {n:"streaming issue",d:"Catch-all for player or stream errors"}
+    ]},
+    {title:"Operational flags",color:"#dc2626",tags:[
+      {n:"known incident",d:"Multiple reports of same issue — batch-hold all tickets"},
+      {n:"live urgent",d:"Live event affected now — auto-sets Severity to Critical"},
+      {n:"vip",d:"VIP customer — prioritise, notify manager"},
+      {n:"fraud",d:"Suspected fraud — do not auto-reply, escalate to security"},
+      {n:"escalated",d:"Handed to another team — fill Escalation URL"},
+      {n:"proactive followup",d:"Must check back before auto-close"},
+      {n:"wrong email",d:"Written from different email than account"},
+      {n:"refund request",d:"Any refund-related selection — enables refund queue filter"},
+      {n:"cancellation request",d:"Cancellation selection — triggers self-serve auto-reply"}
+    ]}
+  ];
+  document.getElementById('tags-body').innerHTML = groups.map(g=>`
+    <div class="tag-group">
+      <div class="tg-head" style="background:${g.color}">${g.title}</div>
+      <div class="tg-body">${g.tags.map(t=>`
+        <div class="tg-item">
+          <div class="tg-name" style="color:${g.color}">${t.n}</div>
+          <div class="tg-desc">${t.d}</div>
+        </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+// LIFECYCLE
+function buildLifecycle(){
+  const stages=[
+    {when:"Ticket arrives",who:"System",actions:["Category and specifics mapped to custom fields via Workflow","Anchor tag applied automatically","Device, plan, geo fields populated from Beacon","Internal note added if account email differs from contact email"]},
+    {when:"Agent opens",who:"Agent",actions:["Verify Category is correct — update if Beacon selection was wrong","Set Account Match Status — required before any reply","If wrong email: send request reply, set Pending","If no account found: send no-account reply, set Pending"]},
+    {when:"During handling",who:"Agent",actions:["Fill Subscription Type when confirmed from account","Fill Payment Source if payment involved","Set Live Event Related to Yes if event was live","Set Severity if escalation is needed","Add Escalation URL if routing to another team","Add internal notes for account findings and refund rationale"]},
+    {when:"Topic changes",who:"Agent",actions:["Keep original Category — it reflects why they contacted","Add a request tag (refund request, cancellation request) for the new intent","Document new request in the conversation thread"]},
+    {when:"At close",who:"Agent",actions:["Resolution is required — workflow reopens ticket if left blank","Fill Refund Outcome if a refund was processed","Set Status to Closed"]}
+  ];
+  document.getElementById('lc-body').innerHTML = stages.map(s=>`
+    <div class="lc-item">
+      <div class="lc-when">
+        <div class="lc-stage">${s.when}</div>
+        <div class="lc-who">${s.who}</div>
+      </div>
+      <div class="lc-actions">${s.actions.map(a=>`
+        <div class="lc-action"><span class="lc-dot">+</span><span>${a}</span></div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+// SETUP
+function buildSetup(){
+  const fields=[
+    ["Issue Category","Dropdown — Required","Account and Access / Subscriptions and Plans / Billing and Payments / Streaming and Playback / Apps and Devices / Content and Schedule / Regional Availability / General and Feedback"],
+    ["Ticket Intent","Dropdown — set by Workflow","Question / Request / Issue / Feedback"],
+    ["Account Match Status","Dropdown — Required","Matched Direct / Matched Via Account Email / Wrong Email Used / No Account Found / Multiple Accounts"],
+    ["Subscription Type","Dropdown — Optional","Monthly / Annual / PPV / Tournament pass / Bundle / In-app iOS / In-app Android"],
+    ["Payment Source","Dropdown — Optional","Direct Stripe / Apple App Store / Google Play / PayPal / Unknown"],
+    ["Device","Dropdown — Optional","iOS / Android / Web Browser / Apple TV / Android TV / Roku / Fire TV / Samsung TV / LG TV / Other Smart TV / Chromecast"],
+    ["Live Event Related","Yes or No — Optional","Yes / No"],
+    ["Severity","Dropdown — Optional","Low / Medium / High / Critical"],
+    ["Refund Reason","Dropdown — Optional","Charged after cancellation / Duplicate charge / Event cancelled / Streaming failure / Geo restriction / Purchase mistake / Goodwill"],
+    ["Escalation URL","Text — Optional","Free text. Paste Slack thread, Jira link, or incident doc. Internal only."],
+    ["Resolution","Dropdown — Required at close","Resolved Answered / Resolved Action Taken / Refunded Full / Refunded Partial / Credit Added / Escalated Pending / Resolved Platform Fix / No Response Closed / Duplicate Contact"],
+    ["Refund Outcome","Dropdown — Optional at close","Approved Full / Approved Partial / Declined / Credit Offered"]
+  ];
+  document.getElementById('setup-fields').innerHTML = `<div class="tbl-wrap"><table>
+    <thead><tr><th>Field name</th><th>Type and required</th><th>Values to add</th></tr></thead>
+    <tbody>${fields.map((f,i)=>`<tr style="${i%2===0?'background:#f8f9fb':''}">
+      <td style="font-weight:700">${f[0]}</td>
+      <td style="font-size:12px;color:#64748b">${f[1]}</td>
+      <td style="font-size:12px">${f[2].split('/').map(v=>`<span class="fv">${v.trim()}</span>`).join(' ')}</td>
+    </tr>`).join('')}
+    </tbody></table></div>`;
+
+  const beaconSteps=[
+    ["Add subscription account email field","Type: Email. Label: Subscription account email — if different from above. Required: No."],
+    ["Add Category dropdown","Type: Dropdown. Required: Yes. Add all 8 category names. This is the primary field that controls all conditional fields below it."],
+    ["Add 8 Specifics dropdowns — one per category","Create one dropdown for each category. Each one: Required = Yes, Condition = Show when Category = matching category name. Label all 8 as: What specifically? Populate each with the relevant options from the Mapping tab."],
+    ["Add Device conditional dropdown","Type: Dropdown. Condition: Show when Category = Streaming and Playback OR Apps and Devices. Add device options."],
+    ["Add Purchase Platform conditional dropdown","Type: Dropdown. Condition: Show when Category = Billing and Payments OR Subscriptions and Plans."],
+    ["Add Plan Type conditional dropdown","Type: Dropdown. Condition: Show when Category = Billing and Payments OR Subscriptions and Plans."],
+    ["Add Country text field","Type: Text. Condition: Show when Category = Regional Availability."],
+    ["Add VPN active dropdown","Type: Dropdown. Options: No, Yes, Not sure. Condition: Show when Category = Regional Availability."],
+    ["Add Event name text field","Type: Text. Condition: Show when Category = Content and Schedule OR Streaming and Playback."],
+    ["Enable attachments","Beacon settings — Contact — Allow attachments — On."]
+  ];
+  document.getElementById('setup-beacon').innerHTML = beaconSteps.map((s,i)=>`
+    <div class="cs"><div class="cs-num">${i+1}</div>
+    <div class="cs-body"><strong>${s[0]}</strong><p>${s[1]}</p></div></div>`).join('');
+
+  const wfSteps=[
+    ["Create anchor tag workflows — one per option","For each option in the Specifics dropdowns that has a tag in the Mapping table: Condition = Specifics field value = option text. Action = Apply tag."],
+    ["Password reset auto-reply","Condition: Tag = login failed AND Specifics = I forgot my password. Action: Send Password Reset Guide saved reply. Set Status = Pending."],
+    ["Cancellation auto-reply","Condition: Tag = cancellation request. Action: Send Cancellation Guide saved reply. Set Status = Pending."],
+    ["No-reply auto-close","Condition: Status = Pending AND days since last customer reply = 5. Action: Send Closing Notice saved reply. Set Resolution = No Response Closed. Set Status = Closed."],
+    ["Resolution required at close","Condition: Status changed to Closed AND Resolution = blank. Action: Reopen ticket. Add note: Fill Resolution before closing."],
+    ["Live urgent severity","Condition: Tag = live urgent added. Action: Set Severity = Critical."],
+    ["Refund queue routing","Condition: Tag = refund request. Action: These tickets appear in a saved view filtered by tag = refund request."],
+    ["Account email mismatch note","Condition: Account Email field is filled AND Account Email does not equal Contact Email. Action: Add internal note."]
+  ];
+  document.getElementById('setup-workflows').innerHTML = wfSteps.map((s,i)=>`
+    <div class="cs"><div class="cs-num">${i+1}</div>
+    <div class="cs-body"><strong>${s[0]}</strong><p>${s[1]}</p></div></div>`).join('');
+}
+
+function show(id,btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('section-'+id).classList.add('active');
+  if(btn) btn.classList.add('active');
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  buildMapping();buildFields();buildWorkflows();buildTags();buildLifecycle();buildSetup();
+});
+</script>
+</body>
+</html>

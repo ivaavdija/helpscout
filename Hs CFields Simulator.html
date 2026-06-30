@@ -1,0 +1,1287 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fandom Labs — Support Simulation</title>
+<style>
+:root {
+  --hs-blue: #3b82f6;
+  --hs-blue-hover: #2563eb;
+  --hs-blue-lt: #eff6ff;
+  --hs-navy: #1e293b;
+  --hs-nav: #0f172a;
+  --green: #10b981;
+  --green-lt: #ecfdf5;
+  --amber: #f59e0b;
+  --amber-lt: #fffbeb;
+  --red: #ef4444;
+  --red-lt: #fef2f2;
+  --slate: #475569;
+  --muted: #94a3b8;
+  --border: #e2e8f0;
+  --bg: #f3f4f6;
+  --white: #ffffff;
+  --beacon-blue: #4f46e5;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font); }
+html, body { height: 100%; overflow: hidden; font-size: 13px; background: var(--bg); color: #0f172a; }
+button { outline: none; border: none; background: transparent; cursor: pointer; font-family: inherit; }
+
+/* ── SCENARIO BAR ── */
+#scenario-bar {
+  background: var(--hs-nav); height: 56px; display: flex; align-items: center;
+  padding: 0 20px; gap: 8px; overflow-x: auto; flex-shrink: 0;
+  border-bottom: 1px solid rgba(255,255,255,.08); scrollbar-width: none;
+}
+#scenario-bar::-webkit-scrollbar { display: none; }
+.bar-title { color: #fff; font-weight: 700; font-size: 14px; margin-right: 16px; display: flex; align-items: center; gap: 8px; }
+.bar-title span { background: var(--hs-blue); color: #fff; font-size: 9px; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.sc-btn {
+  padding: 7px 14px; border-radius: 6px; border: 1px solid rgba(255,255,255,.15);
+  background: rgba(255,255,255,.05); color: #cbd5e1; font-size: 12px; font-weight: 600;
+  cursor: pointer; white-space: nowrap; transition: all .15s; outline: none;
+}
+.sc-btn:hover { background: rgba(255,255,255,.15); color: #fff; }
+.sc-btn.active { background: var(--hs-blue); border-color: var(--hs-blue); color: #fff; }
+
+/* ── MAIN LAYOUT ── */
+#app { display: flex; height: calc(100vh - 56px); overflow: hidden; }
+
+/* ── LEFT: HELP SCOUT PANEL ── */
+#hs-panel { flex: 0 0 65%; display: flex; flex-direction: column; border-right: 1px solid var(--border); background: var(--white); min-width: 0; }
+#hs-topbar {
+  background: #fff; padding: 0 24px; height: 64px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 16px; flex-shrink: 0;
+}
+#hs-inbox-chip { font-size: 12px; font-weight: 800; padding: 5px 12px; border-radius: 6px; background: var(--hs-navy); color: #fff; white-space: nowrap; }
+#hs-subject { flex: 1; font-size: 18px; font-weight: 700; color: #0f172a; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#hs-status-badge { font-size: 11px; font-weight: 800; padding: 5px 12px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; border: 1px solid; text-transform: uppercase; letter-spacing: 0.5px; }
+.status-new { background: var(--hs-blue-lt); color: var(--hs-blue); border-color: #bfdbfe; }
+.status-open { background: var(--green-lt); color: var(--green); border-color: #bbf7d0; }
+.status-pending { background: var(--amber-lt); color: var(--amber); border-color: #fde68a; }
+.status-closed { background: #f8fafc; color: var(--muted); border-color: #cbd5e1; }
+
+#hs-body { display: flex; flex: 1; overflow: hidden; }
+
+/* Thread column */
+#hs-thread-col { display: flex; flex-direction: column; flex: 1; min-width: 0; overflow: hidden; background: #fff; }
+
+/* Alerts */
+.hs-alert { padding: 14px 24px; font-size: 13px; display: none; align-items: center; gap: 8px; border-bottom: 1px solid; flex-shrink: 0; }
+.hs-alert.mismatch { background: var(--amber-lt); color: #92400e; border-color: #fcd34d; font-weight: 500; }
+.hs-alert.workflow { background: var(--hs-blue-lt); color: #1e40af; border-color: #bfdbfe; }
+
+/* Thread & Messages */
+#hs-thread { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 24px; background: #fff; }
+#hs-empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--muted); text-align: center; }
+#hs-empty svg { width: 56px; height: 56px; opacity: 0.2; margin-bottom: 16px; }
+#hs-empty h2 { font-size: 18px; font-weight: 700; color: #475569; margin-bottom: 8px; }
+
+.msg { display: flex; gap: 16px; max-width: 900px; }
+.msg-avatar { width: 40px; height: 40px; border-radius: 50%; background: #e2e8f0; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #64748b; font-size: 16px; overflow: hidden;}
+.msg-avatar.customer { background: #cbd5e1; color: #fff;}
+.msg-avatar.agent { background: var(--hs-blue-lt); color: var(--hs-blue); }
+.msg-avatar.note { background: var(--amber-lt); color: var(--amber); }
+.msg-avatar.system { background: transparent; color: var(--muted); }
+.msg-content { flex: 1; min-width: 0; }
+.msg-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.msg-meta b { font-size: 14px; font-weight: 700; color: #0f172a; }
+.msg-meta span { font-size: 12px; color: var(--muted); }
+.msg-bubble { background: #fff; border: 1px solid var(--border); padding: 16px; border-radius: 0 12px 12px 12px; font-size: 13px; line-height: 1.6; color: #334155; }
+.msg.customer .msg-bubble { background: #f8fafc; }
+.msg.agent .msg-bubble { background: var(--hs-blue-lt); border-color: #bfdbfe; }
+.msg.note .msg-bubble { background: var(--amber-lt); border-color: #fde68a; border-left: 3px solid var(--amber); border-radius: 12px; }
+.msg.system { align-items: center; justify-content: center; }
+.msg.system .msg-bubble { background: transparent; border: none; color: var(--muted); font-style: italic; padding: 0; }
+.msg-role { font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 4px; background: var(--border); color: var(--slate); text-transform: uppercase; }
+.msg-role.note { background: #fef3c7; color: #b45309; }
+.msg-attach-pill { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; background: #fff; border: 1px solid var(--border); border-radius: 6px; font-size: 12px; font-weight: 600; color: var(--hs-blue); margin-top: 12px; }
+
+/* Compose Box */
+#hs-compose { border-top: 1px solid var(--border); background: var(--white); flex-shrink: 0; }
+.comp-tabs { display: flex; border-bottom: 1px solid var(--border); background: #f8fafc; padding: 0 12px;}
+.c-tab { padding: 12px 20px; font-size: 13px; font-weight: 600; border: none; background: transparent; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 0.2s; }
+.c-tab.active { color: var(--hs-blue); border-bottom-color: var(--hs-blue); background: #fff; }
+.c-tab:hover:not(.active) { color: var(--slate); }
+#compose-area { padding: 16px 24px; }
+#compose-textarea { width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; font-size: 13px; resize: none; height: 100px; outline: none; transition: border-color .15s; line-height: 1.5; background: #fff; }
+#compose-textarea:focus { border-color: var(--hs-blue); box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+#compose-textarea.note-mode { background: #fffdf2; border-color: #fcd34d; }
+.comp-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+.btn { padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; display: inline-flex; align-items: center; justify-content: center; }
+.btn-send { background: var(--hs-blue); color: #fff; font-weight: 700; padding: 8px 20px; border-radius: 6px; border: none; cursor: pointer; }
+.btn-send:hover { background: var(--hs-blue-hover); }
+.btn-send.note-send { background: var(--amber); }
+.btn-send.note-send:hover { background: #d97706; }
+.btn-sec { background: #fff; border-color: var(--border); color: var(--slate); }
+.btn-sec:hover { background: #f8fafc; }
+#macro-select { padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); background: #fff; color: var(--slate); font-size: 12px; font-weight: 600; cursor: pointer; outline: none; width: 220px; }
+
+/* ── NEW HELP SCOUT CUSTOM FIELDS PANE ── */
+#hs-cf-col { width: 300px; flex-shrink: 0; background: #fff; border-left: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+.cf-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.cf-header h3 { font-size: 15px; font-weight: 700; color: #0f172a; }
+.cf-header button { font-size: 18px; color: var(--muted); cursor: pointer; }
+.cf-header button:hover { color: var(--slate); }
+.cf-body { padding: 20px; overflow-y: auto; flex: 1; }
+
+.hs-field { margin-bottom: 16px; }
+.hs-field label { display: block; font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 6px; }
+.hs-field label .req { color: #ef4444; margin-left: 2px; }
+.hs-val { width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; color: #0f172a; background: #fff; outline: none; transition: border-color 0.2s; }
+select.hs-val { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath fill='%236b7280' d='M6 8L0 0h12z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; cursor: pointer; }
+.hs-val:focus { border-color: var(--hs-blue); box-shadow: 0 0 0 2px rgba(59,130,246,0.1); }
+.hs-val.empty { color: var(--muted); }
+.hs-val.mismatch { border-color: #fca5a5; background: #fef2f2; color: #991b1b; font-weight: 600; }
+
+/* ── NEW HELP SCOUT RIGHT SIDEBAR ── */
+#hs-right-col { width: 260px; flex-shrink: 0; background: #f9fafb; border-left: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
+.profile-card { padding: 32px 20px 24px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.avatar-gradient { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #fbcfe8 0%, #c4b5fd 100%); margin-bottom: 12px; }
+.profile-name { font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
+.profile-email { font-size: 13px; color: var(--hs-blue); text-decoration: none; }
+
+.right-card { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin: 0 16px 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+.right-card h4 { font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 12px; }
+.mismatch-pill { display: inline-flex; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 6px; background: var(--red-lt); color: var(--red); border: 1px solid #fecaca; text-transform: uppercase; }
+
+/* Tags */
+#tags-container { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.tag { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-family: monospace; font-weight: 700; border: 1px solid var(--border); background: #f1f5f9; color: var(--slate); }
+.tag.t-red { background: #fef2f2; border-color: #fecaca; color: var(--red); }
+.tag.t-blue { background: #eff6ff; border-color: #bfdbfe; color: var(--hs-blue); }
+.tag.t-amber { background: #fffbeb; border-color: #fde68a; color: var(--amber); }
+.tag-rm { background: none; border: none; cursor: pointer; color: inherit; opacity: 0.5; font-size: 14px; line-height: 1; }
+.tag-rm:hover { opacity: 1; }
+.tag-add-wrap { display: flex; gap: 8px; }
+.tag-add-input { flex: 1; padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 12px; font-family: monospace; outline: none; }
+
+/* ── RIGHT: BEACON WIDGET ── */
+#beacon-panel { flex: 0 0 35%; min-width: 380px; display: flex; flex-direction: column; background: #eef2f6; border-left: 1px solid var(--border); padding: 24px; align-items: center; justify-content: center; }
+#beacon-widget { width: 100%; max-width: 400px; background: #fff; border-radius: 12px; box-shadow: 0 12px 40px rgba(0,0,0,0.12); display: flex; flex-direction: column; height: 100%; max-height: 750px; overflow: hidden; border: 1px solid var(--border); }
+#beacon-widget-header { background: var(--beacon-blue); padding: 24px; color: #fff; text-align: center; flex-shrink: 0; }
+.avatars { display: flex; justify-content: center; margin-bottom: 12px; }
+.avatars .av { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--beacon-blue); margin-left: -12px; background: #cbd5e1; display: flex; align-items: center; justify-content: center; font-size: 18px; overflow: hidden; }
+.avatars .av:first-child { margin-left: 0; }
+#beacon-widget-header h2 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+#beacon-widget-header p { font-size: 13px; opacity: 0.9; }
+
+/* Form Scroll Area */
+#beacon-form-scroll { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 16px; background: #fff; min-height: 0; }
+.b-field { display: flex; flex-direction: column; gap: 6px; }
+.b-label { font-size: 13px; font-weight: 600; color: #1e293b; display: flex; justify-content: space-between; align-items: center; }
+.b-req { font-size: 10px; font-weight: 700; color: var(--red); background: var(--red-lt); padding: 2px 6px; border-radius: 4px; border: 1px solid #fecaca; text-transform: uppercase; }
+.b-opt { font-size: 10px; font-weight: 700; color: var(--muted); background: #f1f5f9; padding: 2px 6px; border-radius: 4px; border: 1px solid #e2e8f0; text-transform: uppercase;}
+.b-input, .b-select, .b-textarea { width: 100%; padding: 12px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; color: #0f172a; outline: none; transition: border-color .2s; background: #fff; }
+.b-input:focus, .b-select:focus, .b-textarea:focus { border-color: var(--beacon-blue); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15); }
+.b-select { appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath fill='%236b7280' d='M6 8L0 0h12z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 32px; }
+.b-textarea { min-height: 90px; resize: vertical; }
+
+.dyn-block { background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid var(--beacon-blue); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 8px; animation: fadeIn 0.3s; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+.dyn-block-title { font-size: 10px; font-weight: 800; color: var(--beacon-blue); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+
+.attach-zone { border: 2px dashed #cbd5e1; border-radius: 8px; padding: 16px; text-align: center; color: #64748b; font-size: 13px; font-weight: 600; cursor: pointer; background: #f8fafc; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.attach-zone:hover { border-color: var(--beacon-blue); color: var(--beacon-blue); background: #eff6ff; }
+.attach-zone.active { border-style: solid; border-color: var(--green); background: var(--green-lt); color: var(--green); }
+
+.beacon-footer { padding: 16px 24px; border-top: 1px solid var(--border); flex-shrink: 0; background: #fff; }
+.btn-submit { width: 100%; padding: 14px; background: var(--beacon-blue); border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; transition: background .2s; }
+.btn-submit:hover { background: #4338ca; }
+
+/* Sent state */
+#beacon-sent { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 40px 24px; text-align: center; height: 100%; background: #fff; flex: 1; }
+.sent-icon { width: 64px; height: 64px; background: var(--green-lt); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; color: var(--green); border: 2px solid #bbf7d0; margin: 0 auto 20px; }
+.sent-title { font-size: 22px; font-weight: 800; color: #0f172a; margin-bottom: 12px; }
+.sent-sub { font-size: 14px; color: var(--muted); line-height: 1.6; margin-bottom: 32px; }
+
+/* Modals */
+.overlay { display: none; position: fixed; inset: 0; background: rgba(15,23,42,.6); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+.modal { background: var(--white); border-radius: 12px; padding: 28px; max-width: 400px; width: 90%; box-shadow: 0 25px 50px -12px rgba(0,0,0,.25); }
+.modal h3 { font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 8px; }
+.modal p { font-size: 13px; color: var(--slate); margin-bottom: 20px; line-height: 1.5; }
+.modal-select, .modal-input { width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; outline: none; margin-bottom: 24px; }
+.modal-select:focus, .modal-input:focus { border-color: var(--hs-blue); }
+.modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
+</style>
+</head>
+<body>
+
+<!-- SCENARIO BAR -->
+<div id="scenario-bar">
+  <div class="bar-title"><span>Demo</span> Simulator</div>
+  <div id="scenario-buttons-container" style="display:flex; gap:8px;"></div>
+</div>
+
+<!-- APP LAYOUT -->
+<div id="app">
+
+  <!-- LEFT: HELP SCOUT -->
+  <div id="hs-panel">
+    <div id="hs-topbar">
+      <div id="hs-inbox-chip">EHFTV</div>
+      <div id="hs-subject">Awaiting submission</div>
+      <div id="hs-status-badge" class="status-new">NEW</div>
+    </div>
+    
+    <div id="hs-body">
+      <!-- 1. THREAD COLUMN -->
+      <div id="hs-thread-col">
+        <!-- Alerts -->
+        <div id="mismatch-alert" class="hs-alert mismatch mismatch-hidden">
+          <span>⚠️ <b>Account Email Mismatch:</b> Customer contacted from <span id="ma-contact" style="text-decoration:underline"></span> but provided account email <span id="ma-account" style="text-decoration:underline"></span>.</span>
+        </div>
+        <div id="automations-strip" class="hs-alert workflow"></div>
+        
+        <!-- Thread -->
+        <div id="hs-thread">
+          <div id="hs-empty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+            <h2>No ticket yet</h2>
+            <p>Select a scenario from the top bar, review the Beacon form on the right, and submit to simulate the automated routing.</p>
+          </div>
+        </div>
+        
+        <!-- Compose -->
+        <div id="hs-compose" style="display:none">
+          <div class="comp-tabs">
+            <button class="c-tab active" id="tab-reply" onclick="setComposeMode('reply')">Reply</button>
+            <button class="c-tab" id="tab-note" onclick="setComposeMode('note')">Internal Note</button>
+          </div>
+          <div id="compose-area">
+            <textarea id="compose-textarea" placeholder="Write your reply..."></textarea>
+            <div class="compose-hint" id="compose-hint">This message will be sent to the customer</div>
+            <div class="comp-actions">
+              <div>
+                <select id="macro-select" onchange="useMacro(this.value)">
+                  <option value="">Insert Saved Reply...</option>
+                </select>
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button class="btn btn-sec" onclick="openModal('escalate')">Escalate</button>
+                <button class="btn btn-sec" onclick="setPending()">Set Pending</button>
+                <button class="btn btn-sec" onclick="openModal('close')">Close</button>
+                <button class="btn btn-send" id="send-btn" onclick="sendMessage()">Send Reply</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 2. CUSTOM FIELDS PANE (Matches HS screenshot layout) -->
+      <div id="hs-cf-col" style="display:none;">
+        <div class="cf-header">
+          <h3>Custom Fields</h3>
+          <button onclick="this.parentElement.parentElement.style.display='none'" title="Close Panel">×</button>
+        </div>
+        <div class="cf-body">
+            <div class="hs-field"><label>Category <span class="req">*</span></label><select class="hs-val empty" id="sf-category" onchange="updateFieldClass(this)"></select></div>
+            <div class="hs-field"><label>Subcategory <span class="req">*</span></label><input type="text" class="hs-val" id="sf-subcategory" readonly style="background:var(--bg); color:var(--muted)"></div>
+            <div class="hs-field"><label>Ticket Intent <span class="req">*</span></label><select class="hs-val empty" id="sf-intent" onchange="updateFieldClass(this)"></select></div>
+            <div class="hs-field"><label>Account Match <span class="req">*</span></label><select class="hs-val empty" id="sf-account-match" onchange="updateFieldClass(this)"></select></div>
+            
+            <div class="hs-field"><label>Device</label><select class="hs-val empty" id="sf-device" onchange="updateFieldClass(this)"></select></div>
+            <div class="hs-field"><label>Live Event Related</label><select class="hs-val empty" id="sf-live" onchange="updateFieldClass(this)"></select></div>
+            <div class="hs-field"><label>Subscription Type</label><select class="hs-val empty" id="sf-sub-type" onchange="updateFieldClass(this)"></select></div>
+            <div class="hs-field"><label>Severity</label><select class="hs-val empty" id="sf-severity" onchange="updateFieldClass(this)"></select></div>
+            <div class="hs-field"><label>Refund Reason</label><select class="hs-val empty" id="sf-refund-reason" onchange="updateFieldClass(this)"></select></div>
+            <div class="hs-field"><label>Escalation URL</label><input type="text" class="hs-val" id="sf-escalation" placeholder="Paste Slack / Jira link..." onchange="updateFieldClass(this, true)"></div>
+            <div class="hs-field"><label>Resolution</label><select class="hs-val empty" id="sf-resolution" onchange="updateFieldClass(this)"></select></div>
+        </div>
+      </div>
+
+      <!-- 3. RIGHT SIDEBAR (Customer Profile & Tags) -->
+      <div id="hs-right-col" style="display:none;">
+        <div class="profile-card">
+          <div class="avatar-gradient"></div>
+          <div class="profile-name" id="sb-name">Customer Name</div>
+          <a href="#" class="profile-email" id="sb-contact-email">customer@email.com</a>
+        </div>
+        
+        <div class="right-card" id="sb-account-row" style="display:none;">
+          <h4>Account Info</h4>
+          <span class="mismatch-pill" style="margin-bottom:8px;">Wrong Email Used</span>
+          <div style="font-size:12px; color:var(--slate);">Beacon Account Email:</div>
+          <div id="sb-account-email" style="font-size:13px; font-weight:600; color:#0f172a; word-break:break-all;"></div>
+        </div>
+
+        <div class="right-card">
+          <h4>Tags</h4>
+          <div id="tags-container"></div>
+          <div class="tag-add-wrap">
+            <input type="text" class="tag-add-input" id="tag-input" placeholder="Add tag..." onkeypress="if(event.key === 'Enter') addTag()">
+            <button class="btn btn-sec" style="padding: 4px 10px" onclick="addTag()">Add</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- RIGHT: BEACON WIDGET PANEL -->
+  <div id="beacon-panel">
+    <div id="beacon-widget">
+      <div id="beacon-widget-header">
+        <div class="avatars">
+          <div class="av" style="background:#fecaca">S</div>
+          <div class="av" style="background:#bfdbfe">J</div>
+          <div class="av" style="background:#bbf7d0">K</div>
+          <div class="av" style="background:#fde68a">A</div>
+        </div>
+        <h2>How can we help?</h2>
+        <p>We usually respond in a few hours</p>
+      </div>
+      
+      <div id="beacon-form-scroll">
+        <div class="b-field">
+          <div class="b-label">Subject <span class="b-req">Required</span></div>
+          <input class="b-input" id="b-subject" type="text" placeholder="Brief description">
+        </div>
+
+        <div class="b-field">
+          <div class="b-label">Contact email <span class="b-req">Required</span></div>
+          <input class="b-input" id="b-contact" type="email" placeholder="your@email.com">
+        </div>
+        
+        <div class="b-field">
+          <div class="b-label">Account email <span class="b-opt">Optional</span></div>
+          <input class="b-input" id="b-account" type="email" placeholder="Email linked to your subscription">
+        </div>
+        
+        <div class="b-field" style="margin-top: 12px; border-top: 1px solid #e2e8f0; padding-top: 16px;">
+          <div class="b-label">1. What do you need help with? <span class="b-req">Required</span></div>
+          <select class="b-select" id="b-cat" onchange="onCatChange()"></select>
+        </div>
+        
+        <div class="b-field" id="w-subcat" style="display:none">
+          <div class="b-label">2. Topic <span class="b-req">Required</span></div>
+          <select class="b-select" id="b-subcat" onchange="onSubChange()"></select>
+        </div>
+        
+        <div class="b-field" id="w-reason" style="display:none">
+          <div class="b-label">3. What exactly is happening? <span class="b-req">Required</span></div>
+          <select class="b-select" id="b-reason" onchange="onReasonChange()"></select>
+        </div>
+
+        <!-- CONDITIONAL FIELDS -->
+        <div id="b-dyn-device" class="dyn-block" style="display:none;">
+          <div class="dyn-block-title">Troubleshooting Details</div>
+          <div class="b-field">
+            <div class="b-label">Which device?</div>
+            <select class="b-select" id="b-device"></select>
+          </div>
+        </div>
+        
+        <div id="b-dyn-plan" class="dyn-block" style="display:none;">
+          <div class="dyn-block-title">Subscription Details</div>
+          <div class="b-field" style="margin-bottom:12px">
+            <div class="b-label">How did you subscribe?</div>
+            <select class="b-select" id="b-platform"></select>
+          </div>
+          <div class="b-field">
+            <div class="b-label">Plan or pass type</div>
+            <select class="b-select" id="b-plan-type"></select>
+          </div>
+        </div>
+        
+        <div id="b-dyn-event" class="dyn-block" style="display:none;">
+          <div class="dyn-block-title">Event Details</div>
+          <div class="b-field">
+            <div class="b-label">Event or match name</div>
+            <input class="b-input" id="b-event" type="text" placeholder="e.g. EHF Champions League Final">
+          </div>
+        </div>
+        
+        <div id="b-dyn-geo" class="dyn-block" style="display:none;">
+          <div class="dyn-block-title">Location Details</div>
+          <div class="b-field" style="margin-bottom:12px">
+            <div class="b-label">Current country</div>
+            <input class="b-input" id="b-country" type="text" placeholder="e.g. Germany, USA">
+          </div>
+          <div class="b-field">
+            <div class="b-label">Are you using a VPN?</div>
+            <select class="b-select" id="b-vpn"></select>
+          </div>
+        </div>
+
+        <div class="b-field" style="margin-top: 8px;">
+          <div class="b-label">How can we help? <span class="b-req">Required</span></div>
+          <textarea class="b-textarea" id="b-text" placeholder="Describe what happened..."></textarea>
+        </div>
+        
+        <div class="b-field">
+          <div class="attach-zone" id="b-attach" onclick="toggleAttach()">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+            <span>Click to attach a screenshot</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="beacon-footer" id="beacon-footer">
+        <button class="btn-submit" id="b-submit" onclick="submitBeacon()">Send a message</button>
+      </div>
+
+      <div id="beacon-sent">
+        <div class="sent-icon">✓</div>
+        <h2 class="sent-title">Message sent</h2>
+        <p class="sent-sub">Your request has been routed to our team.<br>A support agent will respond shortly.</p>
+        <button class="btn btn-sec" onclick="resetBeacon()">Send another message</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODALS -->
+<div id="modal-close" class="overlay" onclick="if(event.target===this)closeModal('close')">
+  <div class="modal">
+    <h3>Close Ticket</h3>
+    <p>Select a resolution before closing. This is required for reporting.</p>
+    <select id="modal-res-select" class="modal-select"></select>
+    <div class="modal-actions">
+      <button class="btn btn-sec" onclick="closeModal('close')">Cancel</button>
+      <button class="btn btn-pri" onclick="confirmClose()">Close Ticket</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-escalate" class="overlay" onclick="if(event.target===this)closeModal('escalate')">
+  <div class="modal">
+    <h3>Escalate Ticket</h3>
+    <p>Paste the engineering Jira ticket, Slack thread, or Incident URL.</p>
+    <input type="text" id="modal-esc-input" class="modal-input" placeholder="https://...">
+    <div class="modal-actions">
+      <button class="btn btn-sec" onclick="closeModal('escalate')">Cancel</button>
+      <button class="btn btn-pri" style="background:var(--amber); border-color:var(--amber)" onclick="confirmEscalate()">Escalate & Set Pending</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── SOURCE OF TRUTH CONFIG DATA ──────────────────────────────────────────────
+const CONFIG = {
+  beacon_categories: [
+    { value: "billing", label: "Billing and Payments" },
+    { value: "subscriptions", label: "Subscriptions and Passes" },
+    { value: "streaming", label: "Streaming and Watching" },
+    { value: "account", label: "Account Management" },
+    { value: "login", label: "Login and Access" },
+    { value: "apps", label: "Apps and Casting" },
+    { value: "content", label: "Content and Schedule" },
+    { value: "regional", label: "Regional Availability" },
+    { value: "general", label: "General and Feedback" }
+  ],
+  beacon_subcategories: {
+    "billing": ["Payment Failed", "Unexpected Charges", "Refund Request", "Invoice and Receipt", "Payment Method"],
+    "subscriptions": ["Plans and Pricing", "Cancellation", "Upgrade or Downgrade", "Renewal and Auto-charge", "Event Pass or PPV"],
+    "streaming": ["Playback Problems", "Video Quality", "Audio Issues", "Live Event Issues"],
+    "account": ["Profile and Settings", "Email or Password Change", "Account Deletion", "Multiple Accounts"],
+    "login": ["Password and Login", "Verification Email", "Account Locked"],
+    "apps": ["App Not Working", "Installation and Updates", "Casting and TV Viewing", "Device Compatibility"],
+    "content": ["Replay and Highlights", "Content Availability", "Schedule and Listings", "Commentary"],
+    "regional": ["Blocked in My Country", "VPN Detected", "Travelling Abroad", "Blackout Restriction"],
+    "general": ["Feedback and Suggestions", "Feedback and Complaints", "General Question", "Business Enquiry"]
+  },
+  beacon_reasons: {
+    "Payment Failed": [ { text: "My card was declined", intent: "Issue", tag: "payment failed", dyn: [] }, { text: "3D Secure or bank authentication failed", intent: "Issue", tag: "payment failed", dyn: [] }, { text: "PayPal payment not going through", intent: "Issue", tag: "payment failed", dyn: [] } ],
+    "Unexpected Charges": [ { text: "I was charged twice for the same thing", intent: "Issue", tag: "duplicate charge", dyn: ["plan"] }, { text: "Amount charged was different from expected", intent: "Issue", tag: "", dyn: ["plan"] }, { text: "I do not recognise a charge on my statement", intent: "Issue", tag: "", dyn: [] } ],
+    "Refund Request": [ { text: "I want to request a refund", intent: "Request", tag: "refund request", dyn: ["plan"] }, { text: "My refund request was declined", intent: "Question", tag: "", dyn: [] }, { text: "I requested a refund — where is it?", intent: "Question", tag: "", dyn: [] } ],
+    "Invoice and Receipt": [ { text: "I need an invoice or receipt", intent: "Request", tag: "", dyn: [] }, { text: "My invoice details are wrong", intent: "Issue", tag: "", dyn: [] } ],
+    "Payment Method": [ { text: "I want to update my payment method", intent: "Request", tag: "", dyn: [] }, { text: "What payment methods do you accept?", intent: "Question", tag: "", dyn: [] } ],
+    "Plans and Pricing": [ { text: "What plans are available?", intent: "Question", tag: "", dyn: [] }, { text: "What does my current plan include?", intent: "Question", tag: "", dyn: ["plan"] }, { text: "Are there any discounts?", intent: "Question", tag: "", dyn: [] } ],
+    "Cancellation": [ { text: "I want to cancel my subscription", intent: "Request", tag: "cancellation request", dyn: ["plan"] }, { text: "How do I cancel — step by step?", intent: "Question", tag: "", dyn: [] }, { text: "I cancelled but was still charged", intent: "Issue", tag: "refund request", dyn: ["plan"] }, { text: "When does access end after cancelling?", intent: "Question", tag: "", dyn: [] } ],
+    "Upgrade or Downgrade": [ { text: "I want to upgrade my plan", intent: "Request", tag: "", dyn: ["plan"] }, { text: "I want to downgrade my plan", intent: "Request", tag: "", dyn: ["plan"] } ],
+    "Renewal and Auto-charge": [ { text: "I was charged on renewal unexpectedly", intent: "Issue", tag: "refund request", dyn: ["plan"] }, { text: "How does auto-renewal work?", intent: "Question", tag: "", dyn: [] }, { text: "I want to turn off auto-renewal", intent: "Request", tag: "", dyn: ["plan"] } ],
+    "Event Pass or PPV": [ { text: "I bought a pass but cannot access it", intent: "Issue", tag: "", dyn: ["plan", "event"] }, { text: "How do event passes work?", intent: "Question", tag: "", dyn: [] }, { text: "I want a refund for an event pass", intent: "Request", tag: "refund request", dyn: ["plan", "event"] } ],
+    "Playback Problems": [ { text: "Video is buffering or freezing", intent: "Issue", tag: "buffering", dyn: ["device", "event"] }, { text: "Black screen — video will not load at all", intent: "Issue", tag: "black screen", dyn: ["device", "event"] }, { text: "Player shows an error code", intent: "Issue", tag: "", dyn: ["device", "event"] } ],
+    "Video Quality": [ { text: "Video is pixelated or low quality", intent: "Issue", tag: "quality issue", dyn: ["device", "event"] }, { text: "Quality keeps dropping automatically", intent: "Issue", tag: "quality issue", dyn: ["device"] }, { text: "Quality has got worse recently", intent: "Feedback", tag: "quality issue", dyn: ["device"] } ],
+    "Audio Issues": [ { text: "No audio — completely silent", intent: "Issue", tag: "no audio", dyn: ["device", "event"] }, { text: "Audio is out of sync with the video", intent: "Issue", tag: "", dyn: ["device", "event"] }, { text: "Wrong language or audio track", intent: "Issue", tag: "", dyn: ["device", "event"] } ],
+    "Live Event Issues": [ { text: "The live stream is not showing", intent: "Issue", tag: "stream missing", dyn: ["device", "event"] }, { text: "Live stream stopped during the event", intent: "Issue", tag: "stream missing", dyn: ["device", "event"] }, { text: "Significant delay vs broadcast", intent: "Issue", tag: "", dyn: ["device", "event"] } ],
+    "Profile and Settings": [ { text: "I need to change my email address", intent: "Request", tag: "email change", dyn: [] }, { text: "I want to update my details", intent: "Request", tag: "", dyn: [] }, { text: "I want to delete my account", intent: "Request", tag: "", dyn: [] } ],
+    "Email or Password Change": [ { text: "I need to change my email address", intent: "Request", tag: "email change", dyn: [] }, { text: "I want to change my password", intent: "Request", tag: "password reset", dyn: [] } ],
+    "Account Deletion": [ { text: "I want to delete my account permanently", intent: "Request", tag: "", dyn: [] } ],
+    "Multiple Accounts": [ { text: "I think I have multiple accounts", intent: "Question", tag: "", dyn: [] }, { text: "Someone may be accessing my account", intent: "Issue", tag: "fraud", dyn: [] } ],
+    "Password and Login": [ { text: "I forgot my password", intent: "Request", tag: "password reset", dyn: [] }, { text: "I cannot log in — access denied", intent: "Issue", tag: "login failed", dyn: [] }, { text: "Password reset email is not arriving", intent: "Issue", tag: "login failed", dyn: [] } ],
+    "Verification Email": [ { text: "Verification email never arrived", intent: "Issue", tag: "", dyn: [] }, { text: "My account was not activated", intent: "Issue", tag: "", dyn: [] } ],
+    "Account Locked": [ { text: "My account has been locked", intent: "Issue", tag: "", dyn: [] }, { text: "I am getting an account suspended message", intent: "Issue", tag: "", dyn: [] } ],
+    "App Not Working": [ { text: "App keeps crashing", intent: "Issue", tag: "app crash", dyn: ["device"] }, { text: "App is freezing or very slow", intent: "Issue", tag: "app crash", dyn: ["device"] }, { text: "A feature is not working in the app", intent: "Issue", tag: "", dyn: ["device"] } ],
+    "Installation and Updates": [ { text: "I cannot find the app", intent: "Question", tag: "", dyn: ["device"] }, { text: "App will not install or update", intent: "Issue", tag: "", dyn: ["device"] }, { text: "Something broke after a recent update", intent: "Issue", tag: "", dyn: ["device"] } ],
+    "Casting and TV Viewing": [ { text: "Chromecast or AirPlay is not working", intent: "Issue", tag: "casting issue", dyn: ["device"] }, { text: "Smart TV app has issues", intent: "Issue", tag: "casting issue", dyn: ["device"] }, { text: "Can I watch on my smart TV?", intent: "Question", tag: "", dyn: ["device"] } ],
+    "Device Compatibility": [ { text: "Is my device supported?", intent: "Question", tag: "", dyn: ["device"] }, { text: "The app does not work on my device", intent: "Issue", tag: "", dyn: ["device"] } ],
+    "Replay and Highlights": [ { text: "The replay is missing or not showing", intent: "Issue", tag: "replay missing", dyn: ["event"] }, { text: "When will the replay be available?", intent: "Question", tag: "", dyn: ["event"] }, { text: "Highlights are missing or wrong", intent: "Issue", tag: "", dyn: ["event"] } ],
+    "Content Availability": [ { text: "A match I expected is not on the platform", intent: "Issue", tag: "stream missing", dyn: ["event"] }, { text: "What leagues or sports do you cover?", intent: "Question", tag: "", dyn: [] } ],
+    "Schedule and Listings": [ { text: "The schedule on the platform is wrong", intent: "Issue", tag: "", dyn: ["event"] }, { text: "What time zone do you use?", intent: "Question", tag: "", dyn: [] } ],
+    "Commentary": [ { text: "Commentary is in the wrong language", intent: "Issue", tag: "", dyn: ["event"] }, { text: "Match information or scores are wrong", intent: "Issue", tag: "", dyn: ["event"] } ],
+    "Blocked in My Country": [ { text: "I am getting a geo-restriction error", intent: "Issue", tag: "geo blocked", dyn: ["geo"] }, { text: "Why is this content blocked in my country?", intent: "Question", tag: "", dyn: ["geo", "event"] } ],
+    "VPN Detected": [ { text: "I am getting a VPN detected error", intent: "Issue", tag: "vpn detected", dyn: ["geo"] }, { text: "Is using a VPN allowed?", intent: "Question", tag: "", dyn: [] } ],
+    "Travelling Abroad": [ { text: "I am travelling and cannot access my subscription", intent: "Issue", tag: "geo blocked", dyn: ["geo"] } ],
+    "Blackout Restriction": [ { text: "A match is blacked out in my area", intent: "Issue", tag: "", dyn: ["geo", "event"] }, { text: "Why are some matches blacked out?", intent: "Question", tag: "", dyn: [] } ],
+    "Feedback and Suggestions": [ { text: "Feature request or improvement idea", intent: "Feedback", tag: "", dyn: [] }, { text: "Positive feedback", intent: "Feedback", tag: "", dyn: [] } ],
+    "Feedback and Complaints": [ { text: "General complaint about the service", intent: "Feedback", tag: "", dyn: [] }, { text: "Service quality feedback", intent: "Feedback", tag: "", dyn: [] } ],
+    "General Question": [ { text: "General question not covered above", intent: "Question", tag: "", dyn: [] } ],
+    "Business Enquiry": [ { text: "Business or partnership enquiry", intent: "Question", tag: "", dyn: [] }, { text: "Media or press enquiry", intent: "Question", tag: "", dyn: [] } ]
+  },
+  beacon_dynamic_fields: {
+    devices: ["iPhone / iPad", "Android phone or tablet", "Web browser", "Apple TV", "Android TV or Google TV", "Roku", "Amazon Fire TV", "Samsung Smart TV", "LG Smart TV", "Other Smart TV", "Chromecast or AirPlay"],
+    platforms: ["Direct (card / website)", "Apple App Store", "Google Play", "PayPal", "Not sure"],
+    plan_types: ["Monthly subscription", "Annual subscription", "PPV or single event", "Tournament pass", "Bundle", "Free trial"],
+    vpns: ["No", "Yes", "Not sure"]
+  },
+  agent_fields: {
+    "sf-category": ["Streaming", "Billing & Payments", "Subscriptions", "Account & Access", "Login & Access", "Apps & Casting", "Content & Schedule", "Geo Restriction", "General"],
+    "sf-intent": ["Issue", "Request", "Question", "Feedback"],
+    "sf-account-match": ["Matched", "Wrong Email Used", "No Account Found", "Multiple Accounts"],
+    "sf-device": ["iPhone / iPad", "Android", "Web Browser", "Apple TV", "Android TV", "Roku", "Fire TV", "Samsung Smart TV", "LG Smart TV", "Chromecast / AirPlay"],
+    "sf-live": ["Yes", "No"],
+    "sf-sub-type": ["Monthly", "Annual", "PPV", "Tournament Pass", "Bundle", "Free Trial", "In-app iOS", "In-app Android"],
+    "sf-severity": ["Low", "Medium", "High", "Critical"],
+    "sf-refund-reason": ["Charged after cancellation", "Duplicate charge", "Event cancelled", "Streaming failure", "Geo restriction", "Purchase mistake", "Goodwill"],
+    "sf-resolution": ["Resolved — Answered", "Resolved — Action Taken", "Refunded — Full", "Refunded — Partial", "Credit Added", "Escalated — Pending", "Platform Fix", "No Response — Closed", "Duplicate Contact"]
+  },
+  conditional_logic: {
+    "b-dyn-device": ["streaming", "apps"],
+    "b-dyn-plan": ["billing", "subscriptions"],
+    "b-dyn-event": ["content", "streaming"],
+    "b-dyn-geo": ["regional"]
+  },
+  macros: {
+    "streaming": [
+      { label: "Black screen — troubleshoot", text: "Hi [Customer], \n\nSorry to hear you're seeing a black screen. Let's get this sorted out.\n\nPlease try the following:\n1. Force-quit the app and reopen it\n2. Check your internet connection — we recommend at least 10 Mbps for HD\n3. On Apple TV: go to Settings > Apps > our app > Clear Cache\n4. If the issue continues, try on a different device\n\nPlease let me know which steps you tried and whether the issue is still happening." },
+      { label: "Live event — hold message", text: "Hi [Customer], \n\nThank you for reaching out. We're aware of an ongoing issue with the live stream and our production team is investigating. We apologise for the disruption.\n\nWe'll send you an update as soon as we have more information. If the issue has been resolved by the time you see this message, please try refreshing your stream.\n\nThank you for your patience." }
+    ],
+    "billing": [
+      { label: "Refund policy — standard", text: "Hi [Customer], \n\nThank you for getting in touch. I have reviewed your account and can see the charge in question.\n\nOur standard refund policy covers: billing errors, duplicate charges, and charges within 14 days of purchase when the service has not been used.\n\nI will process a refund to your original payment method. Please allow 5-7 business days for it to appear on your statement.\n\nApologies for any inconvenience." }
+    ],
+    "subscriptions": [
+      { label: "Cancellation — confirm steps", text: "Hi [Customer], \n\nThank you for reaching out. Here is how to cancel your subscription:\n\n1. Log into your account at the website\n2. Go to Account Settings > Subscription\n3. Click \"Cancel Subscription\"\n4. Confirm the cancellation\n\nYour access will continue until the end of the current billing period. You will not be charged again after that." }
+    ],
+    "login": [
+      { label: "Password reset — resend", text: "Hi [Customer], \n\nI have manually triggered a password reset email to your address. Please check your inbox and spam/junk folder.\n\nThe link is valid for 24 hours. If you still do not receive it, it may be that your account is registered under a different email address." }
+    ],
+    "content": [
+      { label: "Replay timing — standard", text: "Hi [Customer], \n\nThank you for reaching out about the replay. Replays are typically available 1-3 hours after the match ends, though during busy periods this can take a little longer.\n\nI have flagged the specific match you mentioned to our content team to check on the timeline." }
+    ],
+    "regional": [
+      { label: "Geo restriction — explain", text: "Hi [Customer], \n\nThank you for contacting us. The content you are trying to access is subject to regional broadcasting rights restrictions, which unfortunately means it cannot be made available in your area.\n\nThis is not something we are able to override — it is a rights agreement between the rights holder and local broadcasters in your region." },
+      { label: "VPN detected — advise", text: "Hi [Customer], \n\nThank you for reaching out. It looks like our system has detected a VPN or proxy connection from your session, which is causing the access error.\n\nPlease disable your VPN and try again. Our platform requires an unmasked connection to verify your location for rights compliance purposes." }
+    ],
+    "general": [
+      { label: "Acknowledge complaint", text: "Hi [Customer], \n\nThank you for taking the time to write to us and I am genuinely sorry to hear about your experience. The issues you have described are not the standard of service we aim to provide.\n\nI have logged your feedback and escalated it to our operations team. I will personally follow up with you once I have investigated what happened." }
+    ]
+  }
+};
+
+const SCENARIOS = {
+  blackscreen: {
+    label: "Black screen (Live)",
+    inbox: "EHFTV",
+    subject: "Black screen during EHF Champions League Final",
+    beacon: { contactEmail: "anna.lindqvist@gmail.com", accountEmail: "", category: "streaming", subcategory: "Playback Problems", reason: "Black screen — video will not load at all", device: "Apple TV", event: "EHF Champions League Final", freeText: "I can hear commentary but there is just a black screen. It started about 10 minutes into the match and I have tried refreshing several times.", hasAttachment: false },
+    fields: { category: "Streaming", intent: "Issue", account_match: "Matched", device: "Apple TV", live: "Yes", severity: "High" },
+    tags: [ { text: "black screen", cls: "t-red" }, { text: "live urgent", cls: "t-amber" } ],
+    automations: [ { text: "Mapped to Streaming", cls: "" }, { text: "Tag: black screen", cls: "tag-red" }, { text: "Tag: live urgent", cls: "tag-amber" }, { text: "Severity: High", cls: "" } ],
+    macroCategory: "streaming",
+    mismatch: false
+  },
+  wrongemail: {
+    label: "Wrong Email Mismatch",
+    inbox: "IIHFTV",
+    subject: "Duplicate charge — account not found",
+    beacon: { contactEmail: "peter.smith@gmail.com", accountEmail: "peter.smith@iihf-work.com", category: "billing", subcategory: "Unexpected Charges", reason: "I was charged twice for the same thing", platform: "Direct (card / website)", planType: "Annual subscription", freeText: "I see two charges for my annual subscription on the same day. My account is under my work email address which is different from this one. Please check and refund one of the charges.", hasAttachment: true },
+    fields: { category: "Billing & Payments", intent: "Issue", account_match: "Wrong Email Used", sub_type: "Annual", refund_reason: "Duplicate charge" },
+    tags: [ { text: "duplicate charge", cls: "t-red" }, { text: "wrong email", cls: "t-amber" } ],
+    automations: [ { text: "Mapped to Billing & Payments", cls: "" }, { text: "Tag: duplicate charge", cls: "tag-red" }, { text: "Tag: wrong email", cls: "tag-amber" } ],
+    macroCategory: "billing",
+    mismatch: true
+  },
+  refund: {
+    label: "Refund request",
+    inbox: "TriLive",
+    subject: "Refund request — charged after cancellation",
+    beacon: { contactEmail: "marcus.berg@hotmail.com", accountEmail: "", category: "billing", subcategory: "Refund Request", reason: "I want to request a refund", platform: "Direct (card / website)", planType: "Monthly subscription", freeText: "I cancelled my subscription two weeks ago but was charged again this month. I have the cancellation confirmation email. Please refund the charge.", hasAttachment: true },
+    fields: { category: "Billing & Payments", intent: "Request", account_match: "Matched", sub_type: "Monthly", refund_reason: "Charged after cancellation" },
+    tags: [ { text: "refund request", cls: "t-blue" }, { text: "duplicate charge", cls: "t-red" } ],
+    automations: [ { text: "Mapped to Billing & Payments", cls: "" }, { text: "Tag: refund request", cls: "tag-blue" }, { text: "Routed to Refund queue", cls: "" } ],
+    macroCategory: "billing",
+    mismatch: false
+  },
+  cancellation: {
+    label: "Cancellation",
+    inbox: "EHFTV",
+    subject: "I want to cancel my subscription",
+    beacon: { contactEmail: "sofia.nilsson@gmail.com", accountEmail: "", category: "subscriptions", subcategory: "Cancellation", reason: "I want to cancel my subscription", platform: "Direct (card / website)", planType: "Annual subscription", freeText: "I would like to cancel my annual subscription. I have not been using it much lately and do not want it to renew.", hasAttachment: false },
+    fields: { category: "Subscriptions", intent: "Request", account_match: "Matched", sub_type: "Annual" },
+    tags: [ { text: "cancellation request", cls: "t-blue" } ],
+    automations: [ { text: "Mapped to Subscriptions", cls: "" }, { text: "Tag: cancellation request", cls: "tag-blue" }, { text: "Auto-reply: Cancellation guide sent", cls: "" } ],
+    macroCategory: "subscription",
+    mismatch: false,
+    autoClose: true
+  },
+  geoblock: {
+    label: "Geo block / VPN",
+    inbox: "EuroVolleyTV",
+    subject: "Geo-restriction error",
+    beacon: { contactEmail: "james.wilson@yahoo.com", accountEmail: "", category: "regional", subcategory: "Blocked in My Country", reason: "I am getting a geo-restriction error", country: "United States", vpn: "No", freeText: "I keep getting an error that says this content is not available in my region. I have a valid subscription and I am in the US. I am not using any VPN.", hasAttachment: false },
+    fields: { category: "Geo Restriction", intent: "Issue", account_match: "Matched" },
+    tags: [ { text: "geo blocked", cls: "t-red" } ],
+    automations: [ { text: "Mapped to Geo Restriction", cls: "" }, { text: "Tag: geo blocked", cls: "tag-red" } ],
+    macroCategory: "regional",
+    mismatch: false
+  },
+  password: {
+    label: "Password Reset",
+    inbox: "Handbollsligan",
+    subject: "Cannot log in — forgot password",
+    beacon: { contactEmail: "eva.johansson@icloud.com", accountEmail: "", category: "login", subcategory: "Password and Login", reason: "I forgot my password", freeText: "I cannot remember my password and the reset email is not arriving. I have checked my spam folder.", hasAttachment: false },
+    fields: { category: "Login & Access", intent: "Request", account_match: "Matched" },
+    tags: [ { text: "password reset", cls: "t-blue" } ],
+    automations: [ { text: "Mapped to Login & Access", cls: "" }, { text: "Tag: password reset", cls: "tag-blue" }, { text: "Auto-reply: Password reset link sent", cls: "" } ],
+    macroCategory: "login",
+    mismatch: false,
+    autoClose: true
+  },
+  content: {
+    label: "Content question",
+    inbox: "EuroVolleyTV",
+    subject: "Replay not available — EHF Euro Qualifier",
+    beacon: { contactEmail: "thomas.eriksson@gmail.com", accountEmail: "", category: "content", subcategory: "Replay and Highlights", reason: "The replay is missing or not showing", event: "EHF Euro 2025 Qualifier — Sweden vs France", freeText: "The match ended 3 hours ago and the replay is still not available. I paid for the subscription specifically for the replay feature.", hasAttachment: false },
+    fields: { category: "Content & Schedule", intent: "Issue", account_match: "Matched", live: "No" },
+    tags: [ { text: "replay missing", cls: "t-amber" } ],
+    automations: [ { text: "Mapped to Content & Schedule", cls: "" }, { text: "Tag: replay missing", cls: "tag-amber" } ],
+    macroCategory: "content",
+    mismatch: false
+  },
+  feedback: {
+    label: "Feedback / complaint",
+    inbox: "EHFTV",
+    subject: "Poor service experience — complaint",
+    beacon: { contactEmail: "carla.bianchi@gmail.com", accountEmail: "", category: "general", subcategory: "Feedback and Complaints", reason: "General complaint about the service", freeText: "I have had streaming issues on three consecutive live matches. Your support took over 24 hours to respond last time and the issue was never resolved.", hasAttachment: false },
+    fields: { category: "General", intent: "Feedback", account_match: "Matched", sub_type: "Annual", severity: "Medium" },
+    tags: [ { text: "proactive followup", cls: "t-amber" } ],
+    automations: [ { text: "Mapped to General", cls: "" }, { text: "Ticket Intent: Feedback", cls: "" } ],
+    macroCategory: "general",
+    mismatch: false
+  }
+};
+
+// ── GLOBAL STATE ─────────────────────────────────────────────────────────────
+let state = {
+  scenarioId: null,
+  submitted: false,
+  composeMode: 'reply',
+  status: 'new',
+  tags: [],
+  fields: {},
+  fileAttached: false
+};
+
+// ── INITIALIZATION ───────────────────────────────────────────────────────────
+function init() {
+  // Populate Beacon Selects
+  populateSelect('b-cat', CONFIG.beacon_categories, true);
+  populateSelectArray('b-device', CONFIG.beacon_dynamic_fields.devices, true);
+  populateSelectArray('b-platform', CONFIG.beacon_dynamic_fields.platforms, true);
+  populateSelectArray('b-plan-type', CONFIG.beacon_dynamic_fields.plan_types, true);
+  populateSelectArray('b-vpn', CONFIG.beacon_dynamic_fields.vpns, false);
+  
+  // Populate Agent Sidebar Selects
+  Object.keys(CONFIG.agent_fields).forEach(key => {
+    populateSelectArray(key, CONFIG.agent_fields[key], true);
+  });
+  populateSelectArray('modal-res-select', CONFIG.agent_fields['sf-resolution'], true);
+
+  // Build Scenario Bar
+  const container = document.getElementById('scenario-buttons-container');
+  if (container) {
+    Object.keys(SCENARIOS).forEach((key, index) => {
+      const btn = document.createElement('button');
+      btn.className = 'sc-btn';
+      if (index === 0) btn.classList.add('active');
+      btn.innerText = SCENARIOS[key].label;
+      btn.onclick = () => loadScenario(key, btn);
+      container.appendChild(btn);
+    });
+    // Auto-load first
+    loadScenario(Object.keys(SCENARIOS)[0]);
+  }
+}
+
+function populateSelect(id, objArr, addEmpty = false) {
+  const sel = document.getElementById(id);
+  if (!sel) return;
+  sel.innerHTML = addEmpty ? '<option value="">Select a category</option>' : '';
+  objArr.forEach(opt => {
+    sel.innerHTML += `<option value="${opt.value}">${opt.label}</option>`;
+  });
+}
+
+function populateSelectArray(id, arr, addEmpty = false) {
+  const sel = document.getElementById(id);
+  if (!sel) return;
+  sel.innerHTML = addEmpty ? '<option value="">Select an option</option>' : '';
+  arr.forEach(val => {
+    sel.innerHTML += `<option value="${val}">${val}</option>`;
+  });
+}
+
+// ── BEACON LOGIC ─────────────────────────────────────────────────────────────
+function onCatChange() {
+  const cat = document.getElementById('b-cat').value;
+  const subWrap = document.getElementById('w-subcat');
+  const reasonWrap = document.getElementById('w-reason');
+  
+  hideAllDyn();
+  if (reasonWrap) reasonWrap.style.display = 'none';
+
+  if (cat && CONFIG.beacon_subcategories[cat]) {
+    populateSelectArray('b-subcat', CONFIG.beacon_subcategories[cat], true);
+    if (subWrap) subWrap.style.display = 'block';
+  } else {
+    if (subWrap) subWrap.style.display = 'none';
+  }
+}
+
+function onSubChange() {
+  const sub = document.getElementById('b-subcat').value;
+  const reasonWrap = document.getElementById('w-reason');
+  
+  hideAllDyn();
+
+  if (sub && CONFIG.beacon_reasons[sub]) {
+    populateSelectArray('b-reason', CONFIG.beacon_reasons[sub], true);
+    if (reasonWrap) reasonWrap.style.display = 'block';
+  } else {
+    if (reasonWrap) reasonWrap.style.display = 'none';
+  }
+}
+
+function onReasonChange() {
+  const cat = document.getElementById('b-cat').value;
+  hideAllDyn();
+  
+  if (!cat) return;
+  
+  if (CONFIG.conditional_logic["b-dyn-device"] && CONFIG.conditional_logic["b-dyn-device"].includes(cat)) {
+    const el = document.getElementById('b-dyn-device');
+    if(el) el.style.display = 'block';
+  }
+  if (CONFIG.conditional_logic["b-dyn-plan"] && CONFIG.conditional_logic["b-dyn-plan"].includes(cat)) {
+    const el = document.getElementById('b-dyn-plan');
+    if(el) el.style.display = 'block';
+  }
+  if (CONFIG.conditional_logic["b-dyn-event"] && CONFIG.conditional_logic["b-dyn-event"].includes(cat)) {
+    const el = document.getElementById('b-dyn-event');
+    if(el) el.style.display = 'block';
+  }
+  if (CONFIG.conditional_logic["b-dyn-geo"] && CONFIG.conditional_logic["b-dyn-geo"].includes(cat)) {
+    const el = document.getElementById('b-dyn-geo');
+    if(el) el.style.display = 'block';
+  }
+}
+
+function hideAllDyn() {
+  ['b-dyn-device', 'b-dyn-plan', 'b-dyn-event', 'b-dyn-geo'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+}
+
+function toggleAttach() {
+  state.fileAttached = !state.fileAttached;
+  const btn = document.getElementById('b-attach');
+  if (!btn) return;
+  
+  if (state.fileAttached) {
+    btn.classList.add('active');
+    btn.innerHTML = "📎 screenshot.png attached";
+  } else {
+    btn.classList.remove('active');
+    btn.innerHTML = "<svg width='24' height='24' fill='none' stroke='currentColor' stroke-width='1.5' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' d='M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12'></path></svg><span>Click to attach a screenshot</span>";
+  }
+}
+
+// ── SCENARIO LOADER ──────────────────────────────────────────────────────────
+function loadScenario(id, btn) {
+  if (btn) {
+    document.querySelectorAll('.sc-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  const sc = SCENARIOS[id];
+  if (!sc) return;
+  
+  state.scenarioId = id;
+  state.submitted = false;
+  state.fileAttached = false;
+  
+  resetBeacon();
+  clearAgentPanel();
+
+  // Fill Beacon
+  const b = sc.beacon;
+  if(document.getElementById('b-subject')) document.getElementById('b-subject').value = sc.subject || "";
+  if(document.getElementById('b-contact')) document.getElementById('b-contact').value = b.contactEmail || "";
+  if(document.getElementById('b-account')) document.getElementById('b-account').value = b.accountEmail || "";
+  
+  setSelectByValueOrText('b-cat', b.category);
+  onCatChange();
+
+  setTimeout(() => {
+    setSelectByValueOrText('b-subcat', b.subcategory);
+    onSubChange();
+
+    setTimeout(() => {
+      setSelectByValueOrText('b-reason', b.reason);
+      onReasonChange();
+
+      if(b.device) setSelectByValueOrText('b-device', b.device);
+      if(b.platform) setSelectByValueOrText('b-platform', b.platform);
+      if(b.planType) setSelectByValueOrText('b-plan-type', b.planType);
+      if(b.event && document.getElementById('b-event')) document.getElementById('b-event').value = b.event;
+      if(b.country && document.getElementById('b-country')) document.getElementById('b-country').value = b.country;
+      if(b.vpn) setSelectByValueOrText('b-vpn', b.vpn);
+      
+      if(document.getElementById('b-text')) document.getElementById('b-text').value = b.freeText || "";
+      
+      if (b.hasAttachment !== state.fileAttached) toggleAttach();
+    }, 50);
+  }, 50);
+}
+
+function setSelectByValueOrText(id, val) {
+  const sel = document.getElementById(id);
+  if (!sel || !val) return;
+  for (let i = 0; i < sel.options.length; i++) {
+    if (sel.options[i].value === val || sel.options[i].text === val) {
+      sel.selectedIndex = i;
+      return;
+    }
+  }
+}
+
+function submitBeacon() {
+  if(!document.getElementById('b-contact').value) return alert("Contact email is required.");
+  
+  const bForm = document.getElementById('beacon-form-scroll');
+  const bFooter = document.getElementById('beacon-footer');
+  const bSent = document.getElementById('beacon-sent');
+  
+  if (bForm) bForm.style.display = 'none';
+  if (bFooter) bFooter.style.display = 'none';
+  if (bSent) bSent.style.display = 'flex';
+  
+  state.submitted = true;
+  setTimeout(populateAgentPanel, 400);
+}
+
+function resetBeacon() {
+  const bForm = document.getElementById('beacon-form-scroll');
+  const bFooter = document.getElementById('beacon-footer');
+  const bSent = document.getElementById('beacon-sent');
+  
+  if (bForm) bForm.style.display = 'flex';
+  if (bFooter) bFooter.style.display = 'block';
+  if (bSent) bSent.style.display = 'none';
+}
+
+function generateNameFromEmail(email) {
+  if (!email) return 'Customer';
+  const part = email.split('@')[0];
+  return part.split('.').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+}
+
+function clearAgentPanel() {
+  const thread = document.getElementById('hs-thread');
+  if (thread) {
+    thread.innerHTML = `
+      <div id="hs-empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+        <h2>No ticket yet</h2>
+        <p>Select a scenario from the top bar, review the Beacon form on the right, and submit to simulate the automated routing.</p>
+      </div>
+    `;
+  }
+  
+  // Hide columns
+  if (document.getElementById('hs-cf-col')) document.getElementById('hs-cf-col').style.display = 'none';
+  if (document.getElementById('hs-right-col')) document.getElementById('hs-right-col').style.display = 'none';
+  
+  ['hs-compose', 'automations-strip'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.style.display = 'none';
+  });
+  
+  const mismatch = document.getElementById('mismatch-alert');
+  if(mismatch) {
+    mismatch.style.display = 'none';
+    mismatch.classList.add('mismatch-hidden');
+  }
+
+  if(document.getElementById('hs-subject')) document.getElementById('hs-subject').textContent = 'Awaiting submission';
+  setStatus('new');
+  
+  if(document.getElementById('sb-contact-email')) document.getElementById('sb-contact-email').textContent = '—';
+  if(document.getElementById('tags-container')) document.getElementById('tags-container').innerHTML = '';
+
+  ['sf-category','sf-intent','sf-account-match','sf-device','sf-live','sf-sub-type','sf-severity','sf-refund-reason','sf-resolution'].forEach(id => {
+    const el = document.getElementById(id); 
+    if(el) {
+      el.value = '';
+      el.className = 'hs-val empty';
+    }
+  });
+  if(document.getElementById('sf-subcategory')) document.getElementById('sf-subcategory').value = '';
+  if(document.getElementById('sf-escalation')) document.getElementById('sf-escalation').value = '';
+  if(document.getElementById('compose-textarea')) document.getElementById('compose-textarea').value = '';
+  if(document.getElementById('macro-select')) document.getElementById('macro-select').innerHTML = '<option value="">Insert Saved Reply...</option>';
+}
+
+// ── AGENT WORKFLOW ───────────────────────────────────────────────────────────
+function populateAgentPanel() {
+  const sc = SCENARIOS[state.scenarioId];
+  if (!sc) return;
+
+  const b = sc.beacon;
+
+  // Reveal columns
+  if (document.getElementById('hs-cf-col')) document.getElementById('hs-cf-col').style.display = 'flex';
+  if (document.getElementById('hs-right-col')) document.getElementById('hs-right-col').style.display = 'flex';
+
+  // Topbar
+  if(document.getElementById('hs-inbox-chip')) document.getElementById('hs-inbox-chip').textContent = sc.inbox;
+  if(document.getElementById('hs-subject')) document.getElementById('hs-subject').textContent = sc.subject;
+  
+  let newStatus = 'new';
+  if (sc.autoClose && sc.tags.some(t => t.text.includes('password'))) newStatus = 'closed';
+  else if (sc.autoClose) newStatus = 'pending';
+  setStatus(newStatus);
+
+  // Customer Profile
+  if(document.getElementById('sb-name')) document.getElementById('sb-name').textContent = generateNameFromEmail(b.contactEmail);
+  if(document.getElementById('sb-contact-email')) {
+      const emailEl = document.getElementById('sb-contact-email');
+      emailEl.textContent = b.contactEmail;
+      emailEl.href = "mailto:" + b.contactEmail;
+  }
+  
+  const mmAlert = document.getElementById('mismatch-alert');
+  const mmRow = document.getElementById('sb-account-row');
+  const matchField = document.getElementById('sf-account-match');
+
+  if (sc.mismatch && b.accountEmail) {
+    if(mmAlert) {
+      mmAlert.classList.remove('mismatch-hidden');
+      mmAlert.style.display = 'flex';
+      if(document.getElementById('ma-contact')) document.getElementById('ma-contact').textContent = b.contactEmail;
+      if(document.getElementById('ma-account')) document.getElementById('ma-account').textContent = b.accountEmail;
+    }
+    if(mmRow) {
+      mmRow.style.display = 'block';
+      if(document.getElementById('sb-account-email')) document.getElementById('sb-account-email').textContent = b.accountEmail;
+    }
+    if(matchField) {
+      matchField.value = "Wrong Email Used";
+      matchField.classList.add('mismatch');
+      matchField.classList.remove('empty');
+    }
+  } else {
+    if(mmAlert) {
+      mmAlert.classList.add('mismatch-hidden');
+      mmAlert.style.display = 'none';
+    }
+    if(mmRow) mmRow.style.display = 'none';
+    if(matchField) {
+      matchField.value = "Matched";
+      matchField.classList.remove('mismatch', 'empty');
+    }
+  }
+
+  // Custom Fields
+  state.fields = { ...sc.fields };
+  ['category', 'intent', 'account_match', 'device', 'live', 'severity', 'sub_type', 'refund_reason', 'resolution'].forEach(k => {
+    const elId = 'sf-' + k.replace('_','-');
+    const el = document.getElementById(elId);
+    if(el) {
+      if (state.fields[k]) {
+        setSelectByValueOrText(elId, state.fields[k]);
+        el.classList.remove('empty');
+      } else {
+        el.value = "";
+        el.classList.add('empty');
+      }
+    }
+  });
+  if(document.getElementById('sf-subcategory')) document.getElementById('sf-subcategory').value = b.subcategory || "";
+  if(document.getElementById('sf-escalation')) document.getElementById('sf-escalation').value = "";
+
+  // Tags
+  state.tags = sc.tags ? sc.tags.map(t => ({...t})) : [];
+  renderTags();
+
+  // Automations Strip
+  const strip = document.getElementById('automations-strip');
+  if (sc.automations && sc.automations.length && strip) {
+    strip.style.display = 'flex';
+    strip.innerHTML = sc.automations.map(a => `<span class="auto-item"><span class="auto-check">✓</span> <span class="${a.cls||''}">${a.text}</span></span>`).join('');
+  } else if (strip) {
+    strip.style.display = 'none';
+  }
+
+  // Thread
+  const thread = document.getElementById('hs-thread');
+  if(thread) thread.innerHTML = '';
+
+  // 1. Customer Message
+  let cBody = `<strong>Subcategory:</strong> ${b.subcategory}\n<strong>Reason:</strong> ${b.reason}\n\n`;
+  if(b.device) cBody += `<strong>Device:</strong> ${b.device}\n`;
+  if(b.platform) cBody += `<strong>Platform:</strong> ${b.platform}\n`;
+  if(b.planType) cBody += `<strong>Plan:</strong> ${b.planType}\n`;
+  if(b.event) cBody += `<strong>Event:</strong> ${b.event}\n`;
+  if(b.country) cBody += `<strong>Country:</strong> ${b.country}  |  <strong>VPN:</strong> ${b.vpn}\n`;
+  cBody += `\n${b.freeText}`;
+  
+  appendMessage(generateNameFromEmail(b.contactEmail), cBody, 'customer', b.hasAttachment);
+
+  // 2. Auto Replies
+  if (sc.autoClose) {
+    if (sc.tags.some(t => t.text === 'password reset')) {
+      appendMessage('System Auto-Reply', 'Password reset link sent. Status set to Closed.', 'system');
+    }
+    if (sc.tags.some(t => t.text === 'cancellation request')) {
+      appendMessage('System Auto-Reply', 'Cancellation self-serve guide sent. Status set to Pending.', 'system');
+    }
+  }
+
+  // Display compose area
+  if(document.getElementById('hs-compose')) document.getElementById('hs-compose').style.display = 'block';
+
+  // Macros
+  loadMacros(sc.macroCategory);
+}
+
+function updateFieldClass(el, isText=false) {
+  if (!isText && el.tagName === 'SELECT') {
+    if (el.value) el.classList.remove('empty', 'mismatch');
+    else el.classList.add('empty');
+  }
+}
+
+// ── MACROS & COMPOSE ─────────────────────────────────────────────────────────
+function loadMacros(cat) {
+  const macros = CONFIG.macros[cat] || CONFIG.macros.general || [];
+  const sel = document.getElementById('macro-select');
+  if(!sel) return;
+  sel.innerHTML = '<option value="">Insert Saved Reply...</option>';
+  macros.forEach((m, i) => {
+    sel.innerHTML += `<option value="${cat}:${i}">${m.label}</option>`;
+  });
+}
+
+function useMacro(val) {
+  if (!val) return;
+  const [cat, idx] = val.split(':');
+  const macro = CONFIG.macros[cat][parseInt(idx)];
+  if (macro && document.getElementById('compose-textarea')) {
+    document.getElementById('compose-textarea').value = macro.text;
+    setComposeMode('reply');
+  }
+  if(document.getElementById('macro-select')) document.getElementById('macro-select').value = "";
+}
+
+function setComposeMode(mode) {
+  state.composeMode = mode;
+  const ta = document.getElementById('compose-textarea');
+  const hint = document.getElementById('compose-hint');
+  const btn = document.getElementById('send-btn');
+
+  if(document.getElementById('tab-reply')) document.getElementById('tab-reply').classList.toggle('active', mode === 'reply');
+  if(document.getElementById('tab-note')) document.getElementById('tab-note').classList.toggle('active', mode === 'note');
+
+  if(ta && hint && btn) {
+    if (mode === 'note') {
+      ta.classList.add('note-mode');
+      ta.placeholder = 'Write an internal note (only visible to your team)...';
+      hint.textContent = 'This note is only visible to your team';
+      hint.className = 'compose-hint note-hint';
+      btn.textContent = 'Add Note';
+      btn.className = 'btn-send note-send';
+    } else {
+      ta.classList.remove('note-mode');
+      ta.placeholder = 'Write your reply...';
+      hint.textContent = 'This message will be sent to the customer';
+      hint.className = 'compose-hint';
+      btn.textContent = 'Send Reply';
+      btn.className = 'btn-send';
+    }
+  }
+}
+
+function sendMessage() {
+  const ta = document.getElementById('compose-textarea');
+  if(!ta) return;
+  const text = ta.value.trim();
+  if (!text) return;
+
+  if (state.composeMode === 'reply') {
+    const matchField = document.getElementById('sf-account-match');
+    if (matchField && (matchField.classList.contains('mismatch') || matchField.value === 'Wrong Email Used')) {
+      alert("Please resolve the Account Match Status in the sidebar before replying.");
+      return;
+    }
+    appendMessage('Support Agent (You)', text, 'agent');
+    setStatus('open');
+  } else {
+    appendMessage('You (Internal Note)', text, 'note');
+  }
+  
+  ta.value = '';
+}
+
+// ── ACTIONS & MODALS ─────────────────────────────────────────────────────────
+function setStatus(statusStr) {
+  state.status = statusStr.toLowerCase();
+  const badge = document.getElementById('hs-status-badge');
+  if(badge) {
+    badge.textContent = statusStr.toUpperCase();
+    badge.className = `status-${state.status}`;
+  }
+}
+
+function setPending() {
+  setStatus('pending');
+  appendMessage('System', 'Status changed to Pending — waiting for response', 'system');
+}
+
+function openModal(type) {
+  const mod = document.getElementById('modal-' + type);
+  if(mod) mod.style.display = 'flex';
+}
+
+function closeModal(type) {
+  const mod = document.getElementById('modal-' + type);
+  if(mod) mod.style.display = 'none';
+}
+
+function confirmClose() {
+  const resEl = document.getElementById('modal-res-select');
+  if(!resEl) return;
+  const res = resEl.value;
+  if (!res) {
+    resEl.style.borderColor = 'var(--red)';
+    return;
+  }
+  resEl.style.borderColor = 'var(--border)';
+  
+  const sbRes = document.getElementById('sf-resolution');
+  if (sbRes) {
+    sbRes.value = res;
+    updateFieldClass(sbRes);
+  }
+  
+  setStatus('closed');
+  appendMessage('System', 'Ticket closed. Resolution: ' + res, 'system');
+  closeModal('close');
+  if(document.getElementById('hs-compose')) document.getElementById('hs-compose').style.display = 'none';
+}
+
+function confirmEscalate() {
+  const inputEl = document.getElementById('modal-esc-input');
+  if(!inputEl) return;
+  const url = inputEl.value.trim();
+  if (!url) return;
+
+  const escEl = document.getElementById('sf-escalation');
+  if (escEl) {
+    escEl.value = url;
+    updateFieldClass(escEl, true);
+  }
+  
+  addTag('escalated', 't-amber');
+  setStatus('pending');
+  appendMessage('System', 'Escalation link added: ' + url, 'system');
+  closeModal('escalate');
+  inputEl.value = '';
+}
+
+// ── HELPERS ──────────────────────────────────────────────────────────────────
+function appendMessage(author, text, type, hasAttachment = false) {
+  const thread = document.getElementById('hs-thread');
+  if(!thread) return;
+  const div = document.createElement('div');
+  
+  if (type === 'system') {
+    div.className = 'msg system';
+    div.innerHTML = `<div class="msg-bubble">${text}</div>`;
+  } else {
+    div.className = `msg ${type}`;
+    let roleBadge = '';
+    if (type === 'note') roleBadge = '<span class="msg-role note">INTERNAL</span>';
+    else if (type === 'agent') roleBadge = '<span class="msg-role">AGENT</span>';
+    
+    // Avatar initials
+    let initial = author.charAt(0).toUpperCase();
+    if(type === 'agent' || type === 'note') initial = 'A';
+    
+    let html = `
+      <div class="msg-avatar ${type}">${initial}</div>
+      <div class="msg-content">
+        <div class="msg-meta"><b>${author}</b> ${roleBadge} <span>Just now</span></div>
+        <div class="msg-bubble">${text.replace(/\n/g, '<br>')}</div>
+    `;
+    if (hasAttachment) {
+      html += `<div class="msg-attach-pill">📎 screenshot.png attached</div>`;
+    }
+    html += `</div>`;
+    div.innerHTML = html;
+  }
+  
+  thread.appendChild(div);
+  thread.scrollTop = thread.scrollHeight;
+}
+
+// ── TAGS ─────────────────────────────────────────────────────────────────────
+function renderTags() {
+  const container = document.getElementById('tags-container');
+  if(!container) return;
+  if (state.tags.length === 0) {
+    container.innerHTML = '<span style="color:var(--muted);font-style:italic;">No tags</span>';
+    return;
+  }
+  container.innerHTML = state.tags.map((t, i) => {
+    let cls = 't-blue'; 
+    if (t.type === 'op' || t.cls === 't-red' || t.cls === 't-amber') cls = t.cls || 't-red'; 
+    if (t.text.includes('request')) cls = 't-green';
+    return `<span class="tag ${cls}">${t.text} <button class="tag-rm" onclick="removeTag(${i})">×</button></span>`;
+  }).join('');
+}
+
+function addTag(text = null, type = 'symptom') {
+  if (!text) {
+    const input = document.getElementById('tag-input');
+    if(!input) return;
+    text = input.value.trim().toLowerCase();
+    input.value = '';
+  }
+  if (text && !state.tags.find(t => t.text === text)) {
+    if (['vip', 'fraud', 'escalated', 'live urgent', 'known incident', 'wrong email'].includes(text)) type = 'op';
+    let cls = type === 'op' ? 't-red' : 't-blue';
+    state.tags.push({ text, type, cls });
+    renderTags();
+    appendMessage('System', 'Tag added: ' + text, 'system');
+  }
+}
+
+function removeTag(i) {
+  const removed = state.tags[i].text;
+  state.tags.splice(i, 1);
+  renderTags();
+  appendMessage('System', 'Removed tag: ' + removed, 'system');
+}
+
+window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

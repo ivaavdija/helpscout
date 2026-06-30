@@ -1,0 +1,705 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>HS Setup Data</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f8f9fb;color:#1a1f2e;font-size:13px;line-height:1.55}
+.mono{font-family:'IBM Plex Mono',monospace}
+
+/* TOP BAR */
+.topbar{background:#1a1f2e;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.topbar h1{font-size:13px;font-weight:600;color:#fff}
+.topbar p{font-size:11px;color:#475569}
+.progress-wrap{display:flex;align-items:center;gap:10px}
+.progress-bar{width:180px;height:6px;background:#374151;border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:#22c55e;border-radius:3px;transition:width .3s}
+.progress-text{font-size:11px;color:#94a3b8;font-family:'IBM Plex Mono',monospace}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:180px 1fr;min-height:calc(100vh - 48px)}
+.sidebar{background:#fff;border-right:1px solid #e5e7eb;padding:12px 0;position:sticky;top:48px;height:calc(100vh - 48px);overflow-y:auto}
+.sidebar::-webkit-scrollbar{width:3px}
+.sidebar::-webkit-scrollbar-thumb{background:#e5e7eb;border-radius:3px}
+.sb-link{display:flex;align-items:center;justify-content:space-between;padding:7px 14px;font-size:11.5px;color:#6b7280;cursor:pointer;transition:all .12s;border-left:2px solid transparent}
+.sb-link:hover{background:#f9fafb;color:#1a1f2e}
+.sb-link.active{color:#1d4ed8;background:#eff6ff;border-left-color:#1d4ed8;font-weight:600}
+.sb-check{width:14px;height:14px;border-radius:50%;border:1.5px solid #d1d5db;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.sb-check.done{background:#22c55e;border-color:#22c55e}
+.sb-check.done::after{content:'✓';font-size:8px;color:#fff;font-weight:700}
+.sb-group{font-size:9px;font-weight:700;color:#9ca3af;text-transform:uppercase;letter-spacing:.6px;padding:12px 14px 4px}
+
+/* MAIN */
+.main{padding:24px 28px;max-width:720px}
+.section{display:none}
+.section.active{display:block}
+
+/* SECTION HEADER */
+.sec-hdr{margin-bottom:16px}
+.sec-hdr h2{font-size:17px;font-weight:700;color:#1a1f2e;margin-bottom:3px}
+.sec-hdr p{font-size:12px;color:#6b7280;line-height:1.5}
+
+/* MARK DONE BUTTON */
+.mark-done{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.done-btn{background:#f0fdf4;border:1px solid #86efac;color:#15803d;font-size:11px;font-weight:600;padding:5px 12px;border-radius:5px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s}
+.done-btn:hover{background:#dcfce7}
+.done-btn.completed{background:#15803d;border-color:#15803d;color:#fff}
+.done-label{font-size:11px;color:#9ca3af}
+
+/* COPY BLOCK */
+.copy-block{background:#1a1f2e;border-radius:8px;margin:10px 0;overflow:hidden}
+.copy-block-hdr{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid #2d3748}
+.copy-block-label{font-size:10px;font-weight:600;color:#94a3b8;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.3px}
+.copy-btn{background:#2d3748;border:1px solid #374151;color:#94a3b8;font-size:10px;padding:2px 8px;border-radius:3px;cursor:pointer;font-family:'IBM Plex Mono',monospace;transition:all .15s}
+.copy-btn:hover{background:#374151;color:#e2e8f0}
+.copy-block pre{padding:12px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#a9b1d6;line-height:1.75;white-space:pre-wrap;overflow-x:auto}
+.copy-block pre .k{color:#7dd3fc}
+.copy-block pre .v{color:#86efac}
+.copy-block pre .c{color:#475569}
+.copy-block pre .t{color:#fbbf24}
+.copy-block pre .r{color:#f9a8d4}
+
+/* INLINE TABLE */
+.it{width:100%;border-collapse:collapse;font-size:12px;margin:10px 0;background:#fff;border-radius:8px;overflow:hidden;border:1px solid #e5e7eb}
+.it th{text-align:left;padding:7px 10px;background:#f9fafb;color:#6b7280;font-weight:600;border-bottom:1px solid #e5e7eb;font-size:10.5px;font-family:'IBM Plex Mono',monospace}
+.it td{padding:7px 10px;border-bottom:1px solid #f3f4f6;color:#374151;vertical-align:top;line-height:1.5}
+.it tr:last-child td{border-bottom:none}
+
+/* TAGS */
+.tag-set{display:flex;flex-wrap:wrap;gap:5px;margin:10px 0}
+.tag{font-family:'IBM Plex Mono',monospace;font-size:10.5px;padding:3px 8px;border-radius:4px;cursor:pointer;transition:all .15s;user-select:all}
+.tag:hover{opacity:.75}
+.tg-a{background:#dbeafe;color:#1e40af}
+.tg-b{background:#dcfce7;color:#14532d}
+.tg-c{background:#ede9fe;color:#5b21b6}
+.tg-d{background:#ffedd5;color:#9a3412}
+.tg-e{background:#fee2e2;color:#991b1b}
+
+/* WORKFLOW CARD */
+.wf-card{background:#fff;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;margin:8px 0}
+.wf-hdr{display:flex;align-items:center;gap:8px;padding:9px 12px;background:#f9fafb;border-bottom:1px solid #f3f4f6}
+.wf-n{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;color:#fff}
+.wf-title{font-size:12px;font-weight:600;color:#1a1f2e}
+.wf-pri{font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:auto}
+.wf-body{padding:10px 12px;display:flex;flex-direction:column;gap:5px}
+.wf-row{display:flex;gap:6px;align-items:flex-start;font-size:11.5px}
+.wf-lbl{font-size:9px;font-weight:700;padding:2px 5px;border-radius:3px;flex-shrink:0;margin-top:2px;font-family:'IBM Plex Mono',monospace}
+.if-lbl{background:#dbeafe;color:#1e40af}
+.then-lbl{background:#dcfce7;color:#15803d}
+.wf-val{color:#374151;line-height:1.5}
+.wf-val code{background:#f3f4f6;border-radius:3px;padding:0 4px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#1d4ed8}
+
+/* VIEW CARD */
+.view-card{background:#fff;border:1px solid #e5e7eb;border-radius:7px;padding:11px 13px;margin:6px 0;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start}
+.view-icon{font-size:15px;margin-top:1px}
+.view-name{font-size:12.5px;font-weight:600;color:#1a1f2e;margin-bottom:2px}
+.view-filter{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#6b7280;line-height:1.5}
+.view-where{font-size:10px;color:#9ca3af}
+
+/* SAVED REPLY */
+.reply-card{background:#fff;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;margin:8px 0}
+.reply-hdr{padding:9px 12px;background:#f9fafb;border-bottom:1px solid #f3f4f6;display:flex;align-items:center;justify-content:space-between}
+.reply-name{font-size:12px;font-weight:600;color:#1a1f2e}
+.reply-body{padding:10px 12px;font-size:12px;color:#374151;line-height:1.65;white-space:pre-wrap}
+
+/* SCENARIO TABLE */
+.scenarios{display:flex;flex-direction:column;gap:0;background:#fff;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden}
+.sc-row{display:grid;grid-template-columns:28px 1fr auto;gap:8px;align-items:start;padding:9px 12px;border-bottom:1px solid #f3f4f6;cursor:pointer;transition:background .12s}
+.sc-row:last-child{border-bottom:none}
+.sc-row:hover{background:#f9fafb}
+.sc-n{width:20px;height:20px;background:#1a1f2e;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;flex-shrink:0}
+.sc-sub{font-size:12px;font-weight:600;color:#1a1f2e;margin-bottom:2px}
+.sc-body{font-size:11px;color:#6b7280;line-height:1.4}
+.sc-tag{font-size:9px}
+
+/* CALL */
+.call{border-radius:7px;padding:10px 13px;margin:10px 0;font-size:12px;line-height:1.55}
+.call-blue{background:#eff6ff;border-left:3px solid #1d4ed8;color:#1e3a8a}
+.call-amber{background:#fffbeb;border-left:3px solid #d97706;color:#78350f}
+.call-green{background:#f0fdf4;border-left:3px solid #16a34a;color:#14532d}
+
+p.sub{font-size:12px;color:#6b7280;margin:8px 0 14px;line-height:1.55}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div>
+    <h1>Help Scout Setup — Copy/Paste Data Sheet</h1>
+    <p>All values ready to enter. Tick each section when done.</p>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="pbar" style="width:0%"></div></div>
+    <span class="progress-text" id="ptext">0 / 7</span>
+  </div>
+</div>
+
+<div class="layout">
+<nav class="sidebar">
+  <div class="sb-group">Setup</div>
+  <div class="sb-link active" onclick="show('inboxes',this)" id="nav-inboxes"><span>📬 Inboxes</span><span class="sb-check" id="chk-inboxes"></span></div>
+  <div class="sb-link" onclick="show('tags',this)" id="nav-tags"><span>🏷️ Tags (22)</span><span class="sb-check" id="chk-tags"></span></div>
+  <div class="sb-link" onclick="show('fields',this)" id="nav-fields"><span>📋 Custom Fields</span><span class="sb-check" id="chk-fields"></span></div>
+  <div class="sb-link" onclick="show('beacon',this)" id="nav-beacon"><span>💬 Beacon Form</span><span class="sb-check" id="chk-beacon"></span></div>
+  <div class="sb-link" onclick="show('workflows',this)" id="nav-workflows"><span>⚡ Workflows</span><span class="sb-check" id="chk-workflows"></span></div>
+  <div class="sb-link" onclick="show('views',this)" id="nav-views"><span>👁 Views</span><span class="sb-check" id="chk-views"></span></div>
+  <div class="sb-link" onclick="show('replies',this)" id="nav-replies"><span>💬 Saved Replies</span><span class="sb-check" id="chk-replies"></span></div>
+</nav>
+
+<main class="main">
+
+<!-- ══════════════════════════════════════════
+     1. INBOXES
+══════════════════════════════════════════ -->
+<div id="inboxes" class="section active">
+  <div class="sec-hdr">
+    <h2>📬 Inboxes</h2>
+    <p>Create 5 inboxes. Settings → Mailboxes → Create Mailbox. Use any email you own (Gmail aliases work perfectly).</p>
+  </div>
+  <div class="mark-done">
+    <button class="done-btn" onclick="markDone('inboxes',this)">✓ Mark section done</button>
+    <span class="done-label">Tick when all 5 inboxes are created</span>
+  </div>
+
+  <table class="it">
+    <tr><th>Inbox name (enter exactly)</th><th>From name</th><th>Use this email</th><th>Purpose</th></tr>
+    <tr><td><strong>IIHFTV Support</strong></td><td>IIHFTV Support</td><td>yourname+iihftv@gmail.com</td><td>Main platform inbox</td></tr>
+    <tr><td><strong>Triathlon Live Support</strong></td><td>TriLive Support</td><td>yourname+trilive@gmail.com</td><td>Main platform inbox</td></tr>
+    <tr><td><strong>EuroVolleyTV Support</strong></td><td>EuroVolleyTV Support</td><td>yourname+cev@gmail.com</td><td>Main platform inbox</td></tr>
+    <tr><td><strong>Billing &amp; Refunds</strong></td><td>Billing Team</td><td>yourname+billing@gmail.com</td><td>All refund/payment tickets</td></tr>
+    <tr><td><strong>B2B Partners</strong></td><td>Partner Support</td><td>yourname+b2b@gmail.com</td><td>Rights holders, operators</td></tr>
+  </table>
+
+  <div class="call call-blue">After creating each inbox: open it → Settings tab → set "Reply from" to the Gmail alias. Don't worry about DKIM/verification for a demo — tickets will arrive regardless.</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     2. TAGS
+══════════════════════════════════════════ -->
+<div id="tags" class="section">
+  <div class="sec-hdr">
+    <h2>🏷️ Tags — 22 tags</h2>
+    <p>Help Scout creates tags when first used. Fastest method: open any ticket → type each tag name → press Enter. They're created instantly. Or Settings → Tags if available on your plan.</p>
+  </div>
+  <div class="mark-done">
+    <button class="done-btn" onclick="markDone('tags',this)">✓ Mark section done</button>
+  </div>
+
+  <p class="sub">Click any tag to copy its name to clipboard. Create all 22.</p>
+
+  <div class="call call-amber">Naming rule: lowercase, hyphens only, no spaces, no colons. If you type them wrong, rename them in Settings → Tags.</div>
+
+  <p style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;margin:14px 0 6px">Group A — Playback (7)</p>
+  <div class="tag-set">
+    <span class="tag tg-a" onclick="copyTag(this)">black-screen</span>
+    <span class="tag tg-a" onclick="copyTag(this)">buffering</span>
+    <span class="tag tg-a" onclick="copyTag(this)">no-audio</span>
+    <span class="tag tg-a" onclick="copyTag(this)">quality-issue</span>
+    <span class="tag tg-a" onclick="copyTag(this)">stream-missing</span>
+    <span class="tag tg-a" onclick="copyTag(this)">replay-missing</span>
+    <span class="tag tg-a" onclick="copyTag(this)">casting-issue</span>
+  </div>
+
+  <p style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;margin:14px 0 6px">Group B — Device (3)</p>
+  <div class="tag-set">
+    <span class="tag tg-b" onclick="copyTag(this)">device-tv</span>
+    <span class="tag tg-b" onclick="copyTag(this)">device-mobile</span>
+    <span class="tag tg-b" onclick="copyTag(this)">app-crash</span>
+  </div>
+
+  <p style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;margin:14px 0 6px">Group C — Access (4)</p>
+  <div class="tag-set">
+    <span class="tag tg-c" onclick="copyTag(this)">geo-blocked</span>
+    <span class="tag tg-c" onclick="copyTag(this)">vpn-detected</span>
+    <span class="tag tg-c" onclick="copyTag(this)">login-failed</span>
+    <span class="tag tg-c" onclick="copyTag(this)">fraud-suspected</span>
+  </div>
+
+  <p style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;margin:14px 0 6px">Group D — Billing (3)</p>
+  <div class="tag-set">
+    <span class="tag tg-d" onclick="copyTag(this)">payment-failed</span>
+    <span class="tag tg-d" onclick="copyTag(this)">duplicate-charge</span>
+    <span class="tag tg-d" onclick="copyTag(this)">chargeback-risk</span>
+  </div>
+
+  <p style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;margin:14px 0 6px">Group E — Operational flags (5)</p>
+  <div class="tag-set">
+    <span class="tag tg-e" onclick="copyTag(this)">live-urgent</span>
+    <span class="tag tg-e" onclick="copyTag(this)">known-incident</span>
+    <span class="tag tg-e" onclick="copyTag(this)">cancel-request</span>
+    <span class="tag tg-e" onclick="copyTag(this)">vip-customer</span>
+    <span class="tag tg-e" onclick="copyTag(this)">escalated</span>
+  </div>
+
+  <div class="copy-block">
+    <div class="copy-block-hdr">
+      <span class="copy-block-label">All 22 — one per line (for reference)</span>
+      <button class="copy-btn" onclick="copyBlock(this)">Copy</button>
+    </div>
+    <pre>black-screen
+buffering
+no-audio
+quality-issue
+stream-missing
+replay-missing
+casting-issue
+device-tv
+device-mobile
+app-crash
+geo-blocked
+vpn-detected
+login-failed
+fraud-suspected
+payment-failed
+duplicate-charge
+chargeback-risk
+live-urgent
+known-incident
+cancel-request
+vip-customer
+escalated</pre>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     3. CUSTOM FIELDS
+══════════════════════════════════════════ -->
+<div id="fields" class="section">
+  <div class="sec-hdr">
+    <h2>📋 Custom Fields</h2>
+    <p>Settings → Custom Fields → New Field. Create all 10 fields below. Apply to: IIHFTV, Triathlon Live, EuroVolleyTV, Billing &amp; Refunds. Apply 5-field B2B set to B2B Partners only.</p>
+  </div>
+  <div class="mark-done">
+    <button class="done-btn" onclick="markDone('fields',this)">✓ Mark section done</button>
+  </div>
+
+  <p style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;margin:16px 0 8px">B2C fields — 10 fields (IIHFTV · TriLive · CEV · Billing)</p>
+
+  <table class="it">
+    <tr><th>Field name (copy exactly)</th><th>Type</th><th>Required?</th><th>Values to enter</th></tr>
+    <tr>
+      <td><strong>Issue Category</strong></td>
+      <td>Dropdown</td><td>Yes</td>
+      <td>Streaming · Billing &amp; Payments · Subscriptions · Account &amp; Access · Login &amp; Access · Apps &amp; Casting · Content &amp; Schedule · Geo Restriction · General</td>
+    </tr>
+    <tr>
+      <td><strong>Account Match</strong></td>
+      <td>Dropdown</td><td>Yes</td>
+      <td>Matched · Wrong Email Used · No Account Found · Multiple Accounts · Unverified</td>
+    </tr>
+    <tr>
+      <td><strong>Ticket Intent</strong></td>
+      <td>Dropdown</td><td>No</td>
+      <td>Issue · Request · Question · Feedback</td>
+    </tr>
+    <tr>
+      <td><strong>Subscription Type</strong></td>
+      <td>Dropdown</td><td>No</td>
+      <td>Monthly · Annual · PPV · Tournament Pass · Bundle · Free Trial · In-app iOS · In-app Android</td>
+    </tr>
+    <tr>
+      <td><strong>Device</strong></td>
+      <td>Dropdown</td><td>No</td>
+      <td>iPhone / iPad · Android · Web Browser · Apple TV · Android TV · Roku · Fire TV · Samsung Smart TV · LG Smart TV · Chromecast / AirPlay</td>
+    </tr>
+    <tr>
+      <td><strong>Live Event Related</strong></td>
+      <td>Dropdown</td><td>No</td>
+      <td>Yes · No</td>
+    </tr>
+    <tr>
+      <td><strong>Severity</strong></td>
+      <td>Dropdown</td><td>No</td>
+      <td>Low · Medium · High · Critical</td>
+    </tr>
+    <tr>
+      <td><strong>Refund Reason</strong></td>
+      <td>Dropdown</td><td>No</td>
+      <td>Duplicate charge · Charged after cancellation · Event cancelled · Streaming failure · Geo restriction · Purchase mistake · Goodwill</td>
+    </tr>
+    <tr>
+      <td><strong>Escalation URL</strong></td>
+      <td>Text</td><td>No</td>
+      <td>Free text — no values needed</td>
+    </tr>
+    <tr>
+      <td><strong>Resolution</strong></td>
+      <td>Dropdown</td><td>No (prompt at close)</td>
+      <td>Resolved — Answered · Resolved — Action Taken · Refunded — Full · Refunded — Partial · Credit Added · Escalated — Pending · Platform Fix · No Response — Closed · Duplicate Contact</td>
+    </tr>
+  </table>
+
+  <p style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;margin:20px 0 8px">B2B fields — 5 fields (B2B Partners inbox only)</p>
+
+  <table class="it">
+    <tr><th>Field name</th><th>Type</th><th>Values</th></tr>
+    <tr><td><strong>Contact Type</strong></td><td>Dropdown</td><td>Partner Technical · Partner Billing · Integration Request · Account &amp; Access · General</td></tr>
+    <tr><td><strong>Partner Name</strong></td><td>Text</td><td>Free text</td></tr>
+    <tr><td><strong>Issue Priority</strong></td><td>Dropdown</td><td>Low · Medium · High · Critical</td></tr>
+    <tr><td><strong>Escalation URL</strong></td><td>Text</td><td>Free text</td></tr>
+    <tr><td><strong>Resolution</strong></td><td>Dropdown</td><td>Resolved · Escalated · In Progress · No Response · Duplicate</td></tr>
+  </table>
+
+  <div class="call call-blue">After creating each field: click the field → "Mailboxes" tab → tick the correct inboxes. B2C fields to IIHFTV + TriLive + CEV + Billing. B2B fields to B2B Partners only.</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     4. BEACON FORM
+══════════════════════════════════════════ -->
+<div id="beacon" class="section">
+  <div class="sec-hdr">
+    <h2>💬 Beacon Form Setup</h2>
+    <p>Manage → Beacons → New Beacon. Create ONE beacon for the demo — link it to IIHFTV Support inbox. Configure as below, copy the ID, paste into beacon_test_iihftv.html.</p>
+  </div>
+  <div class="mark-done">
+    <button class="done-btn" onclick="markDone('beacon',this)">✓ Mark section done</button>
+  </div>
+
+  <table class="it">
+    <tr><th>Setting</th><th>Value to enter</th></tr>
+    <tr><td><strong>Beacon name</strong></td><td>IIHFTV Support Beacon</td></tr>
+    <tr><td><strong>Mode</strong></td><td>Self Service (shows form + answers)</td></tr>
+    <tr><td><strong>Linked inbox</strong></td><td>IIHFTV Support</td></tr>
+    <tr><td><strong>Color</strong></td><td>#1d4ed8</td></tr>
+    <tr><td><strong>Icon</strong></td><td>Question mark (or Message)</td></tr>
+    <tr><td><strong>Greeting text</strong></td><td>How can we help?</td></tr>
+    <tr><td><strong>Sub-text</strong></td><td>We usually respond within 2 hours during office hours.</td></tr>
+    <tr><td><strong>Show name field</strong></td><td>Yes — optional</td></tr>
+    <tr><td><strong>Show email field</strong></td><td>Yes — required</td></tr>
+    <tr><td><strong>Docs enabled</strong></td><td>OFF for now (no articles created yet)</td></tr>
+  </table>
+
+  <p style="font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px;margin:16px 0 8px">Custom form fields — add in this order</p>
+
+  <table class="it">
+    <tr><th>#</th><th>Label (enter exactly)</th><th>Type</th><th>Options / Notes</th><th>Required?</th></tr>
+    <tr><td>1</td><td><strong>What do you need help with?</strong></td><td>Dropdown</td><td>Streaming problem · Billing or payment · Login or account access · Subscription or plan · App or device issue · Content not available in my region · Event or schedule question · Partner or business enquiry · Something else</td><td>Yes</td></tr>
+    <tr><td>2</td><td><strong>Your device</strong></td><td>Dropdown</td><td>iPhone or iPad · Android phone or tablet · Web browser · Apple TV · Android TV / Google TV · Roku · Amazon Fire TV · Samsung Smart TV · LG Smart TV · Other / Not sure</td><td>No</td></tr>
+    <tr><td>3</td><td><strong>Message</strong></td><td>Textarea</td><td>Placeholder: "Describe what's happening…"</td><td>No</td></tr>
+  </table>
+
+  <div class="call call-green">
+    <strong>After saving:</strong> Click "Installation" → copy the Beacon ID (looks like: a1b2c3d4-e5f6-7890-abcd-ef1234567890).
+    Open <code>beacon_test_iihftv.html</code> → replace <code>YOUR_BEACON_ID</code> → save → open in browser → Beacon appears bottom-right.
+  </div>
+
+  <div class="call call-amber">
+    <strong>Testing without email confirmation:</strong> Beacon submissions create tickets directly in the linked inbox regardless of email verification. Submit the form → go to IIHFTV Support inbox in HS → ticket is there. Delete and resubmit as many times as needed.
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     5. WORKFLOWS
+══════════════════════════════════════════ -->
+<div id="workflows" class="section">
+  <div class="sec-hdr">
+    <h2>⚡ Workflows — 8 automations</h2>
+    <p>Settings → Automation → Workflows → New Workflow. Build in the order shown. Each workflow has the exact condition and action to enter.</p>
+  </div>
+  <div class="mark-done">
+    <button class="done-btn" onclick="markDone('workflows',this)">✓ Mark section done</button>
+  </div>
+
+  <div class="wf-card">
+    <div class="wf-hdr"><div class="wf-n" style="background:#dc2626">1</div><span class="wf-title">Live Event Urgency</span><span class="wf-pri" style="background:#fee2e2;color:#991b1b">CRITICAL — build first</span></div>
+    <div class="wf-body">
+      <div class="wf-row"><span class="wf-lbl if-lbl">IF</span><span class="wf-val">Subject or body <strong>contains any of:</strong> <code>live</code>, <code>match</code>, <code>right now</code>, <code>happening now</code>, <code>won't load</code>, <code>black screen</code>, <code>buffering</code></span></div>
+      <div class="wf-row"><span class="wf-lbl then-lbl">THEN</span><span class="wf-val">Add tag: <code>live-urgent</code> → Set custom field Severity = <strong>Critical</strong> → Set custom field Live Event Related = <strong>Yes</strong></span></div>
+    </div>
+  </div>
+
+  <div class="wf-card">
+    <div class="wf-hdr"><div class="wf-n" style="background:#d97706">2</div><span class="wf-title">Refund / Chargeback → Billing Inbox</span><span class="wf-pri" style="background:#fffbeb;color:#92400e">HIGH</span></div>
+    <div class="wf-body">
+      <div class="wf-row"><span class="wf-lbl if-lbl">IF</span><span class="wf-val">Subject or body <strong>contains any of:</strong> <code>refund</code>, <code>chargeback</code>, <code>charge back</code>, <code>money back</code>, <code>charged twice</code>, <code>double charge</code></span></div>
+      <div class="wf-row"><span class="wf-lbl then-lbl">THEN</span><span class="wf-val">Move to mailbox: <strong>Billing &amp; Refunds</strong> → Add tag: <code>chargeback-risk</code> (if chargeback wording) → Set Severity = <strong>High</strong></span></div>
+    </div>
+  </div>
+
+  <div class="wf-card">
+    <div class="wf-hdr"><div class="wf-n" style="background:#1d4ed8">3</div><span class="wf-title">Smart TV / Device-TV Routing</span><span class="wf-pri" style="background:#dbeafe;color:#1e40af">HIGH</span></div>
+    <div class="wf-body">
+      <div class="wf-row"><span class="wf-lbl if-lbl">IF</span><span class="wf-val">Subject or body <strong>contains any of:</strong> <code>samsung</code>, <code>smart tv</code>, <code>apple tv</code>, <code>roku</code>, <code>fire tv</code>, <code>android tv</code>, <code>lg tv</code>, <code>chromecast</code></span></div>
+      <div class="wf-row"><span class="wf-lbl then-lbl">THEN</span><span class="wf-val">Add tag: <code>device-tv</code> → Set custom field Device = <strong>Samsung Smart TV</strong> (default; agent updates)</span></div>
+    </div>
+  </div>
+
+  <div class="wf-card">
+    <div class="wf-hdr"><div class="wf-n" style="background:#7c3aed">4</div><span class="wf-title">B2B Partner Domain Detection</span><span class="wf-pri" style="background:#f5f3ff;color:#4c1d95">HIGH</span></div>
+    <div class="wf-body">
+      <div class="wf-row"><span class="wf-lbl if-lbl">IF</span><span class="wf-val">Customer email <strong>contains any of:</strong> <code>iihf.ch</code>, <code>ehf.eu</code>, <code>cev.eu</code>, <code>trilive</code>, <code>partner</code>, <code>rights</code>, <code>b2b-demo</code></span></div>
+      <div class="wf-row"><span class="wf-lbl then-lbl">THEN</span><span class="wf-val">Move to mailbox: <strong>B2B Partners</strong> → Set Contact Type = <strong>Partner Technical</strong></span></div>
+    </div>
+  </div>
+
+  <div class="wf-card">
+    <div class="wf-hdr"><div class="wf-n" style="background:#0891b2">5</div><span class="wf-title">Cancel Request Detection</span><span class="wf-pri" style="background:#ecfeff;color:#155e75">MED</span></div>
+    <div class="wf-body">
+      <div class="wf-row"><span class="wf-lbl if-lbl">IF</span><span class="wf-val">Subject or body <strong>contains any of:</strong> <code>cancel</code>, <code>cancellation</code>, <code>unsubscribe</code>, <code>stop subscription</code>, <code>don't want to continue</code></span></div>
+      <div class="wf-row"><span class="wf-lbl then-lbl">THEN</span><span class="wf-val">Add tag: <code>cancel-request</code> → Set Issue Category = <strong>Subscriptions</strong> → Set Ticket Intent = <strong>Request</strong></span></div>
+    </div>
+  </div>
+
+  <div class="wf-card">
+    <div class="wf-hdr"><div class="wf-n" style="background:#059669">6</div><span class="wf-title">Login / Password Auto-Reply</span><span class="wf-pri" style="background:#ecfdf5;color:#065f46">MED</span></div>
+    <div class="wf-body">
+      <div class="wf-row"><span class="wf-lbl if-lbl">IF</span><span class="wf-val">Subject or body <strong>contains any of:</strong> <code>forgot password</code>, <code>can't log in</code>, <code>reset password</code>, <code>password reset</code>, <code>locked out</code></span></div>
+      <div class="wf-row"><span class="wf-lbl then-lbl">THEN</span><span class="wf-val">Add tag: <code>login-failed</code> → Set Issue Category = <strong>Login &amp; Access</strong> → Send saved reply: <strong>"Password Reset — Resend"</strong></span></div>
+    </div>
+  </div>
+
+  <div class="wf-card">
+    <div class="wf-hdr"><div class="wf-n" style="background:#dc2626">7</div><span class="wf-title">SLA Risk — Waiting Too Long</span><span class="wf-pri" style="background:#fee2e2;color:#991b1b">MED</span></div>
+    <div class="wf-body">
+      <div class="wf-row"><span class="wf-lbl if-lbl">IF</span><span class="wf-val">Conversation is <strong>open</strong> AND customer is waiting for reply for <strong>more than 8 hours</strong></span></div>
+      <div class="wf-row"><span class="wf-lbl then-lbl">THEN</span><span class="wf-val">Add tag: <code>escalated</code> → Set Severity = <strong>High</strong></span></div>
+      <div class="wf-row" style="font-size:11px;color:#6b7280;padding-left:42px">Trigger type in HS: "Customer is waiting longer than X hours" — available on all plans</div>
+    </div>
+  </div>
+
+  <div class="wf-card">
+    <div class="wf-hdr"><div class="wf-n" style="background:#6b7280">8</div><span class="wf-title">No Reply → Auto-Close</span><span class="wf-pri" style="background:#f3f4f6;color:#4b5563">LOW</span></div>
+    <div class="wf-body">
+      <div class="wf-row"><span class="wf-lbl if-lbl">IF</span><span class="wf-val">Status is <strong>Pending</strong> AND customer has NOT replied for <strong>5 days</strong></span></div>
+      <div class="wf-row"><span class="wf-lbl then-lbl">THEN</span><span class="wf-val">Send saved reply: <strong>"Closing — No Response"</strong> → Set status to <strong>Closed</strong> → Set Resolution = <strong>No Response — Closed</strong></span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     6. SAVED VIEWS
+══════════════════════════════════════════ -->
+<div id="views" class="section">
+  <div class="sec-hdr">
+    <h2>👁 Saved Views — 9 views</h2>
+    <p>Conversations → left sidebar → "New View" at the bottom. Enter the name and filters exactly as shown. Pin all of them to sidebar.</p>
+  </div>
+  <div class="mark-done">
+    <button class="done-btn" onclick="markDone('views',this)">✓ Mark section done</button>
+  </div>
+
+  <div class="view-card">
+    <span class="view-icon">🔴</span>
+    <div><div class="view-name">Urgent — Live Event</div><div class="view-filter">Tag: <strong>live-urgent</strong>  ·  Status: Open</div></div>
+    <span class="view-where" style="font-size:10px;color:#dc2626;font-weight:600">Pin #1</span>
+  </div>
+  <div class="view-card">
+    <span class="view-icon">💳</span>
+    <div><div class="view-name">Billing Queue</div><div class="view-filter">Mailbox: <strong>Billing &amp; Refunds</strong>  ·  Status: Open</div></div>
+    <span class="view-where">Pin #2</span>
+  </div>
+  <div class="view-card">
+    <span class="view-icon">💰</span>
+    <div><div class="view-name">Refund Pending</div><div class="view-filter">Tag: <strong>chargeback-risk</strong>  ·  Status: Open</div></div>
+    <span class="view-where">Pin #3</span>
+  </div>
+  <div class="view-card">
+    <span class="view-icon">📺</span>
+    <div><div class="view-name">Device: TV Issues</div><div class="view-filter">Tag: <strong>device-tv</strong>  ·  Status: Open</div></div>
+    <span class="view-where">Pin #4</span>
+  </div>
+  <div class="view-card">
+    <span class="view-icon">👑</span>
+    <div><div class="view-name">VIP Queue</div><div class="view-filter">Tag: <strong>vip-customer</strong>  ·  Status: Open</div></div>
+    <span class="view-where">Pin #5</span>
+  </div>
+  <div class="view-card">
+    <span class="view-icon">🤝</span>
+    <div><div class="view-name">B2B Open</div><div class="view-filter">Mailbox: <strong>B2B Partners</strong>  ·  Status: Open</div></div>
+    <span class="view-where">Pin #6</span>
+  </div>
+  <div class="view-card">
+    <span class="view-icon">⚡</span>
+    <div><div class="view-name">SLA Risk</div><div class="view-filter">Tag: <strong>escalated</strong>  ·  Status: Open</div></div>
+    <span class="view-where">Pin #7</span>
+  </div>
+  <div class="view-card">
+    <span class="view-icon">✅</span>
+    <div><div class="view-name">Resolved Today</div><div class="view-filter">Status: <strong>Closed</strong>  ·  Closed date: <strong>Today</strong></div></div>
+    <span class="view-where">Pin #8</span>
+  </div>
+  <div class="view-card">
+    <span class="view-icon">📊</span>
+    <div><div class="view-name">Weekly Review</div><div class="view-filter">Status: <strong>Closed</strong>  ·  Closed date: <strong>Last 7 days</strong></div></div>
+    <span class="view-where">Pin #9</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     7. SAVED REPLIES
+══════════════════════════════════════════ -->
+<div id="replies" class="section">
+  <div class="sec-hdr">
+    <h2>💬 Saved Replies — 6 replies</h2>
+    <p>Settings → Saved Replies → New Saved Reply. Copy the name and body text exactly. Replace [Customer Name] with a merge tag if HS supports it (type {{ in the body to check).</p>
+  </div>
+  <div class="mark-done">
+    <button class="done-btn" onclick="markDone('replies',this)">✓ Mark section done</button>
+  </div>
+
+  <div class="reply-card">
+    <div class="reply-hdr"><span class="reply-name">Password Reset — Resend</span><button class="copy-btn" style="background:#f3f4f6;border:1px solid #e5e7eb;color:#374151;font-family:'IBM Plex Mono',monospace;font-size:10px;padding:3px 8px;border-radius:3px;cursor:pointer" onclick="copyReply(this)">Copy</button></div>
+    <div class="reply-body">Hi [Customer Name],
+
+Thank you for reaching out. I've manually triggered a new password reset email to your address.
+
+Please check your inbox and your spam/junk folder — the email comes from noreply@[platform].com and may be filtered.
+
+The reset link is valid for 24 hours. If it still doesn't arrive, it's possible your account is registered under a different email address. Let me know and I can check for you.
+
+Best regards,
+Support Team</div>
+  </div>
+
+  <div class="reply-card">
+    <div class="reply-hdr"><span class="reply-name">Live Event — Hold Message</span><button class="copy-btn" style="background:#f3f4f6;border:1px solid #e5e7eb;color:#374151;font-family:'IBM Plex Mono',monospace;font-size:10px;padding:3px 8px;border-radius:3px;cursor:pointer" onclick="copyReply(this)">Copy</button></div>
+    <div class="reply-body">Hi [Customer Name],
+
+Thank you for reaching out. We're aware of an ongoing issue affecting the live stream and our technical team is investigating this right now.
+
+We apologise for the disruption. We'll send you an update as soon as we have more information.
+
+In the meantime, please try:
+1. Refreshing your browser or restarting the app
+2. Checking your internet connection (we recommend at least 10 Mbps for HD)
+3. Trying a different device or browser
+
+Thank you for your patience.
+
+Best regards,
+Support Team</div>
+  </div>
+
+  <div class="reply-card">
+    <div class="reply-hdr"><span class="reply-name">Refund — Approved</span><button class="copy-btn" style="background:#f3f4f6;border:1px solid #e5e7eb;color:#374151;font-family:'IBM Plex Mono',monospace;font-size:10px;padding:3px 8px;border-radius:3px;cursor:pointer" onclick="copyReply(this)">Copy</button></div>
+    <div class="reply-body">Hi [Customer Name],
+
+I've reviewed your account and I'm pleased to confirm that your refund has been approved and processed.
+
+Amount: [€XX.XX]
+Payment method: original payment method
+Timeline: please allow 5–10 business days for the amount to appear on your statement (this depends on your bank or card provider).
+
+I'm sorry for the inconvenience and I hope to see you back on the platform in the future.
+
+Best regards,
+Billing Team</div>
+  </div>
+
+  <div class="reply-card">
+    <div class="reply-hdr"><span class="reply-name">Geo Restriction — Explanation</span><button class="copy-btn" style="background:#f3f4f6;border:1px solid #e5e7eb;color:#374151;font-family:'IBM Plex Mono',monospace;font-size:10px;padding:3px 8px;border-radius:3px;cursor:pointer" onclick="copyReply(this)">Copy</button></div>
+    <div class="reply-body">Hi [Customer Name],
+
+Thank you for getting in touch. I understand this is frustrating.
+
+The content you're trying to access is subject to territorial broadcast rights, which means it isn't available in your current region. This is a restriction we must apply based on our rights agreements with the leagues and federations — it's not something we can override on our end.
+
+Here's what I can confirm:
+- Your subscription remains active and unaffected
+- All other content outside of the restricted matches is available to you as normal
+
+If you believe you're being blocked incorrectly (for example, you're travelling and your location has changed temporarily), please let me know your current country and I'll check if this can be resolved.
+
+Best regards,
+Support Team</div>
+  </div>
+
+  <div class="reply-card">
+    <div class="reply-hdr"><span class="reply-name">Cancellation — Confirmed</span><button class="copy-btn" style="background:#f3f4f6;border:1px solid #e5e7eb;color:#374151;font-family:'IBM Plex Mono',monospace;font-size:10px;padding:3px 8px;border-radius:3px;cursor:pointer" onclick="copyReply(this)">Copy</button></div>
+    <div class="reply-body">Hi [Customer Name],
+
+Your cancellation request has been processed. Here's what happens next:
+
+- Your access continues until the end of your current billing period: [DATE]
+- You will not be charged again after this date
+- Your account and watch history will remain accessible until then
+
+If you change your mind before the end of your billing period, you can reactivate your subscription from your account settings at any time.
+
+We're sorry to see you go. If there's anything we could have done better, we'd genuinely appreciate hearing from you.
+
+Best regards,
+Support Team</div>
+  </div>
+
+  <div class="reply-card">
+    <div class="reply-hdr"><span class="reply-name">Closing — No Response</span><button class="copy-btn" style="background:#f3f4f6;border:1px solid #e5e7eb;color:#374151;font-family:'IBM Plex Mono',monospace;font-size:10px;padding:3px 8px;border-radius:3px;cursor:pointer" onclick="copyReply(this)">Copy</button></div>
+    <div class="reply-body">Hi [Customer Name],
+
+I'm following up on your recent support request. Since we haven't heard back from you, I'll go ahead and close this ticket for now.
+
+If you still need help, please don't hesitate to reach out again — we're happy to assist.
+
+Best regards,
+Support Team</div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+const sections = ['inboxes','tags','fields','beacon','workflows','views','replies'];
+const done = {};
+
+function show(id, el) {
+  sections.forEach(s => {
+    document.getElementById(s).classList.remove('active');
+    document.getElementById('nav-'+s).classList.remove('active');
+  });
+  document.getElementById(id).classList.add('active');
+  document.getElementById('nav-'+id).classList.add('active');
+  document.querySelector('.main').scrollTop = 0;
+}
+
+function markDone(sec, btn) {
+  done[sec] = !done[sec];
+  const chk = document.getElementById('chk-'+sec);
+  if (done[sec]) {
+    chk.classList.add('done');
+    btn.classList.add('completed');
+    btn.textContent = '✓ Done';
+  } else {
+    chk.classList.remove('done');
+    btn.classList.remove('completed');
+    btn.textContent = '✓ Mark section done';
+  }
+  updateProgress();
+}
+
+function updateProgress() {
+  const count = Object.values(done).filter(Boolean).length;
+  const total = sections.length;
+  document.getElementById('pbar').style.width = (count/total*100)+'%';
+  document.getElementById('ptext').textContent = count+' / '+total;
+}
+
+function copyTag(el) {
+  navigator.clipboard.writeText(el.textContent).then(() => {
+    const orig = el.style.opacity;
+    el.style.opacity = '.4';
+    setTimeout(() => el.style.opacity = orig, 300);
+  });
+}
+
+function copyBlock(btn) {
+  const pre = btn.closest('.copy-block').querySelector('pre');
+  navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  });
+}
+
+function copyReply(btn) {
+  const body = btn.closest('.reply-card').querySelector('.reply-body').textContent;
+  navigator.clipboard.writeText(body.trim()).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  });
+}
+</script>
+</body>
+</html>
