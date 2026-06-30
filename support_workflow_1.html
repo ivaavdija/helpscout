@@ -1,0 +1,1088 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Fandom Labs — End-to-End Support Workflow</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f0f4f8;color:#1a202c;font-size:13px;line-height:1.6;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+
+.page{max-width:900px;margin:0 auto;padding:32px 24px 80px}
+
+/* COVER */
+.cover{background:linear-gradient(150deg,#0f172a 0%,#1e3a5f 60%,#0f2a1a 100%);border-radius:16px;padding:36px 40px;margin-bottom:28px;position:relative;overflow:hidden}
+.cover::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(163,230,53,.06);pointer-events:none}
+.cover::after{content:'';position:absolute;bottom:-60px;left:60px;width:300px;height:300px;border-radius:50%;background:rgba(29,78,216,.06);pointer-events:none}
+.cover-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#a3e635;margin-bottom:10px}
+.cover h1{font-size:28px;font-weight:900;color:#fff;line-height:1.2;margin-bottom:8px;letter-spacing:-.5px}
+.cover p{font-size:13px;color:#64748b;max-width:560px;line-height:1.7;margin-bottom:20px}
+.cover-meta{display:flex;gap:20px;flex-wrap:wrap;border-top:1px solid rgba(255,255,255,.08);padding-top:16px}
+.cm{font-size:11px;color:#94a3b8}
+.cm strong{color:#e2e8f0;display:block;font-size:12px;margin-bottom:1px}
+.cover-phases{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.cp{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 14px;font-size:11px;color:#94a3b8;display:flex;align-items:center;gap:6px}
+.cp-num{width:18px;height:18px;border-radius:50%;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center}
+
+/* PHASE HEADER */
+.phase-hdr{border-radius:12px;padding:18px 22px;margin-bottom:16px;margin-top:32px;display:flex;align-items:center;gap:16px}
+.phase-num{width:36px;height:36px;border-radius:50%;font-size:16px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.phase-info h2{font-size:18px;font-weight:800;margin-bottom:2px}
+.phase-info p{font-size:12px;opacity:.7;line-height:1.5}
+.phase-who{font-size:10px;font-weight:700;padding:3px 10px;border-radius:10px;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;align-self:flex-start;margin-top:2px}
+
+/* STEPS */
+.step{background:#fff;border-radius:12px;border:1px solid #e2e8f0;margin-bottom:14px;overflow:hidden}
+.step-hdr{padding:14px 18px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #f1f5f9}
+.step-n{width:26px;height:26px;border-radius:50%;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff}
+.step-title{font-size:14px;font-weight:700;color:#0f172a}
+.step-sub{font-size:11px;color:#64748b;margin-top:1px}
+.step-body{padding:14px 18px}
+
+/* FIELD ROW */
+.field-row{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid #f8fafc}
+.field-row:last-child{border-bottom:none}
+.field-icon{font-size:14px;width:22px;flex-shrink:0;margin-top:1px}
+.field-info{flex:1}
+.field-name{font-size:12px;font-weight:700;color:#0f172a}
+.field-desc{font-size:11px;color:#64748b;margin-top:1px;line-height:1.5}
+.field-example{font-size:10px;color:#94a3b8;font-style:italic;margin-top:2px}
+.req-tag{font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;white-space:nowrap;flex-shrink:0}
+.req{background:#fef2f2;color:#b91c1c;border:1px solid #fecaca}
+.opt{background:#fffbeb;color:#92400e;border:1px solid #fde68a}
+.auto{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0}
+.readonly{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe}
+
+/* CATEGORY BLOCK */
+.cat-block{border-radius:10px;border:1px solid;overflow:hidden;margin-bottom:10px}
+.cat-hdr{padding:11px 14px;display:flex;align-items:center;gap:10px}
+.cat-hdr-icon{font-size:18px}
+.cat-hdr-name{font-size:14px;font-weight:800}
+.cat-hdr-desc{font-size:11px;opacity:.7;margin-top:1px}
+.cat-items{padding:4px 0}
+.cat-item{display:grid;grid-template-columns:1fr 110px 140px 120px;gap:8px;padding:9px 14px;border-bottom:1px solid;align-items:start;font-size:11px}
+.cat-item:last-child{border-bottom:none}
+.cat-item-label{font-weight:600;color:#0f172a;line-height:1.4}
+.cat-item-sub{color:#64748b;font-size:10px;margin-top:1px}
+.ci-type{padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;text-align:center}
+.ci-tag{font-family:monospace;font-size:10px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:3px;padding:1px 6px;color:#334155;display:inline-block}
+.ci-note{font-size:10px;color:#64748b;line-height:1.5}
+.cat-col-hdr{display:grid;grid-template-columns:1fr 110px 140px 120px;gap:8px;padding:7px 14px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+
+/* AUTOMATION TABLE */
+.auto-table{width:100%;border-collapse:collapse;font-size:11px}
+.auto-table th{padding:8px 10px;background:#0f172a;color:#e2e8f0;font-weight:600;text-align:left;font-size:10px;letter-spacing:.3px;text-transform:uppercase}
+.auto-table td{padding:8px 10px;border-bottom:1px solid #f1f5f9;vertical-align:top;line-height:1.5}
+.auto-table tr:hover td{background:#f8fafc}
+.auto-table tr:last-child td{border-bottom:none}
+.if-pill{font-family:monospace;font-size:10px;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:3px;padding:2px 6px;display:inline-block;margin:1px 0}
+.then-pill{font-family:monospace;font-size:10px;background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;border-radius:3px;padding:2px 6px;display:inline-block;margin:1px 0}
+.value-pill{font-size:10px;background:#f5f3ff;color:#6d28d9;border:1px solid #ddd6fe;border-radius:3px;padding:2px 7px;display:inline-block;margin:1px 0}
+
+/* WORKFLOW BOXES */
+.wf-row{display:flex;gap:0;margin-bottom:14px;border-radius:10px;overflow:hidden;border:1px solid #e2e8f0}
+.wf-who{padding:14px 12px;background:#1e293b;writing-mode:vertical-rl;transform:rotate(180deg);font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;justify-content:center;white-space:nowrap}
+.wf-steps{flex:1;display:flex;flex-direction:column}
+.wf-step{padding:11px 14px;border-bottom:1px solid #f8fafc;display:flex;align-items:flex-start;gap:10px}
+.wf-step:last-child{border-bottom:none}
+.wf-step-num{width:20px;height:20px;border-radius:50%;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.wf-step-body{flex:1}
+.wf-step-title{font-size:12px;font-weight:700;color:#0f172a;margin-bottom:2px}
+.wf-step-detail{font-size:11px;color:#475569;line-height:1.5}
+.wf-rules{margin-top:6px;display:flex;flex-direction:column;gap:3px}
+.wf-rule{font-size:10px;padding:4px 8px;border-radius:5px;display:flex;align-items:flex-start;gap:4px;line-height:1.4}
+.wf-rule-if{font-weight:700;flex-shrink:0}
+
+/* CONDITIONAL FLOW */
+.cflow{background:#f8fafc;border-radius:10px;padding:14px;border:1px solid #e2e8f0}
+.cflow-title{font-size:11px;font-weight:700;color:#334155;margin-bottom:10px;text-transform:uppercase;letter-spacing:.4px}
+.cflow-row{display:flex;align-items:stretch;gap:0;margin-bottom:6px;border-radius:7px;overflow:hidden;border:1px solid #e2e8f0}
+.cflow-if{padding:8px 12px;background:#eff6ff;font-size:11px;font-weight:700;color:#1d4ed8;min-width:200px;border-right:1px solid #bfdbfe;display:flex;align-items:flex-start;flex-direction:column;justify-content:center;gap:3px}
+.cflow-then{padding:8px 12px;flex:1;background:#fff;font-size:11px;color:#334155;line-height:1.5;display:flex;flex-direction:column;gap:3px}
+.cflow-who{padding:8px 10px;background:#f8fafc;font-size:10px;font-weight:700;color:#64748b;border-left:1px solid #e2e8f0;white-space:nowrap;display:flex;align-items:center}
+
+/* REPORT CARDS */
+.report-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.report-card{border-radius:10px;border:1px solid #e2e8f0;background:#fff;overflow:hidden}
+.rc-head{padding:10px 14px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:8px}
+.rc-body{padding:10px 14px;font-size:11px;color:#475569;line-height:1.6;border-top:1px solid #f1f5f9}
+.rc-formula{font-family:monospace;font-size:10px;background:#0f172a;color:#a3e635;padding:8px 10px;border-radius:6px;line-height:1.8;margin-top:8px}
+.rf{color:#93c5fd}.rt{color:#a3e635}.ro{color:#fbbf24}
+
+/* MISC */
+.info-box{border-radius:8px;padding:10px 14px;margin:10px 0;font-size:12px;line-height:1.6;border-left:3px solid;display:flex;align-items:flex-start;gap:8px}
+.ib-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+.note{background:#fffbeb;border-color:#f59e0b;color:#78350f}
+.tip{background:#f0fdf4;border-color:#22c55e;color:#14532d}
+.warn{background:#fef2f2;border-color:#ef4444;color:#7f1d1d}
+.example-box{background:#f8fafc;border-radius:8px;padding:12px 14px;border:1px solid #e2e8f0;margin-top:10px}
+.ex-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#94a3b8;margin-bottom:6px}
+.ex-q{font-size:12px;color:#0f172a;font-style:italic;margin-bottom:8px;padding:6px 10px;background:#fff;border-radius:6px;border:1px solid #e2e8f0}
+.ex-fields{display:flex;flex-direction:column;gap:4px;font-size:11px}
+.ex-fr{display:flex;align-items:baseline;gap:6px}
+.ex-fk{color:#94a3b8;min-width:130px;flex-shrink:0}
+.ex-fv{font-weight:600;color:#0f172a}
+.ex-tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}
+.ex-tag{font-family:monospace;font-size:10px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:3px;padding:1px 5px}
+.toc{background:#fff;border-radius:12px;border:1px solid #e2e8f0;padding:16px 20px;margin-bottom:28px}
+.toc h3{font-size:12px;font-weight:700;color:#0f172a;margin-bottom:10px}
+.toc-items{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.toc-item{font-size:11px;color:#64748b;padding:3px 0;display:flex;align-items:center;gap:6px}
+.toc-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+
+@media print{body{background:#fff}.page{padding:20px}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+@media(max-width:700px){.cat-item{grid-template-columns:1fr 1fr}.toc-items{grid-template-columns:1fr}.cflow-row{flex-direction:column}.wf-who{writing-mode:horizontal-tb;transform:none;padding:8px 14px}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-label">Fandom Labs · Support Operations</div>
+  <h1>End-to-End OTT Support<br>Workflow & Process Map</h1>
+  <p>Complete specification for the Beacon form, system automation, agent workflow, and governance. Every field, every condition, every path — with examples throughout.</p>
+  <div class="cover-phases">
+    <div class="cp"><div class="cp-num" style="background:#1d4ed8">1</div>Beacon Form — Customer</div>
+    <div class="cp"><div class="cp-num" style="background:#15803d">2</div>System Routing & Automation</div>
+    <div class="cp"><div class="cp-num" style="background:#6d28d9">3</div>Agent Workflow</div>
+    <div class="cp"><div class="cp-num" style="background:#c2410c">4</div>Governance & Reporting</div>
+  </div>
+  <div class="cover-meta">
+    <div class="cm"><strong>Inboxes covered</strong>EHFTV · IIHFTV · TriLive · Handbollsligan · SnS · EuroVolleyTV · NLL · HapoelTLV</div>
+    <div class="cm"><strong>Custom fields</strong>10 total · 2 required · 8 optional</div>
+    <div class="cm"><strong>Tags (lean set)</strong>22 symptom + flag tags · Down from 170</div>
+    <div class="cm"><strong>Automation rules</strong>16 if/then workflows</div>
+  </div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <h3>Contents</h3>
+  <div class="toc-items">
+    <div class="toc-item"><div class="toc-dot" style="background:#1d4ed8"></div>Phase 1 · Step 1 — Customer identification</div>
+    <div class="toc-item"><div class="toc-dot" style="background:#1d4ed8"></div>Phase 1 · Step 2 — Primary category selection</div>
+    <div class="toc-item"><div class="toc-dot" style="background:#1d4ed8"></div>Phase 1 · Step 3 — Conditional drill-down (all 5 categories)</div>
+    <div class="toc-item"><div class="toc-dot" style="background:#1d4ed8"></div>Phase 1 · Step 4 — Details & attachments</div>
+    <div class="toc-item"><div class="toc-dot" style="background:#15803d"></div>Phase 2 — Auto field population rules</div>
+    <div class="toc-item"><div class="toc-dot" style="background:#15803d"></div>Phase 2 — Auto-reply & deflection rules</div>
+    <div class="toc-item"><div class="toc-dot" style="background:#15803d"></div>Phase 2 — Routing & tagging rules</div>
+    <div class="toc-item"><div class="toc-dot" style="background:#6d28d9"></div>Phase 3 — Agent triage (first 30 seconds)</div>
+    <div class="toc-item"><div class="toc-dot" style="background:#6d28d9"></div>Phase 3 — Account match handling</div>
+    <div class="toc-item"><div class="toc-dot" style="background:#6d28d9"></div>Phase 3 — Category-specific workflows</div>
+    <div class="toc-item"><div class="toc-dot" style="background:#6d28d9"></div>Phase 3 — Resolution & close</div>
+    <div class="toc-item"><div class="toc-dot" style="background:#c2410c"></div>Phase 4 — Monthly reporting dashboard</div>
+    <div class="toc-item"><div class="toc-dot" style="background:#c2410c"></div>Phase 4 — Quality audit rules</div>
+    <div class="toc-item"><div class="toc-dot" style="background:#c2410c"></div>Phase 4 — Tag governance</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- PHASE 1 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="phase-hdr" style="background:#eff6ff;border:1px solid #bfdbfe">
+  <div class="phase-num" style="background:#1d4ed8;color:#fff">1</div>
+  <div class="phase-info">
+    <h2 style="color:#1d4ed8">The Customer Beacon Flow</h2>
+    <p style="color:#3b82f6">What the customer sees and selects. Their answers automatically map to internal Custom Fields and Tags — no agent input needed at intake.</p>
+  </div>
+  <div class="phase-who" style="background:#bfdbfe;color:#1d4ed8">Who: Customer<br>When: Ticket creation</div>
+</div>
+
+<!-- STEP 1: IDENTIFICATION -->
+<div class="step">
+  <div class="step-hdr">
+    <div class="step-n" style="background:#1d4ed8">1</div>
+    <div>
+      <div class="step-title">Identification</div>
+      <div class="step-sub">Two fields collect identity before the customer describes their issue. One is required by Help Scout (contact email), one is ours.</div>
+    </div>
+  </div>
+  <div class="step-body">
+    <div class="field-row">
+      <div class="field-icon">📧</div>
+      <div class="field-info">
+        <div class="field-name">Contact Email</div>
+        <div class="field-desc">Standard Help Scout Beacon field. This is the email the customer writes from.</div>
+        <div class="field-example">Example: "anna.svensson@gmail.com"</div>
+      </div>
+      <span class="req-tag req">Required</span>
+    </div>
+    <div class="field-row">
+      <div class="field-icon">🔑</div>
+      <div class="field-info">
+        <div class="field-name">Account Email</div>
+        <div class="field-desc">Prompt shown to customer: <em>"Which email address is your subscription linked to? Leave blank if it's the same as above."</em></div>
+        <div class="field-desc" style="margin-top:4px">Maps to: <code style="font-family:monospace;font-size:10px;background:#f1f5f9;border:1px solid #e2e8f0;padding:1px 5px;border-radius:3px">Account Email</code> custom field on ticket. If different from contact email, system auto-adds an internal note alerting the agent.</div>
+        <div class="field-example">Example: "anna.svensson@work.com" — different from Gmail address above</div>
+      </div>
+      <span class="req-tag opt">Optional</span>
+    </div>
+    <div class="info-box note">
+      <span class="ib-icon">💡</span>
+      <div><strong>Why this field matters:</strong> A significant portion of B2C tickets arrive from an email not linked to the customer's account. Without this field, agents send a manual reply to ask — adding one full back-and-forth to every affected ticket. This one field can eliminate that delay entirely when customers fill it in.</div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 2: CATEGORY -->
+<div class="step">
+  <div class="step-hdr">
+    <div class="step-n" style="background:#1d4ed8">2</div>
+    <div>
+      <div class="step-title">Primary Category — "What do you need help with today?"</div>
+      <div class="step-sub">Single dropdown. Customer selects one option. Maps directly to the <strong>Issue Category</strong> custom field on the ticket.</div>
+    </div>
+  </div>
+  <div class="step-body">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px">
+      <div style="border-radius:9px;border:1px solid #bfdbfe;background:#eff6ff;padding:12px 14px">
+        <div style="font-size:18px;margin-bottom:4px">💳</div>
+        <div style="font-size:12px;font-weight:700;color:#1d4ed8;margin-bottom:2px">Billing, Payments &amp; Refunds</div>
+        <div style="font-size:10px;color:#3b82f6">Charges, refunds, cancellations, payment failures</div>
+      </div>
+      <div style="border-radius:9px;border:1px solid #a5f3fc;background:#ecfeff;padding:12px 14px">
+        <div style="font-size:18px;margin-bottom:4px">📺</div>
+        <div style="font-size:12px;font-weight:700;color:#0e7490;margin-bottom:2px">Streaming &amp; Playback</div>
+        <div style="font-size:10px;color:#0891b2">Video quality, black screen, audio, buffering, geo blocks</div>
+      </div>
+      <div style="border-radius:9px;border:1px solid #ddd6fe;background:#f5f3ff;padding:12px 14px">
+        <div style="font-size:18px;margin-bottom:4px">🔐</div>
+        <div style="font-size:12px;font-weight:700;color:#6d28d9;margin-bottom:2px">Account, Access &amp; Login</div>
+        <div style="font-size:10px;color:#7c3aed">Passwords, account changes, SSO, email updates</div>
+      </div>
+      <div style="border-radius:9px;border:1px solid #fed7aa;background:#fff7ed;padding:12px 14px">
+        <div style="font-size:18px;margin-bottom:4px">📱</div>
+        <div style="font-size:12px;font-weight:700;color:#c2410c;margin-bottom:2px">App or Device Issue</div>
+        <div style="font-size:10px;color:#ea580c">App crashes, casting, device-specific problems</div>
+      </div>
+      <div style="border-radius:9px;border:1px solid #bbf7d0;background:#f0fdf4;padding:12px 14px">
+        <div style="font-size:18px;margin-bottom:4px">💬</div>
+        <div style="font-size:12px;font-weight:700;color:#15803d;margin-bottom:2px">General Question or Feedback</div>
+        <div style="font-size:10px;color:#16a34a">Schedules, content availability, suggestions, praise</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 3: DRILL-DOWN -->
+<div class="step">
+  <div class="step-hdr">
+    <div class="step-n" style="background:#1d4ed8">3</div>
+    <div>
+      <div class="step-title">Specific Issue — Conditional Drill-Down</div>
+      <div class="step-sub">A second dropdown appears based on Step 2. Customer's selection sets the <strong>Ticket Type</strong> field AND applies the primary <strong>Anchor Tag</strong> automatically. No agent action needed.</div>
+    </div>
+  </div>
+  <div class="step-body">
+
+    <!-- CAT 1: BILLING -->
+    <div class="cat-block" style="border-color:#bfdbfe">
+      <div class="cat-hdr" style="background:#eff6ff;border-bottom:1px solid #bfdbfe">
+        <div class="cat-hdr-icon">💳</div>
+        <div>
+          <div class="cat-hdr-name" style="color:#1d4ed8">IF Category = Billing, Payments &amp; Refunds</div>
+          <div class="cat-hdr-desc" style="color:#3b82f6">Maps Issue Category = <strong>Payment / Refund</strong></div>
+        </div>
+      </div>
+      <div class="cat-col-hdr" style="background:#f8fbff;border-bottom:1px solid #bfdbfe;color:#64748b">
+        <div>Customer sees this option</div><div>Ticket Type</div><div>Anchor Tag applied</div><div>Auto-action</div>
+      </div>
+      <div class="cat-items">
+        <div class="cat-item" style="border-color:#f0f5ff">
+          <div><div class="cat-item-label">I want to cancel my subscription</div><div class="cat-item-sub">Customer wants cancellation actioned</div></div>
+          <div><span class="ci-type" style="background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0">Request</span></div>
+          <div><span class="ci-tag">cancellation request</span></div>
+          <div class="ci-note">Auto-reply: How to cancel self-serve guide + link. Set Pending.</div>
+        </div>
+        <div class="cat-item" style="background:#fafcff;border-color:#f0f5ff">
+          <div><div class="cat-item-label">I want to request a refund</div><div class="cat-item-sub">Customer wants money back</div></div>
+          <div><span class="ci-type" style="background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0">Request</span></div>
+          <div><span class="ci-tag">refund request</span></div>
+          <div class="ci-note">No auto-reply — agent must assess eligibility.</div>
+        </div>
+        <div class="cat-item" style="border-color:#f0f5ff">
+          <div><div class="cat-item-label">My payment failed</div><div class="cat-item-sub">Could not complete a payment</div></div>
+          <div><span class="ci-type" style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe">Issue</span></div>
+          <div><span class="ci-tag">payment failed</span></div>
+          <div class="ci-note">Agent fills: Payment Source + symptom tag (card declined / 3d secure / etc.)</div>
+        </div>
+        <div class="cat-item" style="background:#fafcff;border-color:#f0f5ff">
+          <div><div class="cat-item-label">I was charged twice</div><div class="cat-item-sub">Duplicate charge suspected</div></div>
+          <div><span class="ci-type" style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe">Issue</span></div>
+          <div><span class="ci-tag">duplicate charge</span></div>
+          <div class="ci-note">Auto-route to billing queue. Agent verifies in payment system before any refund.</div>
+        </div>
+        <div class="cat-item" style="border-color:#f0f5ff">
+          <div><div class="cat-item-label">I have a billing question</div><div class="cat-item-sub">Asking about charges, invoices, pricing</div></div>
+          <div><span class="ci-type" style="background:#fffbeb;color:#92400e;border:1px solid #fde68a">Question</span></div>
+          <div><span class="ci-tag">billing question</span></div>
+          <div class="ci-note">Agent answers with saved reply. No Refund Reason needed.</div>
+        </div>
+        <div class="cat-item" style="background:#fafcff;border-color:#f0f5ff">
+          <div><div class="cat-item-label">I was charged after I cancelled</div><div class="cat-item-sub">Post-cancellation billing</div></div>
+          <div><span class="ci-type" style="background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0">Request</span></div>
+          <div><span class="ci-tag">refund request</span></div>
+          <div class="ci-note">Refund Reason = Charged after cancellation. Verify cancellation date first.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAT 2: STREAMING -->
+    <div class="cat-block" style="border-color:#a5f3fc">
+      <div class="cat-hdr" style="background:#ecfeff;border-bottom:1px solid #a5f3fc">
+        <div class="cat-hdr-icon">📺</div>
+        <div>
+          <div class="cat-hdr-name" style="color:#0e7490">IF Category = Streaming &amp; Playback</div>
+          <div class="cat-hdr-desc" style="color:#0891b2">Maps Issue Category = <strong>Streaming</strong></div>
+        </div>
+      </div>
+      <div class="cat-col-hdr" style="background:#f0fdfe;border-bottom:1px solid #a5f3fc;color:#64748b">
+        <div>Customer sees this option</div><div>Ticket Type</div><div>Anchor Tag applied</div><div>Auto-action</div>
+      </div>
+      <div class="cat-items">
+        <div class="cat-item" style="border-color:#e0fafc">
+          <div><div class="cat-item-label">The video is buffering or freezing</div></div>
+          <div><span class="ci-type" style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe">Issue</span></div>
+          <div><span class="ci-tag">buffering</span></div>
+          <div class="ci-note">Agent confirms device. If live event, check for multiple reports → known incident.</div>
+        </div>
+        <div class="cat-item" style="background:#f8fffe;border-color:#e0fafc">
+          <div><div class="cat-item-label">I only see a black screen</div></div>
+          <div><span class="ci-type" style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe">Issue</span></div>
+          <div><span class="ci-tag">black screen</span></div>
+          <div class="ci-note">Ask: browser/app/device. Multiple reports = flag known incident.</div>
+        </div>
+        <div class="cat-item" style="border-color:#e0fafc">
+          <div><div class="cat-item-label">The audio is out of sync or missing</div></div>
+          <div><span class="ci-type" style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe">Issue</span></div>
+          <div><span class="ci-tag">no audio</span></div>
+          <div class="ci-note">Check if venue signal issue → if yes, escalate to production team immediately.</div>
+        </div>
+        <div class="cat-item" style="background:#f8fffe;border-color:#e0fafc">
+          <div><div class="cat-item-label">I am getting a geo-restriction error</div></div>
+          <div><span class="ci-type" style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe">Issue</span></div>
+          <div><span class="ci-tag">geo blocked</span></div>
+          <div class="ci-note">Issue Category auto-overrides to Geo Restriction. Cannot override rights — explain policy.</div>
+        </div>
+        <div class="cat-item" style="border-color:#e0fafc">
+          <div><div class="cat-item-label">The video quality is poor</div><div class="cat-item-sub">Pixelated, low resolution, SD instead of HD</div></div>
+          <div><span class="ci-type" style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe">Issue</span></div>
+          <div><span class="ci-tag">quality issue</span></div>
+          <div class="ci-note">Ask: device, connection speed. If persistent + multiple reports → production escalation.</div>
+        </div>
+        <div class="cat-item" style="background:#f8fffe;border-color:#e0fafc">
+          <div><div class="cat-item-label">There is no live stream showing</div><div class="cat-item-sub">Expected live event not visible</div></div>
+          <div><span class="ci-type" style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe">Issue</span></div>
+          <div><span class="ci-tag">streaming issue</span></div>
+          <div class="ci-note">Set Live Event = Yes. Check schedule first. If verified missing, escalate to production.</div>
+        </div>
+        <div class="cat-item" style="border-color:#e0fafc">
+          <div><div class="cat-item-label">Other playback issue</div></div>
+          <div><span class="ci-type" style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe">Issue</span></div>
+          <div><span class="ci-tag">streaming issue</span></div>
+          <div class="ci-note">Agent adds specific symptom tag after reading free text.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAT 3: ACCOUNT -->
+    <div class="cat-block" style="border-color:#ddd6fe">
+      <div class="cat-hdr" style="background:#f5f3ff;border-bottom:1px solid #ddd6fe">
+        <div class="cat-hdr-icon">🔐</div>
+        <div>
+          <div class="cat-hdr-name" style="color:#6d28d9">IF Category = Account, Access &amp; Login</div>
+          <div class="cat-hdr-desc" style="color:#7c3aed">Maps Issue Category = <strong>Account / Access</strong></div>
+        </div>
+      </div>
+      <div class="cat-col-hdr" style="background:#faf8ff;border-bottom:1px solid #ddd6fe;color:#64748b">
+        <div>Customer sees this option</div><div>Ticket Type</div><div>Anchor Tag applied</div><div>Auto-action</div>
+      </div>
+      <div class="cat-items">
+        <div class="cat-item" style="border-color:#ede9fe">
+          <div><div class="cat-item-label">I forgot my password</div><div class="cat-item-sub">Needs password reset</div></div>
+          <div><span class="ci-type" style="background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0">Request</span></div>
+          <div><span class="ci-tag">password reset</span></div>
+          <div class="ci-note">Auto-reply: password reset link + spam folder tip. Set Status = Closed (zero-touch).</div>
+        </div>
+        <div class="cat-item" style="background:#fdfcff;border-color:#ede9fe">
+          <div><div class="cat-item-label">It says my account doesn't exist</div><div class="cat-item-sub">No account found at their email</div></div>
+          <div><span class="ci-type" style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe">Issue</span></div>
+          <div><span class="ci-tag">login failed</span></div>
+          <div class="ci-note">Account Match likely = No account or Wrong email. Agent checks subscription system.</div>
+        </div>
+        <div class="cat-item" style="border-color:#ede9fe">
+          <div><div class="cat-item-label">I need to change my email address</div></div>
+          <div><span class="ci-type" style="background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0">Request</span></div>
+          <div><span class="ci-tag">email change</span></div>
+          <div class="ci-note">Agent verifies identity before making change. Confirm new email in writing.</div>
+        </div>
+        <div class="cat-item" style="background:#fdfcff;border-color:#ede9fe">
+          <div><div class="cat-item-label">I want to delete my account</div></div>
+          <div><span class="ci-type" style="background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0">Request</span></div>
+          <div><span class="ci-tag">delete account request</span></div>
+          <div class="ci-note">Confirm subscription is cancelled first. Log deletion for GDPR compliance.</div>
+        </div>
+        <div class="cat-item" style="border-color:#ede9fe">
+          <div><div class="cat-item-label">My Apple/Google login isn't working</div><div class="cat-item-sub">SSO authentication failure</div></div>
+          <div><span class="ci-type" style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe">Issue</span></div>
+          <div><span class="ci-tag">login failed</span></div>
+          <div class="ci-note">Agent adds: apple id or google auth tag. Check if customer changed SSO provider email.</div>
+        </div>
+        <div class="cat-item" style="background:#fdfcff;border-color:#ede9fe">
+          <div><div class="cat-item-label">I have a different account issue</div></div>
+          <div><span class="ci-type" style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe">Issue</span></div>
+          <div><span class="ci-tag">account locked</span></div>
+          <div class="ci-note">Agent reads free text and updates tag if needed.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAT 4: APP -->
+    <div class="cat-block" style="border-color:#fed7aa">
+      <div class="cat-hdr" style="background:#fff7ed;border-bottom:1px solid #fed7aa">
+        <div class="cat-hdr-icon">📱</div>
+        <div>
+          <div class="cat-hdr-name" style="color:#c2410c">IF Category = App or Device Issue</div>
+          <div class="cat-hdr-desc" style="color:#ea580c">Maps Issue Category = <strong>App / Device</strong></div>
+        </div>
+      </div>
+      <div class="cat-col-hdr" style="background:#fffbf5;border-bottom:1px solid #fed7aa;color:#64748b">
+        <div>Customer sees this option</div><div>Ticket Type</div><div>Anchor Tag applied</div><div>Auto-action</div>
+      </div>
+      <div class="cat-items">
+        <div class="cat-item" style="border-color:#fde8cc">
+          <div><div class="cat-item-label">The app is crashing</div><div class="cat-item-sub">App closes unexpectedly</div></div>
+          <div><span class="ci-type" style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe">Issue</span></div>
+          <div><span class="ci-tag">app issue</span></div>
+          <div class="ci-note">Agent fills Device field. Check if post-update — if yes, flag as app update issue.</div>
+        </div>
+        <div class="cat-item" style="background:#fffdf8;border-color:#fde8cc">
+          <div><div class="cat-item-label">I can't cast to my TV</div><div class="cat-item-sub">Chromecast, AirPlay, or casting device issues</div></div>
+          <div><span class="ci-type" style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe">Issue</span></div>
+          <div><span class="ci-tag">casting issue</span></div>
+          <div class="ci-note">Agent fills Device field (smart tv / chromecast / airplay). Standard casting troubleshoot flow.</div>
+        </div>
+        <div class="cat-item" style="border-color:#fde8cc">
+          <div><div class="cat-item-label">I can't update the app</div><div class="cat-item-sub">Update failing or not appearing in store</div></div>
+          <div><span class="ci-type" style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe">Issue</span></div>
+          <div><span class="ci-tag">app issue</span></div>
+          <div class="ci-note">Ask: iOS or Android. In-app purchase update issues follow different flow.</div>
+        </div>
+        <div class="cat-item" style="background:#fffdf8;border-color:#fde8cc">
+          <div><div class="cat-item-label">The app won't load at all</div></div>
+          <div><span class="ci-type" style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe">Issue</span></div>
+          <div><span class="ci-tag">app issue</span></div>
+          <div class="ci-note">Standard: clear cache, reinstall, restart device. Escalate if widespread.</div>
+        </div>
+        <div class="cat-item" style="border-color:#fde8cc">
+          <div><div class="cat-item-label">Other device issue</div></div>
+          <div><span class="ci-type" style="background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe">Issue</span></div>
+          <div><span class="ci-tag">app issue</span></div>
+          <div class="ci-note">Agent reads free text and fills Device field accordingly.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAT 5: GENERAL -->
+    <div class="cat-block" style="border-color:#bbf7d0">
+      <div class="cat-hdr" style="background:#f0fdf4;border-bottom:1px solid #bbf7d0">
+        <div class="cat-hdr-icon">💬</div>
+        <div>
+          <div class="cat-hdr-name" style="color:#15803d">IF Category = General Question or Feedback</div>
+          <div class="cat-hdr-desc" style="color:#16a34a">Maps Issue Category = <strong>Feedback</strong> or <strong>Subscription</strong> or <strong>Content / Replay</strong> depending on selection</div>
+        </div>
+      </div>
+      <div class="cat-col-hdr" style="background:#f7fef9;border-bottom:1px solid #bbf7d0;color:#64748b">
+        <div>Customer sees this option</div><div>Ticket Type</div><div>Anchor Tag applied</div><div>Auto-action</div>
+      </div>
+      <div class="cat-items">
+        <div class="cat-item" style="border-color:#dcfce7">
+          <div><div class="cat-item-label">I have a suggestion or feedback</div><div class="cat-item-sub">Feature request, complaint, compliment</div></div>
+          <div><span class="ci-type" style="background:#fdf4ff;color:#9333ea;border:1px solid #e9d5ff">Feedback</span></div>
+          <div><span class="ci-tag">general feedback</span></div>
+          <div class="ci-note">Agent uses saved reply to acknowledge. Routes positive feedback to production team.</div>
+        </div>
+        <div class="cat-item" style="background:#fafffe;border-color:#dcfce7">
+          <div><div class="cat-item-label">I have a question about content or schedules</div><div class="cat-item-sub">What matches are covered, when is replay available</div></div>
+          <div><span class="ci-type" style="background:#fffbeb;color:#92400e;border:1px solid #fde68a">Question</span></div>
+          <div><span class="ci-tag">schedule question</span></div>
+          <div class="ci-note">Category overrides to Content / Replay. Agent answers from content schedule.</div>
+        </div>
+        <div class="cat-item" style="border-color:#dcfce7">
+          <div><div class="cat-item-label">I have a question about my subscription or plans</div></div>
+          <div><span class="ci-type" style="background:#fffbeb;color:#92400e;border:1px solid #fde68a">Question</span></div>
+          <div><span class="ci-tag">subscription question</span></div>
+          <div class="ci-note">Category overrides to Subscription. Agent fills Subscription Type if plan is mentioned.</div>
+        </div>
+        <div class="cat-item" style="background:#fafffe;border-color:#dcfce7">
+          <div><div class="cat-item-label">I want to report a complaint</div></div>
+          <div><span class="ci-type" style="background:#fef2f2;color:#b91c1c;border:1px solid #fecaca">Complaint</span></div>
+          <div><span class="ci-tag">general feedback</span></div>
+          <div class="ci-note">Agent escalates to senior/manager if service quality complaint. Document thoroughly.</div>
+        </div>
+        <div class="cat-item" style="border-color:#dcfce7">
+          <div><div class="cat-item-label">Something else</div></div>
+          <div><span class="ci-type" style="background:#f8fafc;color:#475569;border:1px solid #e2e8f0">Question</span></div>
+          <div><span class="ci-tag">general question</span></div>
+          <div class="ci-note">Agent reads free text and manually updates Category and Tag after reading.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- STEP 4: DETAILS -->
+<div class="step">
+  <div class="step-hdr">
+    <div class="step-n" style="background:#1d4ed8">4</div>
+    <div>
+      <div class="step-title">Details &amp; Attachments</div>
+      <div class="step-sub">Always shown after Step 3. Placeholder text adapts based on category selection.</div>
+    </div>
+  </div>
+  <div class="step-body">
+    <div class="field-row">
+      <div class="field-icon">📝</div>
+      <div class="field-info">
+        <div class="field-name">Description (free-form text)</div>
+        <div class="field-desc">Placeholder changes based on category:</div>
+        <div style="margin-top:6px;display:flex;flex-direction:column;gap:3px">
+          <div style="font-size:11px;color:#475569"><strong style="color:#0f172a">Billing/Refund:</strong> <em>"Describe what happened with your payment. Include any error messages you saw."</em></div>
+          <div style="font-size:11px;color:#475569"><strong style="color:#0f172a">Streaming:</strong> <em>"What exactly are you seeing? Which device are you using? Did it start suddenly or has it always happened?"</em></div>
+          <div style="font-size:11px;color:#475569"><strong style="color:#0f172a">Account:</strong> <em>"Describe the issue. What email did you use to sign up?"</em></div>
+          <div style="font-size:11px;color:#475569"><strong style="color:#0f172a">General:</strong> <em>"Tell us more about your question or feedback."</em></div>
+        </div>
+      </div>
+      <span class="req-tag opt">Optional</span>
+    </div>
+    <div class="field-row">
+      <div class="field-icon">📎</div>
+      <div class="field-info">
+        <div class="field-name">Attachments</div>
+        <div class="field-desc">Screenshots of error messages, payment receipts, or what the customer is seeing. Extremely useful for streaming issues and billing disputes.</div>
+      </div>
+      <span class="req-tag opt">Optional</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- PHASE 2 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="phase-hdr" style="background:#f0fdf4;border:1px solid #bbf7d0">
+  <div class="phase-num" style="background:#15803d;color:#fff">2</div>
+  <div class="phase-info">
+    <h2 style="color:#15803d">System Routing &amp; Automation</h2>
+    <p style="color:#16a34a">When the ticket lands in Help Scout, workflows fire immediately. The agent opens the ticket with fields already populated, tags already applied, and auto-replies already sent where applicable.</p>
+  </div>
+  <div class="phase-who" style="background:#bbf7d0;color:#15803d">Who: Help Scout<br>When: Ticket arrival</div>
+</div>
+
+<div class="step">
+  <div class="step-hdr">
+    <div class="step-n" style="background:#15803d">A</div>
+    <div>
+      <div class="step-title">Auto Field Population — Every Beacon Submission</div>
+      <div class="step-sub">Runs on all tickets. Maps Beacon selections to Custom Fields before any agent sees the ticket.</div>
+    </div>
+  </div>
+  <div class="step-body">
+    <div style="overflow-x:auto">
+    <table class="auto-table">
+      <thead><tr><th>IF (Beacon Input)</th><th>THEN (Field Populated)</th><th>Value Set</th><th>Business Value</th></tr></thead>
+      <tbody>
+        <tr><td>Any Beacon submission</td><td><span class="then-pill">Issue Category</span></td><td><span class="value-pill">Mapped from Step 2 selection</span></td><td>Agent required field pre-filled — saves 5 seconds on every ticket</td></tr>
+        <tr><td>Any Beacon submission</td><td><span class="then-pill">Ticket Type</span></td><td><span class="value-pill">Mapped from Step 3 selection</span></td><td>Tells agent instantly: is this a request, issue, or question</td></tr>
+        <tr><td>Any Beacon submission</td><td><span class="then-pill">Anchor Tag</span></td><td><span class="value-pill">Mapped from Step 3 selection</span></td><td>Enables similar-ticket search before agent reads a word</td></tr>
+        <tr><td>Any Beacon submission</td><td><span class="then-pill">Beacon Topic (read-only)</span></td><td><span class="value-pill">Customer's exact Step 3 selection</span></td><td>Agent sees the customer's own words alongside the processed field</td></tr>
+        <tr><td>Account Email field filled AND it differs from contact email</td><td><span class="then-pill">Internal note added</span></td><td><span class="value-pill">⚠️ Account email differs from contact email</span></td><td>Agent sees the mismatch immediately — no discovery delay</td></tr>
+        <tr><td>Customer selects geo-restriction option</td><td><span class="then-pill">Issue Category override</span></td><td><span class="value-pill">Geo Restriction</span></td><td>Overrides "Streaming" parent category with more specific value</td></tr>
+        <tr><td>Customer selects content/schedule question</td><td><span class="then-pill">Issue Category override</span></td><td><span class="value-pill">Content / Replay</span></td><td>Overrides "General" parent category</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-hdr">
+    <div class="step-n" style="background:#15803d">B</div>
+    <div>
+      <div class="step-title">Auto-Reply &amp; Deflection Rules — Zero-Touch Resolution</div>
+      <div class="step-sub">Some tickets can be resolved or deflected before an agent reads them. These workflows fire the moment the ticket is created.</div>
+    </div>
+  </div>
+  <div class="step-body">
+    <div class="cflow">
+      <div class="cflow-title">Deflection &amp; Auto-Close Rules</div>
+
+      <div class="cflow-row">
+        <div class="cflow-if"><span>IF</span> Customer selects "I forgot my password"</div>
+        <div class="cflow-then">
+          Auto-reply: Password reset instructions + direct link to reset page + "Check your spam folder" tip<br>
+          <strong>Set Status = Closed</strong> — zero-touch resolution. If customer still can't reset, they reply and ticket reopens.
+        </div>
+        <div class="cflow-who">⚙️ System</div>
+      </div>
+
+      <div class="cflow-row">
+        <div class="cflow-if"><span>IF</span> Customer selects "I want to cancel my subscription"</div>
+        <div class="cflow-then">
+          Auto-reply: Self-serve cancellation guide (how to cancel via account settings) + link<br>
+          <strong>Set Status = Pending</strong> — if customer can self-serve, ticket auto-closes after 5 days. If they can't, they reply and agent handles.
+        </div>
+        <div class="cflow-who">⚙️ System</div>
+      </div>
+
+      <div class="cflow-row">
+        <div class="cflow-if"><span>IF</span> Customer selected "App or Device Issue" AND specific topic = "Can't cast to TV"</div>
+        <div class="cflow-then">
+          Auto-reply: Casting troubleshoot guide (device-agnostic steps for Chromecast, AirPlay, Smart TV)<br>
+          <strong>Set Status = Pending</strong> — most casting issues resolve with the guide. Agent reviews if customer replies.
+        </div>
+        <div class="cflow-who">⚙️ System</div>
+      </div>
+
+      <div class="cflow-row" style="border-color:#fecaca">
+        <div class="cflow-if" style="background:#fef2f2;border-color:#fecaca;color:#b91c1c"><span>IF</span> Status = Pending AND no customer reply for 5 days</div>
+        <div class="cflow-then">
+          Send closing notice: "We're closing this ticket as we haven't heard back — reply any time to reopen."<br>
+          <strong>Set Resolution = No response — closed. Set Status = Closed.</strong>
+        </div>
+        <div class="cflow-who">⚙️ System</div>
+      </div>
+    </div>
+    <div class="info-box tip">
+      <span class="ib-icon">📊</span>
+      <div><strong>Deflection rate tracking:</strong> Run a monthly report on tickets where Status was set to Closed automatically (password reset + cancellation guide deflections). This measures self-serve success rate and helps identify whether guides need improving.</div>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-hdr">
+    <div class="step-n" style="background:#15803d">C</div>
+    <div>
+      <div class="step-title">Routing &amp; Priority Rules</div>
+      <div class="step-sub">Tickets are automatically assigned to the right queue, agent, or escalation path based on their fields and tags.</div>
+    </div>
+  </div>
+  <div class="step-body">
+    <div style="overflow-x:auto">
+    <table class="auto-table">
+      <thead><tr><th>IF Condition</th><th>THEN Action</th><th>Priority</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td><span class="if-pill">Tag = live urgent</span></td><td><span class="then-pill">Set Severity = Critical</span> <span class="then-pill">Notify team channel</span> <span class="then-pill">Assign to senior agent</span></td><td style="color:#b91c1c;font-weight:700">P1 — Immediate</td><td>Live events affect multiple customers simultaneously. Every minute counts.</td></tr>
+        <tr><td><span class="if-pill">Tag = known incident</span></td><td><span class="then-pill">Set Status = Pending</span> <span class="then-pill">Send holding reply template</span></td><td style="color:#b91c1c;font-weight:700">P1 — Immediate</td><td>Batch-hold affected tickets. Resolve when incident clears rather than one by one.</td></tr>
+        <tr><td><span class="if-pill">Tag = vip</span></td><td><span class="then-pill">Notify manager</span> <span class="then-pill">Assign to senior agent</span> <span class="then-pill">Target: respond within 30 mins</span></td><td style="color:#b91c1c;font-weight:700">P1 — Immediate</td><td>VIP partners / press / high-value customers require prioritised handling.</td></tr>
+        <tr><td><span class="if-pill">Tag = fraud</span></td><td><span class="then-pill">Tag: internal</span> <span class="then-pill">Do NOT reply to customer</span> <span class="then-pill">Escalate to security team</span></td><td style="color:#b91c1c;font-weight:700">P1 — Immediate</td><td>Fraud investigations follow a separate process. Standard replies can alert the fraudster.</td></tr>
+        <tr><td><span class="if-pill">Category = Payment/Refund</span> + <span class="if-pill">Tag = duplicate charge</span></td><td><span class="then-pill">Auto-route to billing queue</span></td><td style="color:#c2410c;font-weight:700">P2 — High</td><td>Duplicate charges require payment system verification before any action.</td></tr>
+        <tr><td><span class="if-pill">Ticket Type = Complaint</span></td><td><span class="then-pill">Flag for manager review</span> <span class="then-pill">Add to complaints queue</span></td><td style="color:#c2410c;font-weight:700">P2 — High</td><td>Complaints need senior handling and documentation for quality tracking.</td></tr>
+        <tr><td><span class="if-pill">Status = Closed</span> + <span class="if-pill">Resolution = blank</span></td><td><span class="then-pill">Reopen ticket</span> <span class="then-pill">Alert agent: Resolution required</span></td><td style="color:#d97706;font-weight:700">P3 — Normal</td><td>Resolution field is the foundation of all reporting. Blank = unusable data.</td></tr>
+        <tr><td><span class="if-pill">Tag = proactive followup</span></td><td><span class="then-pill">Set follow-up reminder: 3 days</span> <span class="then-pill">Re-surface before auto-close</span></td><td style="color:#d97706;font-weight:700">P3 — Normal</td><td>Prevents tickets with expected delays from falling through the cracks.</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- PHASE 3 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="phase-hdr" style="background:#f5f3ff;border:1px solid #ddd6fe">
+  <div class="phase-num" style="background:#6d28d9;color:#fff">3</div>
+  <div class="phase-info">
+    <h2 style="color:#6d28d9">The Agent Workflow</h2>
+    <p style="color:#7c3aed">Because Phases 1 and 2 did the heavy lifting, the agent's job is to verify, enrich, act, and close — not classify from scratch. Most tickets need just 2–3 agent actions beyond the reply.</p>
+  </div>
+  <div class="phase-who" style="background:#ddd6fe;color:#6d28d9">Who: Support Agent<br>When: Ticket handling</div>
+</div>
+
+<div class="step">
+  <div class="step-hdr">
+    <div class="step-n" style="background:#6d28d9">1</div>
+    <div>
+      <div class="step-title">Triage — First 30 Seconds</div>
+      <div class="step-sub">Two mandatory field checks before any reply. These are the only two fields that are always required.</div>
+    </div>
+  </div>
+  <div class="step-body">
+    <div class="field-row">
+      <div class="field-icon">✅</div>
+      <div class="field-info">
+        <div class="field-name">Verify Issue Category (pre-filled from Beacon)</div>
+        <div class="field-desc">Confirm the Beacon-mapped category is correct. Most of the time it is. Update only if the customer's free text reveals a different actual topic. Example: customer selected "Streaming" but free text reveals they can't log in at all → update to "Account / Access".</div>
+      </div>
+      <span class="req-tag req">Required</span>
+    </div>
+    <div class="field-row">
+      <div class="field-icon">🔍</div>
+      <div class="field-info">
+        <div class="field-name">Set Account Match Status</div>
+        <div class="field-desc">Look up the customer in the subscription/admin system using their contact email. If they provided an Account Email in the Beacon form, use that. Set one of the five values below.</div>
+        <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px">
+          <span style="font-size:10px;font-weight:600;background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;padding:2px 8px;border-radius:4px">Matched — Direct</span>
+          <span style="font-size:10px;font-weight:600;background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;padding:2px 8px;border-radius:4px">Matched — Via Account Email</span>
+          <span style="font-size:10px;font-weight:600;background:#fffbeb;color:#92400e;border:1px solid #fde68a;padding:2px 8px;border-radius:4px">Wrong Email Used</span>
+          <span style="font-size:10px;font-weight:600;background:#fef2f2;color:#b91c1c;border:1px solid #fecaca;padding:2px 8px;border-radius:4px">No Account Found</span>
+          <span style="font-size:10px;font-weight:600;background:#f5f3ff;color:#6d28d9;border:1px solid #ddd6fe;padding:2px 8px;border-radius:4px">Multiple Accounts</span>
+        </div>
+      </div>
+      <span class="req-tag req">Required</span>
+    </div>
+
+    <div class="info-box note" style="margin-top:10px">
+      <span class="ib-icon">⚠️</span>
+      <div><strong>Account Match determines the path:</strong> See the full Account Match decision tree in Step 2 below before replying.</div>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-hdr">
+    <div class="step-n" style="background:#6d28d9">2</div>
+    <div>
+      <div class="step-title">Account Match Decision Tree</div>
+      <div class="step-sub">Every possible Account Match outcome and the exact action to take.</div>
+    </div>
+  </div>
+  <div class="step-body">
+    <div class="cflow">
+      <div class="cflow-title">Account Match → Agent Action</div>
+
+      <div class="cflow-row" style="border-color:#bbf7d0">
+        <div class="cflow-if" style="background:#f0fdf4;border-color:#bbf7d0;color:#15803d"><span style="font-size:9px;font-weight:700;background:#bbf7d0;padding:1px 4px;border-radius:2px;margin-bottom:3px;display:block">MATCHED — DIRECT</span>Contact email matches account email</div>
+        <div class="cflow-then" style="background:#f7fef9">Proceed directly to troubleshooting. No identity steps needed.</div>
+        <div class="cflow-who">🎧 Agent</div>
+      </div>
+
+      <div class="cflow-row" style="border-color:#bbf7d0">
+        <div class="cflow-if" style="background:#f0fdf4;border-color:#bbf7d0;color:#15803d"><span style="font-size:9px;font-weight:700;background:#bbf7d0;padding:1px 4px;border-radius:2px;margin-bottom:3px;display:block">MATCHED — VIA ACCOUNT EMAIL</span>Customer provided different account email in Beacon</div>
+        <div class="cflow-then" style="background:#f7fef9">Account found via Beacon account email field. Proceed to troubleshooting. Note the email discrepancy in the ticket for any account changes.</div>
+        <div class="cflow-who">🎧 Agent</div>
+      </div>
+
+      <div class="cflow-row" style="border-color:#fde68a">
+        <div class="cflow-if" style="background:#fffbeb;border-color:#fde68a;color:#92400e"><span style="font-size:9px;font-weight:700;background:#fde68a;padding:1px 4px;border-radius:2px;margin-bottom:3px;display:block">WRONG EMAIL USED</span>Contact email not found — may have different account email</div>
+        <div class="cflow-then">
+          Send wrong-email reply: <em>"We couldn't find an account linked to [contact email]. Could you confirm the email you used when signing up?"</em><br>
+          <strong>Set Status = Pending.</strong><br>
+          When customer replies with correct email → look up account → update Account Match to Matched → proceed.
+        </div>
+        <div class="cflow-who">🎧 Agent</div>
+      </div>
+
+      <div class="cflow-row" style="border-color:#fecaca">
+        <div class="cflow-if" style="background:#fef2f2;border-color:#fecaca;color:#b91c1c"><span style="font-size:9px;font-weight:700;background:#fecaca;padding:1px 4px;border-radius:2px;margin-bottom:3px;display:block">NO ACCOUNT FOUND</span>No subscription exists for any provided email</div>
+        <div class="cflow-then">
+          Send no-account reply: <em>"We couldn't find an active subscription for any of the emails you've provided. Have you subscribed directly or via the Apple/Google app store?"</em><br>
+          <strong>Set Status = Pending.</strong><br>
+          IF no reply in 5 days → System auto-closes. Resolution = No response — closed.<br>
+          IF they confirm an in-app purchase → update Subscription Type = In-app iOS/Android and advise accordingly.
+        </div>
+        <div class="cflow-who">🎧 Agent</div>
+      </div>
+
+      <div class="cflow-row" style="border-color:#ddd6fe">
+        <div class="cflow-if" style="background:#f5f3ff;border-color:#ddd6fe;color:#6d28d9"><span style="font-size:9px;font-weight:700;background:#ddd6fe;padding:1px 4px;border-radius:2px;margin-bottom:3px;display:block">MULTIPLE ACCOUNTS</span>More than one account found for this customer</div>
+        <div class="cflow-then">
+          Send disambiguation reply: <em>"We found multiple accounts linked to your details. Could you confirm which email address you normally use to log in?"</em><br>
+          <strong>Set Status = Pending.</strong> Do not act on any account until the correct one is confirmed.
+        </div>
+        <div class="cflow-who">🎧 Agent</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-hdr">
+    <div class="step-n" style="background:#6d28d9">3</div>
+    <div>
+      <div class="step-title">Core Handling — Category-Specific Workflows</div>
+      <div class="step-sub">Once account is confirmed, agent handles based on category. Fill optional fields only when confirmed — never guess.</div>
+    </div>
+  </div>
+  <div class="step-body">
+
+    <div style="font-size:11px;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">IF Category = Payment / Refund</div>
+    <div class="cflow" style="margin-bottom:14px">
+      <div class="cflow-row"><div class="cflow-if">Ticket Type = Request + refund</div><div class="cflow-then">Fill <strong>Refund Reason</strong>. Check eligibility against refund policy before confirming. Get manager approval if Reason = Geo restriction. Log reason even if declined.</div><div class="cflow-who">🎧 Agent</div></div>
+      <div class="cflow-row"><div class="cflow-if">Payment Source = In-app iOS or Android</div><div class="cflow-then">We cannot process this refund. Advise customer to contact Apple (Settings → [Name] → Subscriptions) or Google Play (Play Store → Subscriptions). We have no access to these transactions.</div><div class="cflow-who">🎧 Agent</div></div>
+      <div class="cflow-row"><div class="cflow-if">Tag = duplicate charge</div><div class="cflow-then">Verify in Stripe before any action. Check for: two separate charges, one failed + one successful, or recurring charge misunderstood. Only refund confirmed duplicates.</div><div class="cflow-who">🎧 Agent</div></div>
+      <div class="cflow-row"><div class="cflow-if">Refund Reason = Geo restriction</div><div class="cflow-then">Escalate to rights team for approval. Do not refund without sign-off. Paste rights team Slack link in Escalation Link field. Set Pending.</div><div class="cflow-who">🔺 Escalation</div></div>
+    </div>
+
+    <div style="font-size:11px;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">IF Category = Streaming</div>
+    <div class="cflow" style="margin-bottom:14px">
+      <div class="cflow-row"><div class="cflow-if">Single report + specific symptom</div><div class="cflow-then">Standard troubleshoot: 1) Clear cache / refresh, 2) Try different browser/device, 3) Check internet speed, 4) Reinstall app. Add symptom tag (black screen / no audio / buffering). Fill Device field.</div><div class="cflow-who">🎧 Agent</div></div>
+      <div class="cflow-row"><div class="cflow-if">Multiple reports, same symptom, same time window</div><div class="cflow-then">Add tag: <strong>known incident</strong> + <strong>live urgent</strong>. Set Severity = Critical. Send standard holding reply. Alert production team in Slack. Paste Slack link in Escalation Link. Set all related tickets to Pending.</div><div class="cflow-who">🎧 Agent + 🔺 Team</div></div>
+      <div class="cflow-row"><div class="cflow-if">Tag = venue signal</div><div class="cflow-then">This is a production-side issue, not a user-side one. Do NOT send troubleshooting steps — they won't help. Escalate to production team immediately. Set Pending. Send: "We're aware of a signal issue and our production team is working to fix it."</div><div class="cflow-who">🔺 Escalation</div></div>
+      <div class="cflow-row"><div class="cflow-if">Customer using VPN → geo block</div><div class="cflow-then">Advise: VPN detected by platform, must disable VPN to watch. This is platform policy. Not eligible for refund if VPN was the cause.</div><div class="cflow-who">🎧 Agent</div></div>
+    </div>
+
+    <div style="font-size:11px;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">IF Category = Subscription</div>
+    <div class="cflow" style="margin-bottom:14px">
+      <div class="cflow-row"><div class="cflow-if">Ticket Type = Request + cancellation</div><div class="cflow-then">Fill Subscription Type. Check cancellation date — some plans cancel at period end, not immediately. Confirm in writing: cancellation date + when access ends. If customer also wants refund, that's a separate refund request evaluation.</div><div class="cflow-who">🎧 Agent</div></div>
+      <div class="cflow-row"><div class="cflow-if">Renewal issue / charged unexpectedly</div><div class="cflow-then">Check if auto-renewal was enabled (it is by default). Verify what the customer was notified of when subscribing. If within grace period and legitimate confusion, approve goodwill refund. Fill Refund Reason = Goodwill.</div><div class="cflow-who">🎧 Agent</div></div>
+      <div class="cflow-row"><div class="cflow-if">Subscription Type = In-app</div><div class="cflow-then">Subscription managed by Apple/Google — we can't cancel or refund directly. Provide instructions for cancelling via App Store or Play Store. If they already cancelled via app store, verify in our system that entitlement is removed.</div><div class="cflow-who">🎧 Agent</div></div>
+    </div>
+
+    <div class="example-box">
+      <div class="ex-label">Example — Complete ticket: Refund request, wrong plan, annual subscription</div>
+      <div class="ex-q">"I accidentally subscribed to the annual plan — I meant to get monthly. Can I get a refund and switch?"</div>
+      <div class="ex-fields">
+        <div class="ex-fr"><span class="ex-fk">Issue Category</span><span class="ex-fv">Payment / Refund</span></div>
+        <div class="ex-fr"><span class="ex-fk">Ticket Type</span><span class="ex-fv">Request</span></div>
+        <div class="ex-fr"><span class="ex-fk">Account Match</span><span class="ex-fv">Matched — Direct</span></div>
+        <div class="ex-fr"><span class="ex-fk">Subscription Type</span><span class="ex-fv">Annual</span></div>
+        <div class="ex-fr"><span class="ex-fk">Refund Reason</span><span class="ex-fv">Purchase mistake</span></div>
+        <div class="ex-fr"><span class="ex-fk">Resolution</span><span class="ex-fv">Refunded (full) → switched to Monthly</span></div>
+      </div>
+      <div class="ex-tags"><span class="ex-tag">refund request</span></div>
+    </div>
+
+    <div class="example-box" style="margin-top:8px">
+      <div class="ex-label">Example — Complete ticket: Live streaming incident, multiple reports</div>
+      <div class="ex-q">"The stream has gone black during the handball final — this is ridiculous!"</div>
+      <div class="ex-fields">
+        <div class="ex-fr"><span class="ex-fk">Issue Category</span><span class="ex-fv">Streaming</span></div>
+        <div class="ex-fr"><span class="ex-fk">Ticket Type</span><span class="ex-fv">Issue</span></div>
+        <div class="ex-fr"><span class="ex-fk">Account Match</span><span class="ex-fv">Matched — Direct</span></div>
+        <div class="ex-fr"><span class="ex-fk">Live Event Related</span><span class="ex-fv">Yes</span></div>
+        <div class="ex-fr"><span class="ex-fk">Severity</span><span class="ex-fv">Critical</span></div>
+        <div class="ex-fr"><span class="ex-fk">Escalation Link</span><span class="ex-fv">https://slack.com/…/incident-thread</span></div>
+        <div class="ex-fr"><span class="ex-fk">Resolution</span><span class="ex-fv">Resolved — platform fix</span></div>
+      </div>
+      <div class="ex-tags"><span class="ex-tag">black screen</span><span class="ex-tag">known incident</span><span class="ex-tag">live urgent</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-hdr">
+    <div class="step-n" style="background:#6d28d9">4</div>
+    <div>
+      <div class="step-title">Resolution — Closing the Ticket</div>
+      <div class="step-sub">Before clicking Send &amp; Close, the agent completes the final fields. The Resolution field is the foundation of all reporting — fill it carefully.</div>
+    </div>
+  </div>
+  <div class="step-body">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-bottom:14px">
+      <div style="border-radius:8px;padding:10px 12px;border:1px solid #bbf7d0;background:#f0fdf4">
+        <div style="font-size:10px;font-weight:700;color:#15803d;margin-bottom:3px">Resolved — Answered</div>
+        <div style="font-size:11px;color:#475569">Agent answered a question or explained something. No action was taken in the system.</div>
+      </div>
+      <div style="border-radius:8px;padding:10px 12px;border:1px solid #bbf7d0;background:#f0fdf4">
+        <div style="font-size:10px;font-weight:700;color:#15803d;margin-bottom:3px">Resolved — Action Taken</div>
+        <div style="font-size:11px;color:#475569">Agent performed an action: cancelled subscription, reset account, applied credit, changed email, etc.</div>
+      </div>
+      <div style="border-radius:8px;padding:10px 12px;border:1px solid #bfdbfe;background:#eff6ff">
+        <div style="font-size:10px;font-weight:700;color:#1d4ed8;margin-bottom:3px">Refunded (Full)</div>
+        <div style="font-size:11px;color:#475569">Full refund processed. Note amount in ticket for finance audit trail.</div>
+      </div>
+      <div style="border-radius:8px;padding:10px 12px;border:1px solid #bfdbfe;background:#eff6ff">
+        <div style="font-size:10px;font-weight:700;color:#1d4ed8;margin-bottom:3px">Refunded (Partial)</div>
+        <div style="font-size:11px;color:#475569">Partial refund processed. Note amount and reason for partial in ticket.</div>
+      </div>
+      <div style="border-radius:8px;padding:10px 12px;border:1px solid #fde68a;background:#fffbeb">
+        <div style="font-size:10px;font-weight:700;color:#92400e;margin-bottom:3px">Credit Added</div>
+        <div style="font-size:11px;color:#475569">Account credit applied as alternative to refund. Log amount.</div>
+      </div>
+      <div style="border-radius:8px;padding:10px 12px;border:1px solid #fde68a;background:#fffbeb">
+        <div style="font-size:10px;font-weight:700;color:#92400e;margin-bottom:3px">Escalated — Pending</div>
+        <div style="font-size:11px;color:#475569">Ticket cannot be closed — awaiting another team. Keep Pending until resolved externally.</div>
+      </div>
+      <div style="border-radius:8px;padding:10px 12px;border:1px solid #e2e8f0;background:#f8fafc">
+        <div style="font-size:10px;font-weight:700;color:#334155;margin-bottom:3px">Resolved — Platform Fix</div>
+        <div style="font-size:11px;color:#475569">Issue resolved by production/platform team upstream. Agent informed customer.</div>
+      </div>
+      <div style="border-radius:8px;padding:10px 12px;border:1px solid #e2e8f0;background:#f8fafc">
+        <div style="font-size:10px;font-weight:700;color:#334155;margin-bottom:3px">No Response — Closed</div>
+        <div style="font-size:11px;color:#475569">Customer did not reply after 5 days. Set by automation or manually by agent.</div>
+      </div>
+      <div style="border-radius:8px;padding:10px 12px;border:1px solid #e2e8f0;background:#f8fafc">
+        <div style="font-size:10px;font-weight:700;color:#334155;margin-bottom:3px">Duplicate Contact</div>
+        <div style="font-size:11px;color:#475569">Customer sent the same issue multiple times. Close this ticket; link to the primary ticket.</div>
+      </div>
+    </div>
+    <div class="info-box warn">
+      <span class="ib-icon">🚫</span>
+      <div><strong>Resolution = Escalated — Pending means do NOT close.</strong> Keep the ticket in Pending state until the external team (rights, production, finance, security) has resolved the issue. Only then update Resolution and close.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- PHASE 4 -->
+<!-- ══════════════════════════════════════════ -->
+<div class="phase-hdr" style="background:#fff7ed;border:1px solid #fed7aa">
+  <div class="phase-num" style="background:#c2410c;color:#fff">4</div>
+  <div class="phase-info">
+    <h2 style="color:#c2410c">Governance &amp; Reporting</h2>
+    <p style="color:#ea580c">Because data is captured structurally at intake (Beacon + auto-fields) and at outcome (Resolution), Support Ops can run accurate cross-tab reports that were previously impossible with the tag-only model.</p>
+  </div>
+  <div class="phase-who" style="background:#fed7aa;color:#c2410c">Who: Support Ops<br>When: Monthly</div>
+</div>
+
+<div class="step">
+  <div class="step-hdr">
+    <div class="step-n" style="background:#c2410c">A</div>
+    <div>
+      <div class="step-title">Monthly Reporting Dashboard</div>
+      <div class="step-sub">Core reports to run every month. All use multi-condition field filters in Help Scout Reports.</div>
+    </div>
+  </div>
+  <div class="step-body">
+    <div class="report-grid">
+
+      <div class="report-card">
+        <div class="rc-head" style="background:#eff6ff;color:#1d4ed8;border-bottom:1px solid #bfdbfe">💳 Refund Approval Rate</div>
+        <div class="rc-body">What % of refund requests are approved vs declined? Tracks refund policy adherence and identifies over-refunding agents.
+          <div class="rc-formula"><span class="rf">Category</span> = Payment/Refund<br><span class="rt">Resolution</span> = Refunded (full or partial)<br><span class="ro">÷ total refund requests</span> = approval %</div>
+        </div>
+      </div>
+
+      <div class="report-card">
+        <div class="rc-head" style="background:#fff7ed;color:#c2410c;border-bottom:1px solid #fed7aa">📧 Wrong-Email Rate (UX Health)</div>
+        <div class="rc-body">What % of tickets have Account Match = Wrong email? If this rises, Product should fix the login/signup UX.
+          <div class="rc-formula"><span class="rf">Account Match</span> = Wrong email<br><span class="ro">÷ total tickets</span> = wrong-email %<br><span class="rt">Track monthly trend</span></div>
+        </div>
+      </div>
+
+      <div class="report-card">
+        <div class="rc-head" style="background:#f5f3ff;color:#6d28d9;border-bottom:1px solid #ddd6fe">🍎 Apple/Google Refund Deflection</div>
+        <div class="rc-body">How much refund volume is outside our control? Tracks revenue flowing through Apple/Google that we can't directly manage.
+          <div class="rc-formula"><span class="rf">Category</span> = Payment/Refund<br><span class="rf">Subscription Type</span> = In-app iOS/Android<br><span class="rt">Count per month</span></div>
+        </div>
+      </div>
+
+      <div class="report-card">
+        <div class="rc-head" style="background:#ecfeff;color:#0e7490;border-bottom:1px solid #a5f3fc">📺 Streaming Issues by Device</div>
+        <div class="rc-body">Which devices generate the most streaming issues? Identifies platform-specific bugs and prioritises development effort.
+          <div class="rc-formula"><span class="rf">Category</span> = Streaming<br><span class="rf">Device</span> = [group by value]<br><span class="rt">Ranked by volume</span></div>
+        </div>
+      </div>
+
+      <div class="report-card">
+        <div class="rc-head" style="background:#f0fdf4;color:#15803d;border-bottom:1px solid #bbf7d0">📊 Cancellations by Plan Type</div>
+        <div class="rc-body">Are annual subscribers cancelling more? Used for retention strategy and product decisions.
+          <div class="rc-formula"><span class="rf">Category</span> = Subscription<br><span class="rf">Ticket Type</span> = Request<br><span class="rf">Subscription Type</span> = [group by]</div>
+        </div>
+      </div>
+
+      <div class="report-card">
+        <div class="rc-head" style="background:#fef2f2;color:#b91c1c;border-bottom:1px solid #fecaca">🔴 Live Event Impact</div>
+        <div class="rc-body">Do support volumes spike during live events? How many tickets per event? Helps production team and staffing.
+          <div class="rc-formula"><span class="rf">Live Event Related</span> = Yes<br><span class="rt">Tag: known incident</span><br><span class="ro">Over time — spike detection</span></div>
+        </div>
+      </div>
+
+      <div class="report-card">
+        <div class="rc-head" style="background:#fffbeb;color:#92400e;border-bottom:1px solid #fde68a">🌍 Geo Issues by Client Inbox</div>
+        <div class="rc-body">Which client generates the most geo-restriction complaints? Helps identify rights coverage gaps by territory.
+          <div class="rc-formula"><span class="rf">Category</span> = Geo Restriction<br><span class="ri">Inbox</span> = [group by inbox]<br><span class="rt">Tag: geo blocked / wrong territory</span></div>
+        </div>
+      </div>
+
+      <div class="report-card">
+        <div class="rc-head" style="background:#f0fdf4;color:#15803d;border-bottom:1px solid #bbf7d0">✅ Self-Serve Deflection Rate</div>
+        <div class="rc-body">How many tickets were resolved by auto-reply without any agent action? Measures effectiveness of Beacon content.
+          <div class="rc-formula"><span class="rf">Resolution</span> = No response — closed<br>+ tickets closed in <span class="rt">&lt; 5 mins</span><br><span class="ro">÷ total inbound</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-hdr">
+    <div class="step-n" style="background:#c2410c">B</div>
+    <div>
+      <div class="step-title">Quality Audit Rules</div>
+      <div class="step-sub">Monthly checks to catch data quality issues and agent workflow gaps. Run these as saved views in Help Scout.</div>
+    </div>
+  </div>
+  <div class="step-body">
+    <div style="overflow-x:auto">
+    <table class="auto-table">
+      <thead><tr><th>Rule name</th><th>Filter</th><th>What it catches</th><th>Action if found</th></tr></thead>
+      <tbody>
+        <tr><td><strong>The Lazy Agent Rule</strong></td><td><span class="if-pill">Resolution = Resolved — Action Taken</span> AND no system action logged in admin</td><td>Agents selecting "action taken" when they only sent an explanation. Inflates action-taken metric.</td><td>Agent coaching. Correct Resolution to "Resolved — Answered" on affected tickets.</td></tr>
+        <tr><td><strong>Blank Resolution</strong></td><td><span class="if-pill">Status = Closed</span> AND <span class="if-pill">Resolution = blank</span></td><td>Tickets closed without filling Resolution field. This data is lost permanently.</td><td>Automation reopens these automatically. Ops audits any that slip through.</td></tr>
+        <tr><td><strong>Missing Category</strong></td><td><span class="if-pill">Issue Category = blank</span></td><td>Agents who skipped the required field — will happen occasionally on legacy tickets.</td><td>Backfill from ticket content. Identify if agent training is needed.</td></tr>
+        <tr><td><strong>Refund Without Reason</strong></td><td><span class="if-pill">Resolution = Refunded</span> AND <span class="if-pill">Refund Reason = blank</span></td><td>Refunds processed without recording why. Audit trail gap — compliance risk.</td><td>Backfill from ticket conversation. Agent coaching: always fill Refund Reason on any refund.</td></tr>
+        <tr><td><strong>Escalated &amp; Forgotten</strong></td><td><span class="if-pill">Status = Pending</span> AND <span class="if-pill">Escalation Link filled</span> AND ticket age &gt; 7 days</td><td>Tickets escalated externally but not followed up. Customer waiting with no update.</td><td>Agent reviews escalation status. Send customer update: "Still investigating with our team."</td></tr>
+        <tr><td><strong>Stray Tags</strong></td><td>Tags Report → filter for tags NOT in the approved 22-tag set</td><td>Agents manually typing new tags outside the controlled vocabulary. Tag drift.</td><td>Bulk-delete stray tags. Identify the pattern and add to Beacon if legitimate new category.</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-hdr">
+    <div class="step-n" style="background:#c2410c">C</div>
+    <div>
+      <div class="step-title">Tag Governance</div>
+      <div class="step-sub">Because Beacon enforces the Anchor Tags on intake, stray tags typed manually by agents stand out immediately. Monthly review keeps the tag set clean.</div>
+    </div>
+  </div>
+  <div class="step-body">
+    <div style="font-size:13px;font-weight:700;color:#0f172a;margin-bottom:8px">The 22 approved tags — reference list</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+      <div style="border-radius:8px;border:1px solid #e2e8f0;overflow:hidden">
+        <div style="padding:8px 12px;background:#1e293b;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px">Symptom Tags (17)</div>
+        <div style="padding:10px 12px;display:flex;flex-direction:column;gap:4px;font-size:11px;color:#475569">
+          <div><strong style="color:#0e7490;font-family:monospace;font-size:11px">black screen</strong> — No picture, video area is black</div>
+          <div><strong style="color:#0e7490;font-family:monospace;font-size:11px">no audio</strong> — Video plays, no sound</div>
+          <div><strong style="color:#0e7490;font-family:monospace;font-size:11px">buffering</strong> — Loading spinner, stops/starts</div>
+          <div><strong style="color:#0e7490;font-family:monospace;font-size:11px">quality issue</strong> — Pixelated or low resolution</div>
+          <div><strong style="color:#0e7490;font-family:monospace;font-size:11px">casting issue</strong> — Cannot cast to TV/device</div>
+          <div><strong style="color:#0e7490;font-family:monospace;font-size:11px">venue signal</strong> — Production-side broadcast problem</div>
+          <div><strong style="color:#1d4ed8;font-family:monospace;font-size:11px">geo blocked</strong> — Geographic rights restriction</div>
+          <div><strong style="color:#1d4ed8;font-family:monospace;font-size:11px">vpn detected</strong> — VPN detected by platform</div>
+          <div><strong style="color:#1d4ed8;font-family:monospace;font-size:11px">wrong territory</strong> — Content not in their region</div>
+          <div><strong style="color:#15803d;font-family:monospace;font-size:11px">duplicate charge</strong> — Charged more than once</div>
+          <div><strong style="color:#15803d;font-family:monospace;font-size:11px">3d secure</strong> — 3D Secure / SCA failed</div>
+          <div><strong style="color:#15803d;font-family:monospace;font-size:11px">card declined</strong> — Bank declined the card</div>
+          <div><strong style="color:#92400e;font-family:monospace;font-size:11px">replay missing</strong> — VOD not available post-event</div>
+          <div><strong style="color:#92400e;font-family:monospace;font-size:11px">wrong content</strong> — Wrong stream/language/match</div>
+          <div><strong style="color:#92400e;font-family:monospace;font-size:11px">event canceled</strong> — Event did not take place</div>
+          <div><strong style="color:#6d28d9;font-family:monospace;font-size:11px">password reset</strong> — Reset needed or not arriving</div>
+          <div><strong style="color:#6d28d9;font-family:monospace;font-size:11px">account locked</strong> — Account suspended/locked</div>
+        </div>
+      </div>
+      <div style="border-radius:8px;border:1px solid #e2e8f0;overflow:hidden">
+        <div style="padding:8px 12px;background:#1e293b;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px">Operational Flag Tags (5)</div>
+        <div style="padding:10px 12px;display:flex;flex-direction:column;gap:4px;font-size:11px;color:#475569">
+          <div><strong style="color:#b91c1c;font-family:monospace;font-size:11px">known incident</strong> — Multiple reports, same issue, same time. Batch-hold all.</div>
+          <div><strong style="color:#b91c1c;font-family:monospace;font-size:11px">live urgent</strong> — Live event affected right now. Immediate escalation required.</div>
+          <div><strong style="color:#c2410c;font-family:monospace;font-size:11px">proactive followup</strong> — Agent must follow up — do not auto-close.</div>
+          <div><strong style="color:#c2410c;font-family:monospace;font-size:11px">vip</strong> — VIP customer or partner — prioritise and notify manager.</div>
+          <div><strong style="color:#334155;font-family:monospace;font-size:11px">fraud</strong> — Suspected fraud. Separate workflow. Do not reply to customer.</div>
+        </div>
+        <div style="padding:8px 12px;background:#1e293b;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;margin-top:2px">Anchor Tags (Beacon-Applied)</div>
+        <div style="padding:10px 12px;display:flex;flex-direction:column;gap:3px;font-size:11px;color:#475569">
+          <div><strong style="font-family:monospace;font-size:11px;color:#1d4ed8">cancellation request · refund request · payment failed</strong></div>
+          <div><strong style="font-family:monospace;font-size:11px;color:#1d4ed8">duplicate charge · billing question · streaming issue</strong></div>
+          <div><strong style="font-family:monospace;font-size:11px;color:#1d4ed8">black screen · audio issue · geo blocked · password reset</strong></div>
+          <div><strong style="font-family:monospace;font-size:11px;color:#1d4ed8">login failed · email change · app issue · casting issue</strong></div>
+          <div><strong style="font-family:monospace;font-size:11px;color:#1d4ed8">general feedback · schedule question · subscription question</strong></div>
+          <div style="font-size:10px;color:#94a3b8;margin-top:4px">Applied automatically by Beacon — agents do not need to add these manually.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-box tip">
+      <span class="ib-icon">📋</span>
+      <div><strong>Monthly tag pruning process:</strong> Help Scout → Reports → Tags. Sort by volume. Any tag not in the approved list above = stray tag. Bulk-delete via migration CSV (contact HS support) or address individually. If a stray tag appears frequently, it may indicate a genuine gap in the Beacon form — consider adding it as a new option.</div>
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>
