@@ -1,0 +1,705 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>20 Demo Tickets</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#f8f9fb;color:#1a1f2e;font-size:13px}
+
+/* TOP */
+.top{background:#1a1f2e;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.top h1{font-size:13px;font-weight:600;color:#fff}
+.top p{font-size:11px;color:#6b7280}
+.progress{display:flex;align-items:center;gap:10px}
+.pbar-wrap{width:200px;height:5px;background:#374151;border-radius:3px;overflow:hidden}
+.pbar-fill{height:100%;background:#22c55e;border-radius:3px;transition:width .3s;width:0%}
+.pcount{font-size:11px;color:#94a3b8;font-family:'IBM Plex Mono',monospace}
+
+/* FILTERS */
+.filters{background:#fff;border-bottom:1px solid #e5e7eb;padding:10px 24px;display:flex;gap:8px;flex-wrap:wrap;position:sticky;top:48px;z-index:99}
+.filter-btn{font-size:11px;font-weight:500;padding:4px 12px;border-radius:20px;border:1px solid #e5e7eb;cursor:pointer;background:#fff;color:#6b7280;transition:all .15s;font-family:'Inter',sans-serif}
+.filter-btn:hover{border-color:#1d4ed8;color:#1d4ed8}
+.filter-btn.on{background:#1d4ed8;border-color:#1d4ed8;color:#fff}
+
+/* GRID */
+.grid{padding:20px 24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px}
+
+/* TICKET CARD */
+.tc{background:#fff;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;display:flex;flex-direction:column;transition:box-shadow .15s}
+.tc:hover{box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.tc.sent{border-color:#86efac;background:#f0fdf4}
+.tc-hdr{padding:11px 13px 0;display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.tc-num{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;flex-shrink:0}
+.tc-subject{font-size:12.5px;font-weight:600;color:#1a1f2e;line-height:1.35;flex:1}
+.tc-check{width:18px;height:18px;border:1.5px solid #d1d5db;border-radius:50%;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s;margin-top:1px}
+.tc-check.done{background:#22c55e;border-color:#22c55e;color:#fff}
+.tc-check.done::after{content:'✓';font-size:8px;font-weight:700}
+.tc-meta{padding:8px 13px;display:flex;gap:6px;flex-wrap:wrap}
+.tc-tag{font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:12px}
+.tc-inbox{font-size:9.5px;color:#6b7280;background:#f3f4f6;padding:2px 7px;border-radius:12px;font-family:'IBM Plex Mono',monospace}
+.tc-body{padding:0 13px 10px}
+.tc-field{display:grid;grid-template-columns:70px 1fr;gap:4px;margin:3px 0;font-size:11.5px}
+.tc-lbl{color:#9ca3af;font-weight:500}
+.tc-val{color:#374151}
+.tc-message{background:#f8f9fb;border-radius:6px;padding:9px 11px;font-size:11.5px;color:#374151;line-height:1.6;margin:8px 13px 0;border:1px solid #f0f0f0}
+.tc-message-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:#9ca3af;margin-bottom:4px}
+.tc-actions{padding:10px 13px;border-top:1px solid #f3f4f6;display:flex;gap:8px;align-items:center}
+.copy-email{font-size:10px;font-weight:600;padding:5px 10px;border-radius:5px;border:1px solid #e5e7eb;background:#fff;cursor:pointer;color:#374151;font-family:'Inter',sans-serif;transition:all .15s}
+.copy-email:hover{background:#f3f4f6}
+.mark-sent{font-size:10px;font-weight:600;padding:5px 10px;border-radius:5px;border:1px solid #86efac;background:#f0fdf4;cursor:pointer;color:#15803d;font-family:'Inter',sans-serif;transition:all .15s}
+.mark-sent:hover{background:#dcfce7}
+.mark-sent.done{background:#15803d;border-color:#15803d;color:#fff}
+.tc-expect{font-size:10px;color:#6b7280;line-height:1.4;flex:1;text-align:right}
+
+/* SEND METHOD LEGEND */
+.legend{background:#fff;border-bottom:1px solid #e5e7eb;padding:8px 24px;display:flex;gap:16px;font-size:11px;color:#6b7280}
+.leg-item{display:flex;align-items:center;gap:5px}
+.leg-dot{width:8px;height:8px;border-radius:50%}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div>
+    <h1>20 Demo Tickets — Submit these to populate your Help Scout sandbox</h1>
+    <p>Tick each ticket as sent. Send via Beacon (open beacon_test_iihftv.html) or email directly to inbox address.</p>
+  </div>
+  <div class="progress">
+    <div class="pbar-wrap"><div class="pbar-fill" id="pbar"></div></div>
+    <span class="pcount" id="pcount">0 / 20 sent</span>
+  </div>
+</div>
+
+<div class="legend">
+  <div class="leg-item"><div class="leg-dot" style="background:#1d4ed8"></div> Send via Beacon form</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#7c3aed"></div> Email directly to inbox</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#059669"></div> Create manually in HS admin</div>
+</div>
+
+<div class="filters">
+  <button class="filter-btn on" onclick="filter('all',this)">All (20)</button>
+  <button class="filter-btn" onclick="filter('live',this)">🔴 Live Urgent</button>
+  <button class="filter-btn" onclick="filter('billing',this)">💳 Billing</button>
+  <button class="filter-btn" onclick="filter('tv',this)">📺 Device TV</button>
+  <button class="filter-btn" onclick="filter('access',this)">🔑 Access/Geo</button>
+  <button class="filter-btn" onclick="filter('b2b',this)">🤝 B2B</button>
+  <button class="filter-btn" onclick="filter('other',this)">General</button>
+</div>
+
+<div class="grid" id="grid">
+
+<!-- ─── LIVE URGENT ─────────────────────── -->
+<div class="tc" data-cat="live" id="t1">
+  <div class="tc-hdr">
+    <div class="tc-num" style="background:#dc2626">1</div>
+    <div class="tc-subject">Black screen during live match — Apple TV</div>
+    <div class="tc-check" onclick="markSent(1)"></div>
+  </div>
+  <div class="tc-meta">
+    <span class="tc-tag" style="background:#fee2e2;color:#991b1b">live-urgent</span>
+    <span class="tc-tag" style="background:#dbeafe;color:#1e40af">black-screen</span>
+    <span class="tc-tag" style="background:#dcfce7;color:#14532d">device-tv</span>
+    <span class="tc-inbox">IIHFTV</span>
+  </div>
+  <div class="tc-body">
+    <div class="tc-field"><span class="tc-lbl">From:</span><span class="tc-val">jan.mueller@gmail.com</span></div>
+    <div class="tc-field"><span class="tc-lbl">Inbox:</span><span class="tc-val">IIHFTV Support (via Beacon)</span></div>
+    <div class="tc-field"><span class="tc-lbl">D1:</span><span class="tc-val">Streaming problem</span></div>
+    <div class="tc-field"><span class="tc-lbl">D2:</span><span class="tc-val">Apple TV</span></div>
+  </div>
+  <div class="tc-message">
+    <div class="tc-message-lbl">Message body</div>
+    The live match started 10 minutes ago and I have a complete black screen. I can hear the commentary but see nothing. Already restarted the app twice. Apple TV 4K.
+  </div>
+  <div class="tc-actions">
+    <button class="copy-email" onclick="copyMsg(1)">Copy msg</button>
+    <button class="mark-sent" onclick="markSent(1)">Mark sent</button>
+    <span class="tc-expect">→ live-urgent + black-screen + device-tv · Severity: Critical</span>
+  </div>
+</div>
+
+<div class="tc" data-cat="live" id="t2">
+  <div class="tc-hdr">
+    <div class="tc-num" style="background:#dc2626">2</div>
+    <div class="tc-subject">Buffering every 30 seconds — match live now</div>
+    <div class="tc-check" onclick="markSent(2)"></div>
+  </div>
+  <div class="tc-meta">
+    <span class="tc-tag" style="background:#fee2e2;color:#991b1b">live-urgent</span>
+    <span class="tc-tag" style="background:#dbeafe;color:#1e40af">buffering</span>
+    <span class="tc-inbox">TriLive</span>
+  </div>
+  <div class="tc-body">
+    <div class="tc-field"><span class="tc-lbl">From:</span><span class="tc-val">sophie.nielsen@outlook.com</span></div>
+    <div class="tc-field"><span class="tc-lbl">Inbox:</span><span class="tc-val">Triathlon Live (via Beacon)</span></div>
+    <div class="tc-field"><span class="tc-lbl">D1:</span><span class="tc-val">Streaming problem</span></div>
+    <div class="tc-field"><span class="tc-lbl">D2:</span><span class="tc-val">Web browser</span></div>
+  </div>
+  <div class="tc-message">
+    <div class="tc-message-lbl">Message body</div>
+    The Triathlon World Series final is live right now and the stream is buffering every 30 seconds. It's completely unwatchable. My internet is 100mbps so that's not the issue. Chrome on Windows.
+  </div>
+  <div class="tc-actions">
+    <button class="copy-email" onclick="copyMsg(2)">Copy msg</button>
+    <button class="mark-sent" onclick="markSent(2)">Mark sent</button>
+    <span class="tc-expect">→ live-urgent + buffering · Live Event: Yes</span>
+  </div>
+</div>
+
+<div class="tc" data-cat="live" id="t3">
+  <div class="tc-hdr">
+    <div class="tc-num" style="background:#dc2626">3</div>
+    <div class="tc-subject">No audio during CEV Champions League — playing right now</div>
+    <div class="tc-check" onclick="markSent(3)"></div>
+  </div>
+  <div class="tc-meta">
+    <span class="tc-tag" style="background:#fee2e2;color:#991b1b">live-urgent</span>
+    <span class="tc-tag" style="background:#dbeafe;color:#1e40af">no-audio</span>
+    <span class="tc-tag" style="background:#dcfce7;color:#14532d">device-mobile</span>
+    <span class="tc-inbox">CEV</span>
+  </div>
+  <div class="tc-body">
+    <div class="tc-field"><span class="tc-lbl">From:</span><span class="tc-val">luca.pellegrini@gmail.com</span></div>
+    <div class="tc-field"><span class="tc-lbl">Inbox:</span><span class="tc-val">EuroVolleyTV (via Beacon)</span></div>
+    <div class="tc-field"><span class="tc-lbl">D1:</span><span class="tc-val">Streaming problem</span></div>
+    <div class="tc-field"><span class="tc-lbl">D2:</span><span class="tc-val">iPhone or iPad</span></div>
+  </div>
+  <div class="tc-message">
+    <div class="tc-message-lbl">Message body</div>
+    Watching the match live on iPhone. Video is fine but there is absolutely no sound. Started about 15 minutes into the game. This happened last week too during the pool phase.
+  </div>
+  <div class="tc-actions">
+    <button class="copy-email" onclick="copyMsg(3)">Copy msg</button>
+    <button class="mark-sent" onclick="markSent(3)">Mark sent</button>
+    <span class="tc-expect">→ live-urgent + no-audio + device-mobile · Severity: Critical</span>
+  </div>
+</div>
+
+<!-- ─── BILLING / REFUNDS ─────────────────── -->
+<div class="tc" data-cat="billing" id="t4">
+  <div class="tc-hdr">
+    <div class="tc-num" style="background:#d97706">4</div>
+    <div class="tc-subject">Charged after cancellation — threatening chargeback</div>
+    <div class="tc-check" onclick="markSent(4)"></div>
+  </div>
+  <div class="tc-meta">
+    <span class="tc-tag" style="background:#ffedd5;color:#9a3412">chargeback-risk</span>
+    <span class="tc-tag" style="background:#ffedd5;color:#9a3412">payment-failed</span>
+    <span class="tc-inbox">Billing</span>
+  </div>
+  <div class="tc-body">
+    <div class="tc-field"><span class="tc-lbl">From:</span><span class="tc-val">marco.v@yahoo.com</span></div>
+    <div class="tc-field"><span class="tc-lbl">Inbox:</span><span class="tc-val">Email to billing inbox</span></div>
+  </div>
+  <div class="tc-message">
+    <div class="tc-message-lbl">Subject + body — send as email</div>
+    Subject: Charged after I cancelled — will file chargeback
+    
+    I cancelled my IIHFTV subscription in February and you have charged me again this month. I want an immediate refund or I will file a chargeback with my bank. This is unacceptable.
+  </div>
+  <div class="tc-actions">
+    <button class="copy-email" onclick="copyMsg(4)">Copy msg</button>
+    <button class="mark-sent" onclick="markSent(4)">Mark sent</button>
+    <span class="tc-expect">→ Routing to Billing · chargeback-risk · Severity: High</span>
+  </div>
+</div>
+
+<div class="tc" data-cat="billing" id="t5">
+  <div class="tc-hdr">
+    <div class="tc-num" style="background:#d97706">5</div>
+    <div class="tc-subject">Double charged — PayPal and credit card same month</div>
+    <div class="tc-check" onclick="markSent(5)"></div>
+  </div>
+  <div class="tc-meta">
+    <span class="tc-tag" style="background:#ffedd5;color:#9a3412">duplicate-charge</span>
+    <span class="tc-inbox">Billing</span>
+  </div>
+  <div class="tc-body">
+    <div class="tc-field"><span class="tc-lbl">From:</span><span class="tc-val">elena.morin@gmail.com</span></div>
+    <div class="tc-field"><span class="tc-lbl">Inbox:</span><span class="tc-val">Email to billing inbox</span></div>
+  </div>
+  <div class="tc-message">
+    <div class="tc-message-lbl">Subject + body</div>
+    Subject: Two charges on my account for April
+    
+    I can see two charges for April on my bank account — one from PayPal (€9.99) and one from my credit card (€9.99). I only have one subscription. Please refund the duplicate.
+  </div>
+  <div class="tc-actions">
+    <button class="copy-email" onclick="copyMsg(5)">Copy msg</button>
+    <button class="mark-sent" onclick="markSent(5)">Mark sent</button>
+    <span class="tc-expect">→ duplicate-charge · Refund Reason: Duplicate charge</span>
+  </div>
+</div>
+
+<div class="tc" data-cat="billing" id="t6">
+  <div class="tc-hdr">
+    <div class="tc-num" style="background:#d97706">6</div>
+    <div class="tc-subject">Accidental annual purchase — want to switch to monthly</div>
+    <div class="tc-check" onclick="markSent(6)"></div>
+  </div>
+  <div class="tc-meta">
+    <span class="tc-tag" style="background:#ffedd5;color:#9a3412">cancel-request</span>
+    <span class="tc-inbox">Billing</span>
+  </div>
+  <div class="tc-body">
+    <div class="tc-field"><span class="tc-lbl">From:</span><span class="tc-val">ben.thomas@hotmail.com</span></div>
+    <div class="tc-field"><span class="tc-lbl">Inbox:</span><span class="tc-val">Beacon D1: Billing or payment</span></div>
+  </div>
+  <div class="tc-message">
+    <div class="tc-message-lbl">Message body (via Beacon)</div>
+    I accidentally clicked the annual plan instead of monthly. I purchased it literally 20 minutes ago and haven't used it at all. Can you switch me to monthly and refund the difference? Or just fully refund and I'll repurchase monthly.
+  </div>
+  <div class="tc-actions">
+    <button class="copy-email" onclick="copyMsg(6)">Copy msg</button>
+    <button class="mark-sent" onclick="markSent(6)">Mark sent</button>
+    <span class="tc-expect">→ Billing inbox · Refund Reason: Purchase mistake · Severity: High</span>
+  </div>
+</div>
+
+<div class="tc" data-cat="billing" id="t7">
+  <div class="tc-hdr">
+    <div class="tc-num" style="background:#d97706">7</div>
+    <div class="tc-subject">PPV refund — match was cancelled due to weather</div>
+    <div class="tc-check" onclick="markSent(7)"></div>
+  </div>
+  <div class="tc-meta">
+    <span class="tc-tag" style="background:#ffedd5;color:#9a3412">chargeback-risk</span>
+    <span class="tc-inbox">Billing</span>
+  </div>
+  <div class="tc-body">
+    <div class="tc-field"><span class="tc-lbl">From:</span><span class="tc-val">carlos.fuentes@gmail.com</span></div>
+    <div class="tc-field"><span class="tc-lbl">Inbox:</span><span class="tc-val">Email to billing inbox</span></div>
+  </div>
+  <div class="tc-message">
+    <div class="tc-message-lbl">Subject + body</div>
+    Subject: Refund for cancelled triathlon event — €12.99
+    
+    I purchased a PPV for the Hamburg Triathlon on Saturday. The race was cancelled due to extreme weather. I want a full refund of €12.99. The event was clearly cancelled — it was on the news.
+  </div>
+  <div class="tc-actions">
+    <button class="copy-email" onclick="copyMsg(7)">Copy msg</button>
+    <button class="mark-sent" onclick="markSent(7)">Mark sent</button>
+    <span class="tc-expect">→ Billing inbox · Refund Reason: Event cancelled · Subscription Type: PPV</span>
+  </div>
+</div>
+
+<!-- ─── DEVICE TV ──────────────────────── -->
+<div class="tc" data-cat="tv" id="t8">
+  <div class="tc-hdr">
+    <div class="tc-num" style="background:#1d4ed8">8</div>
+    <div class="tc-subject">App crashes on Samsung Smart TV after update</div>
+    <div class="tc-check" onclick="markSent(8)"></div>
+  </div>
+  <div class="tc-meta">
+    <span class="tc-tag" style="background:#dcfce7;color:#14532d">app-crash</span>
+    <span class="tc-tag" style="background:#dcfce7;color:#14532d">device-tv</span>
+    <span class="tc-inbox">IIHFTV</span>
+  </div>
+  <div class="tc-body">
+    <div class="tc-field"><span class="tc-lbl">From:</span><span class="tc-val">david.schneider@web.de</span></div>
+    <div class="tc-field"><span class="tc-lbl">D2:</span><span class="tc-val">Samsung Smart TV</span></div>
+  </div>
+  <div class="tc-message">
+    <div class="tc-message-lbl">Message body (via Beacon)</div>
+    Since the app updated yesterday, it crashes every time I try to start a game. It opens the loading screen then closes after about 8 seconds. Samsung Smart TV 2022 model. I've tried reinstalling but same problem.
+  </div>
+  <div class="tc-actions">
+    <button class="copy-email" onclick="copyMsg(8)">Copy msg</button>
+    <button class="mark-sent" onclick="markSent(8)">Mark sent</button>
+    <span class="tc-expect">→ app-crash + device-tv · Device: Samsung Smart TV · View: Device TV</span>
+  </div>
+</div>
+
+<div class="tc" data-cat="tv" id="t9">
+  <div class="tc-hdr">
+    <div class="tc-num" style="background:#1d4ed8">9</div>
+    <div class="tc-subject">Chromecast stops after 10 minutes — VIP account</div>
+    <div class="tc-check" onclick="markSent(9)"></div>
+  </div>
+  <div class="tc-meta">
+    <span class="tc-tag" style="background:#dcfce7;color:#14532d">casting-issue</span>
+    <span class="tc-tag" style="background:#dcfce7;color:#14532d">device-tv</span>
+    <span class="tc-tag" style="background:#fee2e2;color:#991b1b">vip-customer</span>
+    <span class="tc-inbox">CEV</span>
+  </div>
+  <div class="tc-body">
+    <div class="tc-field"><span class="tc-lbl">From:</span><span class="tc-val">vip.member@gmail.com</span></div>
+    <div class="tc-field"><span class="tc-lbl">Note:</span><span class="tc-val">Add vip-customer tag manually after ticket arrives</span></div>
+  </div>
+  <div class="tc-message">
+    <div class="tc-message-lbl">Message body (via Beacon)</div>
+    Every time I cast EuroVolleyTV to my TV using Chromecast, the stream stops after exactly 10 minutes and I have to restart from the beginning. I've been a subscriber for 3 years and this is very frustrating.
+  </div>
+  <div class="tc-actions">
+    <button class="copy-email" onclick="copyMsg(9)">Copy msg</button>
+    <button class="mark-sent" onclick="markSent(9)">Mark sent</button>
+    <span class="tc-expect">→ casting-issue + device-tv + add vip-customer manually · Views: Device TV + VIP Queue</span>
+  </div>
+</div>
+
+<div class="tc" data-cat="tv" id="t10">
+  <div class="tc-hdr">
+    <div class="tc-num" style="background:#1d4ed8">10</div>
+    <div class="tc-subject">Roku — quality drops to 240p automatically</div>
+    <div class="tc-check" onclick="markSent(10)"></div>
+  </div>
+  <div class="tc-meta">
+    <span class="tc-tag" style="background:#dbeafe;color:#1e40af">quality-issue</span>
+    <span class="tc-tag" style="background:#dcfce7;color:#14532d">device-tv</span>
+    <span class="tc-inbox">TriLive</span>
+  </div>
+  <div class="tc-body">
+    <div class="tc-field"><span class="tc-lbl">From:</span><span class="tc-val">aleksi.h@gmail.com</span></div>
+    <div class="tc-field"><span class="tc-lbl">D2:</span><span class="tc-val">Roku</span></div>
+  </div>
+  <div class="tc-message">
+    <div class="tc-message-lbl">Message body (via Beacon)</div>
+    The stream starts in HD but after about 2 minutes drops to what looks like 240p. I have to manually set quality back to 1080p but it keeps dropping again. Roku Express 4K. Internet is 200mbps — not a connection issue.
+  </div>
+  <div class="tc-actions">
+    <button class="copy-email" onclick="copyMsg(10)">Copy msg</button>
+    <button class="mark-sent" onclick="markSent(10)">Mark sent</button>
+    <span class="tc-expect">→ quality-issue + device-tv · Device: Roku</span>
+  </div>
+</div>
+
+<!-- ─── ACCESS / GEO ──────────────────────── -->
+<div class="tc" data-cat="access" id="t11">
+  <div class="tc-hdr">
+    <div class="tc-num" style="background:#7c3aed">11</div>
+    <div class="tc-subject">Geo-blocked in Germany — CEV subscription purchased</div>
+    <div class="tc-check" onclick="markSent(11)"></div>
+  </div>
+  <div class="tc-meta">
+    <span class="tc-tag" style="background:#ede9fe;color:#5b21b6">geo-blocked</span>
+    <span class="tc-inbox">CEV</span>
+  </div>
+  <div class="tc-body">
+    <div class="tc-field"><span class="tc-lbl">From:</span><span class="tc-val">thomas.w@gmx.de</span></div>
+    <div class="tc-field"><span class="tc-lbl">D1:</span><span class="tc-val">Content not available in my region</span></div>
+  </div>
+  <div class="tc-message">
+    <div class="tc-message-lbl">Message body (via Beacon)</div>
+    I subscribed to EuroVolleyTV monthly but I'm getting a geo-restriction error for half the Champions League matches. I'm in Germany. This was not clearly stated when I subscribed. I want a refund or an explanation.
+  </div>
+  <div class="tc-actions">
+    <button class="copy-email" onclick="copyMsg(11)">Copy msg</button>
+    <button class="mark-sent" onclick="markSent(11)">Mark sent</button>
+    <span class="tc-expect">→ geo-blocked · Category: Geo Restriction · Use geo-block saved reply</span>
+  </div>
+</div>
+
+<div class="tc" data-cat="access" id="t12">
+  <div class="tc-hdr">
+    <div class="tc-num" style="background:#7c3aed">12</div>
+    <div class="tc-subject">VPN error — not using a VPN, home in Finland</div>
+    <div class="tc-check" onclick="markSent(12)"></div>
+  </div>
+  <div class="tc-meta">
+    <span class="tc-tag" style="background:#ede9fe;color:#5b21b6">vpn-detected</span>
+    <span class="tc-inbox">IIHFTV</span>
+  </div>
+  <div class="tc-body">
+    <div class="tc-field"><span class="tc-lbl">From:</span><span class="tc-val">nina.r@protonmail.com</span></div>
+    <div class="tc-field"><span class="tc-lbl">D1:</span><span class="tc-val">Content not available in my region</span></div>
+  </div>
+  <div class="tc-message">
+    <div class="tc-message-lbl">Message body (via Beacon)</div>
+    I keep getting a "VPN Detected" error message but I am not using a VPN. I'm at home in Finland. This started happening two days ago and I can't watch anything. I've restarted my router.
+  </div>
+  <div class="tc-actions">
+    <button class="copy-email" onclick="copyMsg(12)">Copy msg</button>
+    <button class="mark-sent" onclick="markSent(12)">Mark sent</button>
+    <span class="tc-expect">→ vpn-detected · Category: Geo Restriction</span>
+  </div>
+</div>
+
+<div class="tc" data-cat="access" id="t13">
+  <div class="tc-hdr">
+    <div class="tc-num" style="background:#7c3aed">13</div>
+    <div class="tc-subject">Password reset email not arriving — tried 4 times</div>
+    <div class="tc-check" onclick="markSent(13)"></div>
+  </div>
+  <div class="tc-meta">
+    <span class="tc-tag" style="background:#ede9fe;color:#5b21b6">login-failed</span>
+    <span class="tc-inbox">IIHFTV</span>
+  </div>
+  <div class="tc-body">
+    <div class="tc-field"><span class="tc-lbl">From:</span><span class="tc-val">anna.kovacs@icloud.com</span></div>
+    <div class="tc-field"><span class="tc-lbl">D1:</span><span class="tc-val">Login or account access</span></div>
+  </div>
+  <div class="tc-message">
+    <div class="tc-message-lbl">Message body (via Beacon)</div>
+    I've requested a password reset 4 times today and no email is arriving. I've checked spam, junk, promotions — nothing. I need to watch the World Championship games this week. Please help urgently.
+  </div>
+  <div class="tc-actions">
+    <button class="copy-email" onclick="copyMsg(13)">Copy msg</button>
+    <button class="mark-sent" onclick="markSent(13)">Mark sent</button>
+    <span class="tc-expect">→ login-failed · WF6 fires: auto-sends password reset reply</span>
+  </div>
+</div>
+
+<div class="tc" data-cat="access" id="t14">
+  <div class="tc-hdr">
+    <div class="tc-num" style="background:#7c3aed">14</div>
+    <div class="tc-subject">Someone else is using my account — suspicious streams</div>
+    <div class="tc-check" onclick="markSent(14)"></div>
+  </div>
+  <div class="tc-meta">
+    <span class="tc-tag" style="background:#ede9fe;color:#5b21b6">fraud-suspected</span>
+    <span class="tc-tag" style="background:#fee2e2;color:#991b1b">escalated</span>
+    <span class="tc-inbox">IIHFTV</span>
+  </div>
+  <div class="tc-body">
+    <div class="tc-field"><span class="tc-lbl">From:</span><span class="tc-val">julia.kl@gmail.com</span></div>
+    <div class="tc-field"><span class="tc-lbl">Note:</span><span class="tc-val">Add fraud-suspected + escalated manually</span></div>
+  </div>
+  <div class="tc-message">
+    <div class="tc-message-lbl">Subject + body (email to IIHFTV inbox)</div>
+    Subject: My account is being used by someone else
+    
+    I see watch history for streams I never watched — games from a city I've never been to. Someone has access to my account. Please lock it immediately and investigate.
+  </div>
+  <div class="tc-actions">
+    <button class="copy-email" onclick="copyMsg(14)">Copy msg</button>
+    <button class="mark-sent" onclick="markSent(14)">Mark sent</button>
+    <span class="tc-expect">→ Add fraud-suspected + escalated manually · View: SLA Risk</span>
+  </div>
+</div>
+
+<!-- ─── B2B ──────────────────────────── -->
+<div class="tc" data-cat="b2b" id="t15">
+  <div class="tc-hdr">
+    <div class="tc-num" style="background:#059669">15</div>
+    <div class="tc-subject">IIHF rights holder — geo-fencing config question</div>
+    <div class="tc-check" onclick="markSent(15)"></div>
+  </div>
+  <div class="tc-meta">
+    <span class="tc-tag" style="background:#dcfce7;color:#14532d">B2B routing</span>
+    <span class="tc-inbox">B2B Partners</span>
+  </div>
+  <div class="tc-body">
+    <div class="tc-field"><span class="tc-lbl">From:</span><span class="tc-val">rights@iihf-b2b-demo.com</span></div>
+    <div class="tc-field"><span class="tc-lbl">Note:</span><span class="tc-val">Domain triggers WF4 → B2B inbox routing</span></div>
+  </div>
+  <div class="tc-message">
+    <div class="tc-message-lbl">Subject + body (email to any B2C inbox)</div>
+    Subject: Blackout configuration for World Championship broadcast windows
+    
+    We need to confirm the geo-fencing configuration for Germany, France, and Switzerland during the World Championship group phase. Can you share the current territory exclusion list and confirm when changes take effect?
+  </div>
+  <div class="tc-actions">
+    <button class="copy-email" onclick="copyMsg(15)">Copy msg</button>
+    <button class="mark-sent" onclick="markSent(15)">Mark sent</button>
+    <span class="tc-expect">→ WF4 routes to B2B Partners inbox · Contact Type: Partner Technical</span>
+  </div>
+</div>
+
+<div class="tc" data-cat="b2b" id="t16">
+  <div class="tc-hdr">
+    <div class="tc-num" style="background:#059669">16</div>
+    <div class="tc-subject">Triathlon partner — API webhook not firing</div>
+    <div class="tc-check" onclick="markSent(16)"></div>
+  </div>
+  <div class="tc-meta">
+    <span class="tc-tag" style="background:#dcfce7;color:#14532d">B2B routing</span>
+    <span class="tc-inbox">B2B Partners</span>
+  </div>
+  <div class="tc-body">
+    <div class="tc-field"><span class="tc-lbl">From:</span><span class="tc-val">dev@partner-b2b-demo.com</span></div>
+    <div class="tc-field"><span class="tc-lbl">Priority:</span><span class="tc-val">Set to High manually</span></div>
+  </div>
+  <div class="tc-message">
+    <div class="tc-message-lbl">Subject + body (email to any inbox)</div>
+    Subject: Subscription webhook not firing on our integration
+    
+    Our Triathlon Live integration is not receiving subscription_created webhooks since yesterday. New subscriber signups are not being reflected in our CRM. This is affecting our race-day operations. Need urgent support.
+  </div>
+  <div class="tc-actions">
+    <button class="copy-email" onclick="copyMsg(16)">Copy msg</button>
+    <button class="mark-sent" onclick="markSent(16)">Mark sent</button>
+    <span class="tc-expect">→ WF4 → B2B inbox · Issue Priority: High · View: B2B Open</span>
+  </div>
+</div>
+
+<!-- ─── GENERAL / OTHER ──────────────────── -->
+<div class="tc" data-cat="other" id="t17">
+  <div class="tc-hdr">
+    <div class="tc-num" style="background:#6b7280">17</div>
+    <div class="tc-subject">Cancel subscription — annual plan, 8 months in</div>
+    <div class="tc-check" onclick="markSent(17)"></div>
+  </div>
+  <div class="tc-meta">
+    <span class="tc-tag" style="background:#fee2e2;color:#991b1b">cancel-request</span>
+    <span class="tc-inbox">IIHFTV</span>
+  </div>
+  <div class="tc-body">
+    <div class="tc-field"><span class="tc-lbl">From:</span><span class="tc-val">pierre.dubois@free.fr</span></div>
+    <div class="tc-field"><span class="tc-lbl">D1:</span><span class="tc-val">Subscription or plan</span></div>
+  </div>
+  <div class="tc-message">
+    <div class="tc-message-lbl">Message body (via Beacon)</div>
+    I want to cancel my annual subscription. I've had it for 8 months but I don't watch enough to justify the cost. How do I cancel and will I receive a partial refund for the remaining months?
+  </div>
+  <div class="tc-actions">
+    <button class="copy-email" onclick="copyMsg(17)">Copy msg</button>
+    <button class="mark-sent" onclick="markSent(17)">Mark sent</button>
+    <span class="tc-expect">→ WF5: cancel-request · Category: Subscriptions · Subscription Type: Annual</span>
+  </div>
+</div>
+
+<div class="tc" data-cat="other" id="t18">
+  <div class="tc-hdr">
+    <div class="tc-num" style="background:#6b7280">18</div>
+    <div class="tc-subject">Replay missing — game ended 3 hours ago</div>
+    <div class="tc-check" onclick="markSent(18)"></div>
+  </div>
+  <div class="tc-meta">
+    <span class="tc-tag" style="background:#dbeafe;color:#1e40af">replay-missing</span>
+    <span class="tc-inbox">CEV</span>
+  </div>
+  <div class="tc-body">
+    <div class="tc-field"><span class="tc-lbl">From:</span><span class="tc-val">helene.vdb@outlook.be</span></div>
+    <div class="tc-field"><span class="tc-lbl">D1:</span><span class="tc-val">Streaming problem</span></div>
+  </div>
+  <div class="tc-message">
+    <div class="tc-message-lbl">Message body (via Beacon)</div>
+    The Poland vs Italy Champions League match finished 3 hours ago and the replay is not showing in my account. Usually it's there within an hour. I want to watch it tonight. Can you check what's happening?
+  </div>
+  <div class="tc-actions">
+    <button class="copy-email" onclick="copyMsg(18)">Copy msg</button>
+    <button class="mark-sent" onclick="markSent(18)">Mark sent</button>
+    <span class="tc-expect">→ replay-missing · Category: Content &amp; Schedule</span>
+  </div>
+</div>
+
+<div class="tc" data-cat="other" id="t19">
+  <div class="tc-hdr">
+    <div class="tc-num" style="background:#6b7280">19</div>
+    <div class="tc-subject">Travelling — can I access my subscription in Japan?</div>
+    <div class="tc-check" onclick="markSent(19)"></div>
+  </div>
+  <div class="tc-meta">
+    <span class="tc-tag" style="background:#ede9fe;color:#5b21b6">geo-blocked</span>
+    <span class="tc-inbox">TriLive</span>
+  </div>
+  <div class="tc-body">
+    <div class="tc-field"><span class="tc-lbl">From:</span><span class="tc-val">mike.okonkwo@gmail.com</span></div>
+    <div class="tc-field"><span class="tc-lbl">D1:</span><span class="tc-val">Content not available in my region</span></div>
+  </div>
+  <div class="tc-message">
+    <div class="tc-message-lbl">Message body (via Beacon)</div>
+    I have a Triathlon Live annual subscription and I'll be travelling to Japan for work for 3 weeks. Will I be able to watch the World Series races from there, or will I be geo-blocked? The Lausanne World Series is during that period.
+  </div>
+  <div class="tc-actions">
+    <button class="copy-email" onclick="copyMsg(19)">Copy msg</button>
+    <button class="mark-sent" onclick="markSent(19)">Mark sent</button>
+    <span class="tc-expect">→ geo-blocked · Category: Geo Restriction · Ticket Intent: Question</span>
+  </div>
+</div>
+
+<div class="tc" data-cat="other" id="t20">
+  <div class="tc-hdr">
+    <div class="tc-num" style="background:#6b7280">20</div>
+    <div class="tc-subject">Wrong email on account — can't receive notifications</div>
+    <div class="tc-check" onclick="markSent(20)"></div>
+  </div>
+  <div class="tc-meta">
+    <span class="tc-tag" style="background:#ede9fe;color:#5b21b6">login-failed</span>
+    <span class="tc-inbox">IIHFTV</span>
+  </div>
+  <div class="tc-body">
+    <div class="tc-field"><span class="tc-lbl">From:</span><span class="tc-val">user.wrongemail@gmail.com</span></div>
+    <div class="tc-field"><span class="tc-lbl">Note:</span><span class="tc-val">Set Account Match = Wrong Email Used manually</span></div>
+  </div>
+  <div class="tc-message">
+    <div class="tc-message-lbl">Subject + body (email to IIHFTV inbox)</div>
+    Subject: Wrong email on my account — help needed
+    
+    I think I set up my IIHFTV account with a different email address (an old one I no longer use). This email I'm writing from is my current one. Can you help me update it so I can receive billing notifications?
+  </div>
+  <div class="tc-actions">
+    <button class="copy-email" onclick="copyMsg(20)">Copy msg</button>
+    <button class="mark-sent" onclick="markSent(20)">Mark sent</button>
+    <span class="tc-expect">→ Set Account Match = Wrong Email Used · great demo of field usage</span>
+  </div>
+</div>
+
+</div><!-- end grid -->
+
+<!-- Notification -->
+<div id="notif" style="position:fixed;bottom:20px;right:20px;background:#1a1f2e;color:#fff;padding:8px 14px;border-radius:7px;font-size:11.5px;font-family:'IBM Plex Mono',monospace;opacity:0;transition:opacity .3s;pointer-events:none"></div>
+
+<script>
+const messages = {
+  1: "The live match started 10 minutes ago and I have a complete black screen. I can hear the commentary but see nothing. Already restarted the app twice. Apple TV 4K.",
+  2: "The Triathlon World Series final is live right now and the stream is buffering every 30 seconds. It's completely unwatchable. My internet is 100mbps so that's not the issue. Chrome on Windows.",
+  3: "Watching the match live on iPhone. Video is fine but there is absolutely no sound. Started about 15 minutes into the game. This happened last week too during the pool phase.",
+  4: "Subject: Charged after I cancelled — will file chargeback\n\nI cancelled my IIHFTV subscription in February and you have charged me again this month. I want an immediate refund or I will file a chargeback with my bank. This is unacceptable.",
+  5: "Subject: Two charges on my account for April\n\nI can see two charges for April on my bank account — one from PayPal (€9.99) and one from my credit card (€9.99). I only have one subscription. Please refund the duplicate.",
+  6: "I accidentally clicked the annual plan instead of monthly. I purchased it literally 20 minutes ago and haven't used it at all. Can you switch me to monthly and refund the difference? Or just fully refund and I'll repurchase monthly.",
+  7: "Subject: Refund for cancelled triathlon event — €12.99\n\nI purchased a PPV for the Hamburg Triathlon on Saturday. The race was cancelled due to extreme weather. I want a full refund of €12.99. The event was clearly cancelled — it was on the news.",
+  8: "Since the app updated yesterday, it crashes every time I try to start a game. It opens the loading screen then closes after about 8 seconds. Samsung Smart TV 2022 model. I've tried reinstalling but same problem.",
+  9: "Every time I cast EuroVolleyTV to my TV using Chromecast, the stream stops after exactly 10 minutes and I have to restart from the beginning. I've been a subscriber for 3 years and this is very frustrating.",
+  10: "The stream starts in HD but after about 2 minutes drops to what looks like 240p. I have to manually set quality back to 1080p but it keeps dropping again. Roku Express 4K. Internet is 200mbps — not a connection issue.",
+  11: "I subscribed to EuroVolleyTV monthly but I'm getting a geo-restriction error for half the Champions League matches. I'm in Germany. This was not clearly stated when I subscribed. I want a refund or an explanation.",
+  12: "I keep getting a \"VPN Detected\" error message but I am not using a VPN. I'm at home in Finland. This started happening two days ago and I can't watch anything. I've restarted my router.",
+  13: "I've requested a password reset 4 times today and no email is arriving. I've checked spam, junk, promotions — nothing. I need to watch the World Championship games this week. Please help urgently.",
+  14: "Subject: My account is being used by someone else\n\nI see watch history for streams I never watched — games from a city I've never been to. Someone has access to my account. Please lock it immediately and investigate.",
+  15: "Subject: Blackout configuration for World Championship broadcast windows\n\nWe need to confirm the geo-fencing configuration for Germany, France, and Switzerland during the World Championship group phase. Can you share the current territory exclusion list and confirm when changes take effect?",
+  16: "Subject: Subscription webhook not firing on our integration\n\nOur Triathlon Live integration is not receiving subscription_created webhooks since yesterday. New subscriber signups are not being reflected in our CRM. This is affecting our race-day operations. Need urgent support.",
+  17: "I want to cancel my annual subscription. I've had it for 8 months but I don't watch enough to justify the cost. How do I cancel and will I receive a partial refund for the remaining months?",
+  18: "The Poland vs Italy Champions League match finished 3 hours ago and the replay is not showing in my account. Usually it's there within an hour. I want to watch it tonight. Can you check what's happening?",
+  19: "I have a Triathlon Live annual subscription and I'll be travelling to Japan for work for 3 weeks. Will I be able to watch the World Series races from there, or will I be geo-blocked? The Lausanne World Series is during that period.",
+  20: "Subject: Wrong email on my account — help needed\n\nI think I set up my IIHFTV account with a different email address (an old one I no longer use). This email I'm writing from is my current one. Can you help me update it so I can receive billing notifications?"
+};
+
+let sentCount = 0;
+const sentSet = new Set();
+
+function markSent(n) {
+  const card = document.getElementById('t'+n);
+  const check = card.querySelector('.tc-check');
+  const btn = card.querySelector('.mark-sent');
+  if (sentSet.has(n)) {
+    sentSet.delete(n);
+    card.classList.remove('sent');
+    check.classList.remove('done');
+    btn.classList.remove('done');
+    btn.textContent = 'Mark sent';
+    sentCount--;
+  } else {
+    sentSet.add(n);
+    card.classList.add('sent');
+    check.classList.add('done');
+    btn.classList.add('done');
+    btn.textContent = '✓ Sent';
+    sentCount++;
+  }
+  document.getElementById('pbar').style.width = (sentCount/20*100)+'%';
+  document.getElementById('pcount').textContent = sentCount+' / 20 sent';
+}
+
+function copyMsg(n) {
+  navigator.clipboard.writeText(messages[n]).then(() => notify('Copied message #'+n));
+}
+
+function notify(msg) {
+  const el = document.getElementById('notif');
+  el.textContent = msg;
+  el.style.opacity = '1';
+  setTimeout(() => el.style.opacity = '0', 2000);
+}
+
+function filter(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('.tc').forEach(card => {
+    card.style.display = (cat === 'all' || card.dataset.cat === cat) ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>
