@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Stripe Disputes · Support Overview</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter+Tight:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<style>
+  :root{
+    --bg:#000000; --panel:#111111; --panel2:#161616; --raised:#1E1E1E; --raised2:#2A2A2A;
+    --line:rgba(255,255,255,.10); --line2:rgba(255,255,255,.22);
+    --text:#FFFFFF; --muted:rgba(255,255,255,.86); --soft:rgba(255,255,255,.94); --faint:rgba(255,255,255,.5);
+    --lime:#E5FF00; --lime-dim:#C4DA00;
+    --green:#E5FF00; --red:#C74B4B; --blue:#5C79FF; --amber:#C74B4B; --gray:rgba(255,255,255,.6);
+    --stripe:#2D51FF; --stripe-soft:rgba(45,81,255,.14);
+    --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+    --shadow:0 16px 48px rgba(0,0,0,.72);
+    --shadow-sm:0 8px 24px rgba(0,0,0,.6);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;height:100%}
+  body{background:var(--bg);color:var(--text);font-family:'Sora','Helvetica Neue',Arial,sans-serif;overflow:hidden;height:100vh;-webkit-font-smoothing:antialiased}
+  ::selection{background:rgba(229,255,0,.25);color:#fff}
+  .app{display:flex;height:100vh;width:100vw}
+
+  /* sidebar */
+  .rail{width:284px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column}
+  .rail-top{padding:1.3rem 1.25rem 1.1rem;border-bottom:1px solid var(--line)}
+  .brand{display:flex;align-items:center;gap:.6rem;font-family:'Sora','Helvetica Neue',sans-serif;font-weight:800;letter-spacing:-.01em;font-size:.98rem;line-height:1.15;cursor:pointer}
+  .brand .mark{height:26px;width:auto;flex-shrink:0;display:block}
+  .brand .sub{font-family:'Sora',sans-serif;font-size:.62rem;font-weight:700;color:var(--faint);letter-spacing:.14em;text-transform:uppercase}
+  .rail-scroll{flex:1;overflow-y:auto;padding:.5rem .75rem 1rem}
+  .rail-scroll::-webkit-scrollbar{width:6px}.rail-scroll::-webkit-scrollbar-thumb{background:var(--line2);border-radius:3px}
+  .sec-title{font-size:.64rem;text-transform:uppercase;letter-spacing:.14em;color:var(--lime);font-weight:800;margin:1.1rem .55rem .45rem;display:flex;align-items:center;gap:.5rem}
+  .sec-title:first-child{margin-top:.4rem}
+  .nav{display:flex;align-items:center;gap:.7rem;padding:.52rem .6rem;border-radius:9px;color:var(--muted);font-weight:500;font-size:.86rem;cursor:pointer;position:relative;transition:background .16s,color .16s;border:1px solid transparent}
+  .nav .ni{width:16px;text-align:center;font-size:.82rem;color:var(--faint);transition:color .16s}
+  .nav:hover{background:var(--panel2);color:#fff}.nav:hover .ni{color:var(--muted)}
+  .nav.active{background:var(--raised);color:#fff;border-color:var(--line2)}
+  .nav.active .ni{color:var(--lime)}
+  .nav.active::before{content:"";position:absolute;left:-.75rem;top:50%;transform:translateY(-50%);width:3px;height:17px;background:var(--lime);border-radius:0 3px 3px 0}
+  .nav .tick{margin-left:auto;font-size:.72rem;color:var(--green);opacity:0;transition:opacity .2s}
+  .nav.done .tick{opacity:1}.nav.active .tick{opacity:0}
+  .rail-foot{padding:.85rem 1.1rem;border-top:1px solid var(--line);font-size:.72rem;color:var(--faint)}
+  .rail-foot .row{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem}
+  .mini-bar{height:4px;background:var(--panel2);border-radius:3px;overflow:hidden}
+  .mini-bar i{display:block;height:100%;width:0;background:var(--lime);transition:width .35s ease;border-radius:3px}
+
+  /* main */
+  .main{flex:1;display:flex;flex-direction:column;position:relative;min-width:0}
+  .top-progress{position:absolute;left:0;top:0;height:3px;width:100%;z-index:6}
+  .top-progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--lime),#a9c400);transition:width .35s ease}
+
+  .stage{flex:1;position:relative;overflow:hidden}
+  .slide{position:absolute;inset:0;padding:clamp(2rem,4.6vh,3.2rem) clamp(2.4rem,5vw,4.4rem) 96px;overflow:hidden;opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .32s ease,transform .32s ease;display:flex;flex-direction:column;justify-content:flex-start}
+  .slide.active{opacity:1;visibility:visible;transform:none}
+  .wrap{width:100%;max-width:940px;margin:0 auto}
+  /* template header block - keeps title/subtitle at the same place on every slide */
+  .slide .eyebrow{min-height:1rem}
+  h1.title{font-family:'Sora','Helvetica Neue',sans-serif;font-size:clamp(1.5rem,2.4vw,2.05rem);font-weight:800;letter-spacing:-.02em;line-height:1.08;margin:.85rem 0 .55rem;color:var(--text)}
+  p.lead{font-size:clamp(1rem,1.2vw,1.14rem);color:var(--soft);max-width:64ch;line-height:1.55;margin:0}
+
+  .eyebrow{display:inline-flex;align-items:center;gap:.5rem;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.18em;color:var(--lime)}
+  .eyebrow.purple{color:var(--lime)}
+  .muted{color:var(--muted)}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:clamp(.8rem,1.4vh,1.1rem)}
+  .card.raise{background:var(--panel2)}
+  .hoverable{transition:transform .16s,border-color .16s,box-shadow .16s}
+  .hoverable:hover{transform:translateY(-3px);border-color:var(--line2);box-shadow:var(--shadow-sm)}
+
+  .chip{display:inline-flex;align-items:center;gap:.4rem;font-size:.73rem;font-weight:700;padding:.24rem .62rem;border-radius:999px;white-space:nowrap;line-height:1.2}
+  .chip.lime{background:rgba(229,255,0,.1);color:var(--lime);border:1px solid rgba(229,255,0,.24)}
+  .chip.green{background:rgba(229,255,0,.1);color:var(--lime);border:1px solid rgba(229,255,0,.24)}
+  .chip.red{background:rgba(199,75,75,.13);color:var(--red);border:1px solid rgba(199,75,75,.28)}
+  .chip.blue{background:rgba(45,81,255,.16);color:var(--blue);border:1px solid rgba(45,81,255,.4)}
+  .chip.amber{background:rgba(199,75,75,.13);color:var(--red);border:1px solid rgba(199,75,75,.28)}
+  .chip.gray{background:var(--raised);color:var(--gray);border:1px solid var(--line2)}
+  .chip.purple{background:rgba(255,255,255,.06);color:var(--soft);border:1px solid var(--line2)}
+
+  .ico{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;background:var(--raised);border:1px solid var(--line2);color:var(--text)}
+  .ico.lime{background:rgba(229,255,0,.13);border-color:rgba(229,255,0,.32);color:var(--lime)}
+  .ico.green{background:rgba(229,255,0,.13);border-color:rgba(229,255,0,.32);color:var(--lime)}
+  .ico.red{background:rgba(199,75,75,.13);border-color:rgba(199,75,75,.3);color:var(--red)}
+  .ico.blue{background:rgba(45,81,255,.16);border-color:rgba(45,81,255,.42);color:var(--blue)}
+  .ico.amber{background:rgba(199,75,75,.13);border-color:rgba(199,75,75,.3);color:var(--red)}
+  .ico.purple{background:var(--raised);border-color:var(--line2);color:var(--soft)}
+  .ico.gray{background:var(--raised);border-color:var(--line2);color:var(--gray)}
+  .ico.sm{width:32px;height:32px;font-size:.9rem;border-radius:9px}
+
+  .callout{border-radius:12px;padding:.8rem 1rem;border:1px solid var(--line);background:var(--panel);display:flex;gap:.8rem;align-items:flex-start}
+  .callout.warn{border-color:rgba(199,75,75,.3);background:rgba(199,75,75,.07)}
+  .callout.good{border-color:rgba(229,255,0,.28);background:rgba(229,255,0,.06)}
+  .callout.info{border-color:rgba(45,81,255,.4);background:rgba(45,81,255,.08)}
+  .callout.tip{border-color:rgba(229,255,0,.28);background:rgba(229,255,0,.06)}
+  .callout .ct{font-weight:700;font-size:.9rem}
+  .callout .cd{font-size:.85rem;color:var(--muted);margin-top:.1rem;line-height:1.45}
+
+  .num{width:26px;height:26px;border-radius:50%;background:var(--lime);color:#000;font-weight:800;font-size:.8rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .num.ghost{background:var(--raised);color:var(--lime);border:1px solid var(--line2)}
+
+  .g2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(.7rem,1.3vw,1.05rem)}
+  .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(.7rem,1.3vw,1.05rem)}
+  .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(.6rem,1.1vw,.9rem)}
+
+  code,.mono{font-family:var(--mono)}
+  .codeblock{background:#0a0c0f;border:1px solid var(--line);border-radius:12px;padding:.85rem 1rem;font-family:var(--mono);font-size:.78rem;color:#cfd6df;line-height:1.7;overflow:hidden}
+  .codeblock .k{color:var(--lime)}.codeblock .s{color:#86e29a}.codeblock .c{color:var(--faint)}
+
+  /* flashing account cards (cover) */
+  .flashcard{position:relative;border:1px solid rgba(199,75,75,.35);animation:flashred 1.5s ease-in-out infinite}
+  @keyframes flashred{0%,100%{border-color:rgba(199,75,75,.3);box-shadow:0 0 0 rgba(199,75,75,0)}50%{border-color:rgba(199,75,75,.95);box-shadow:0 0 26px rgba(199,75,75,.32)}}
+  .chip.flash{animation:chipflash 1.6s ease-in-out infinite}
+  @keyframes chipflash{0%,100%{box-shadow:0 0 0 rgba(199,75,75,0);border-color:rgba(199,75,75,.28)}50%{box-shadow:0 0 12px rgba(199,75,75,.5);border-color:rgba(199,75,75,.95)}}
+  .flashcard .fnum{animation:flashnum 1.5s ease-in-out infinite}
+  @keyframes flashnum{0%,100%{opacity:.72}50%{opacity:1}}
+
+  /* interactive: tabs */
+  .tabs{display:flex;gap:.45rem;flex-wrap:wrap}
+  .tab{font-size:.82rem;font-weight:600;color:var(--muted);background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:.5rem .85rem;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:.5rem}
+  .tab:hover{color:#fff;border-color:var(--line2)}
+  .tab.on{background:var(--lime);color:#000;border-color:var(--lime);box-shadow:0 4px 14px rgba(229,255,0,.16)}
+  .tab.on .ti{color:#000}.tab .ti{color:var(--faint)}
+
+  /* interactive: scenario switch */
+  .scn{display:flex;flex-direction:column;gap:.45rem}
+  .scn-btn{text-align:left;border:1px solid var(--line);background:var(--panel2);border-radius:11px;padding:.6rem .8rem;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:.6rem;color:var(--soft);font-size:.85rem;font-weight:600}
+  .scn-btn:hover{border-color:var(--line2);background:var(--raised)}
+  .scn-btn.on{border-color:var(--lime);background:rgba(229,255,0,.06);color:#fff}
+  .scn-btn .dotm{width:9px;height:9px;border-radius:50%;background:var(--line2);flex-shrink:0}
+  .scn-btn.on .dotm{background:var(--lime);box-shadow:0 0 8px rgba(229,255,0,.6)}
+  .scn-btn .tag{margin-left:auto;font-size:.7rem;font-weight:800}
+  .ledger{display:flex;flex-direction:column;gap:.5rem}
+  .ledrow{display:flex;justify-content:space-between;align-items:center;font-size:.9rem;padding:.5rem .2rem;border-bottom:1px dashed var(--line)}
+  .ledrow .lv{font-family:var(--mono);font-weight:700}
+  .lv.neg{color:var(--red)}.lv.zero{color:var(--muted)}.lv.pos{color:var(--green)}
+  .total{display:flex;justify-content:space-between;align-items:center;margin-top:.5rem;padding:.85rem 1rem;border-radius:12px;background:var(--raised);border:1px solid var(--line2)}
+  .total .tv{font-family:var(--mono);font-weight:800;font-size:1.6rem}
+
+  /* native stripe mock */
+  .mock{border:1px solid var(--line2);border-radius:14px;overflow:hidden;background:#0b0e12;box-shadow:var(--shadow)}
+  .mock-bar{height:38px;display:flex;align-items:center;gap:.5rem;padding:0 .9rem;background:#0e1116;border-bottom:1px solid var(--line)}
+  .dot{width:10px;height:10px;border-radius:50%}
+  .mock-url{margin-left:.5rem;flex:1;height:22px;border-radius:6px;background:#141a21;border:1px solid var(--line);display:flex;align-items:center;gap:.45rem;padding:0 .6rem;font-family:var(--mono);font-size:.66rem;color:var(--muted);max-width:340px}
+  .mock-url i{font-size:.58rem;color:var(--green)}
+  .mock-body{padding:.9rem 1rem;background:#fff;color:#1a1f36}
+  .m-h{font-size:1rem;font-weight:800;color:#0a0f2c;margin-bottom:.5rem}
+  .m-filters{display:flex;gap:.4rem;margin-bottom:.6rem;flex-wrap:wrap}
+  .m-filter{font-size:.72rem;font-weight:600;color:#525f7f;background:#f6f8fb;border:1px solid #e3e8ee;border-radius:7px;padding:.28rem .6rem;cursor:pointer;transition:all .14s}
+  .m-filter:hover{border-color:#c7d0dd}
+  .m-filter.on{color:#fff;background:#635bff;border-color:#635bff}
+  table.m-tbl{width:100%;border-collapse:collapse;font-size:.76rem}
+  table.m-tbl th{text-align:left;color:#8792a2;font-weight:600;font-size:.64rem;text-transform:uppercase;letter-spacing:.04em;padding:.3rem .5rem;border-bottom:1px solid #e6ebf1}
+  table.m-tbl td{padding:.42rem .5rem;border-bottom:1px solid #f0f3f7;color:#3c4257;white-space:nowrap}
+  table.m-tbl tr{transition:opacity .18s,background .18s}
+  table.m-tbl tr.dim{opacity:.28}
+  table.m-tbl tr.hot{background:#fbfff0}
+  .amt{font-weight:700;color:#0a0f2c;font-family:var(--mono)}
+  .spill{display:inline-flex;align-items:center;gap:.3rem;font-size:.68rem;font-weight:700;padding:.16rem .5rem;border-radius:999px}
+  .spill.need{background:#fff5e6;color:#b25a00}
+  .spill.rev{background:#e9f0ff;color:#2a54c6}
+  .spill.won{background:#e6f8ee;color:#1a7f43}
+  .spill.lost{background:#fdecec;color:#c0392b}
+
+  .mockcard{background:#fff;border-radius:12px;border:1px solid #e6ebf1;padding:.9rem 1rem;color:#1a1f36}
+  .mc-title{font-weight:800;color:#0a0f2c;font-size:.95rem}
+  .mc-sub{font-size:.8rem;color:#4b5563;margin-top:.15rem;line-height:1.4}
+  .mc-btn{font-size:.78rem;font-weight:700;border-radius:8px;padding:.42rem .8rem;border:1px solid #d7dce3;color:#3c4257;background:#fff;cursor:pointer}
+  .mc-btn.primary{background:#635bff;color:#fff;border-color:#635bff}
+  .mc-hint{display:inline-flex;align-items:center;gap:.35rem;font-size:.72rem;color:#697386;background:#f6f8fb;border:1px solid #e6ebf1;border-radius:7px;padding:.28rem .55rem}
+
+  /* interactive stepper (responding) */
+  .steps{display:flex;flex-direction:column;gap:.5rem}
+  .step{display:flex;gap:.7rem;align-items:flex-start;padding:.6rem .75rem;border-radius:11px;border:1px solid var(--line);background:var(--panel2);cursor:pointer;transition:all .15s}
+  .step:hover{border-color:var(--line2)}
+  .step.on{border-color:var(--lime);background:rgba(229,255,0,.05)}
+  .step .sn{width:24px;height:24px;border-radius:50%;background:var(--raised);color:var(--faint);border:1px solid var(--line2);font-weight:800;font-size:.75rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .step.on .sn{background:var(--lime);color:#000;border-color:var(--lime)}
+  .step .st{font-weight:700;font-size:.86rem}
+  .step .sd{font-size:.78rem;color:var(--muted);margin-top:.05rem;line-height:1.4}
+
+  /* interactive lifecycle */
+  .lc{display:flex;align-items:flex-start;justify-content:space-between;gap:.3rem;position:relative}
+  .lc::before{content:"";position:absolute;left:6%;right:6%;top:23px;height:2px;background:var(--line2);z-index:0}
+  .lc-node{position:relative;z-index:1;flex:1;text-align:center;cursor:pointer}
+  .lc-node .lcd{width:46px;height:46px;border-radius:13px;margin:0 auto .45rem;display:flex;align-items:center;justify-content:center;font-size:1.05rem;background:var(--raised);border:1px solid var(--line2);color:var(--muted);transition:all .18s}
+  .lc-node:hover .lcd{border-color:var(--line)}
+  .lc-node.on .lcd{background:var(--lime);border-color:var(--lime);color:#000;box-shadow:0 0 0 4px rgba(229,255,0,.16)}
+  .lc-node .lcl{font-size:.82rem;font-weight:700;color:var(--text)}
+  .lc-node.on .lcl{color:var(--lime)}
+  .lc-node .lcw{font-size:.72rem;color:var(--muted)}
+
+  .statmini{display:flex;align-items:center;gap:.55rem;padding:.5rem .7rem;border-radius:11px;background:var(--raised);border:1px solid var(--line2)}
+  .statmini .sml{font-size:.63rem;color:var(--faint);text-transform:uppercase;letter-spacing:.05em;font-weight:600}
+  .statmini .smv{font-weight:800;font-size:.92rem;line-height:1.15}
+
+  /* reveal */
+  [data-rev]{opacity:0;transform:translateY(16px)}
+  .slide.active [data-rev]{animation:rev .4s cubic-bezier(.16,1,.3,1) forwards;animation-delay:var(--d,0s)}
+  @keyframes rev{to{opacity:1;transform:none}}
+  [data-pop]{opacity:0;transform:scale(.94)}
+  .slide.active [data-pop]{animation:pop .45s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:var(--d,0s)}
+  @keyframes pop{to{opacity:1;transform:none}}
+  .fade-in{animation:fade .3s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+  /* controls */
+  .controls{position:absolute;left:0;right:0;bottom:0;height:64px;border-top:1px solid var(--line);background:rgba(8,9,11,.82);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:space-between;padding:0 clamp(2.4rem,5vw,4.4rem);z-index:5}
+  .btn{display:inline-flex;align-items:center;gap:.5rem;font-size:.82rem;font-weight:600;color:var(--muted);background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:.45rem .8rem;cursor:pointer;transition:all .14s var(--ease,cubic-bezier(.2,.6,.2,1))}
+  .btn:hover{color:#fff;border-color:var(--line2);background:var(--raised)}
+  .btn:disabled{opacity:.35;cursor:not-allowed}
+  .btn.prime{background:var(--lime);color:#000;border-color:var(--lime)}.btn.prime:hover{background:#f2ff4d}
+  .btn.home{color:var(--lime);border-color:rgba(229,255,0,.28)}
+  .dots{display:flex;gap:6px;align-items:center}
+  .dots i{width:7px;height:7px;border-radius:50%;background:var(--line2);cursor:pointer;transition:all .2s}
+  .dots i.on{background:var(--lime);width:20px;border-radius:4px}
+  .counter{font-size:.78rem;color:var(--faint);font-variant-numeric:tabular-nums;min-width:56px;text-align:center}
+
+  @media (max-width:1180px){.rail{width:228px}}
+  @media (max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}[data-rev],[data-pop]{opacity:1;transform:none}.flashcard{border-color:rgba(199,75,75,.7)}}
+
+  /* live dashboard (slide 1) */
+  .kpi{cursor:pointer;text-align:center;padding:.65rem .6rem;transition:border-color .16s,transform .16s}
+  .kpi:hover{transform:translateY(-2px);border-color:var(--line2)}
+  .kpi.on{border-color:var(--lime);box-shadow:0 0 0 1px rgba(229,255,0,.3)}
+  .kpi .kn{font-size:1.9rem;font-weight:900;line-height:1;margin:.25rem 0 0}
+  .kpi .kl{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;font-weight:600}
+  .kpi .kt{font-size:.66rem;color:var(--faint);margin-top:.35rem}
+  .acctdot{width:9px;height:9px;border-radius:2px;display:inline-block;vertical-align:middle}
+  .chartcard{padding:.6rem .5rem;display:flex;flex-direction:column;align-items:center;justify-content:flex-start}
+  .chartcard .ctitle{font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--faint);margin-bottom:.3rem}
+  .dlegend{display:flex;flex-wrap:wrap;gap:.22rem .55rem;margin-top:.4rem;justify-content:center;max-width:250px}
+  .dleg{display:flex;align-items:center;gap:.32rem;font-size:.67rem;color:var(--muted);cursor:pointer;transition:color .15s,opacity .15s}
+  .dleg:hover{color:#fff}.dleg.off{opacity:.35}
+  .dleg .lgd{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+  .dseg{transition:opacity .15s}
+  .d-tbl{width:100%;border-collapse:collapse;font-size:.75rem}
+  .d-tbl th{position:sticky;top:0;background:var(--panel);text-align:left;color:var(--faint);font-weight:600;font-size:.62rem;text-transform:uppercase;letter-spacing:.05em;padding:.35rem .6rem;border-bottom:1px solid var(--line2)}
+  .d-tbl td{padding:.32rem .6rem;border-bottom:1px solid var(--line);color:var(--soft);white-space:nowrap}
+  .d-tbl tbody tr:hover td{background:var(--panel2)}
+  .pst{display:inline-flex;align-items:center;gap:.3rem;font-size:.65rem;font-weight:700;padding:.12rem .5rem;border-radius:999px}
+  .pst.need{background:rgba(199,75,75,.14);color:var(--red);border:1px solid rgba(199,75,75,.3)}
+  .pst.lost{background:rgba(199,75,75,.14);color:var(--red);border:1px solid rgba(199,75,75,.3)}
+  .pst.won{background:rgba(74,222,128,.14);color:var(--green);border:1px solid rgba(74,222,128,.3)}
+  .pst.rev{background:rgba(255,255,255,.14);color:var(--blue);border:1px solid rgba(255,255,255,.3)}
+  .pst.warn{background:var(--raised);color:var(--gray);border:1px solid var(--line2)}
+  .fchip{display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;font-weight:600;color:var(--lime);background:rgba(229,255,0,.08);border:1px solid rgba(229,255,0,.28);border-radius:999px;padding:.24rem .6rem;cursor:pointer}
+  .fchip .x{color:var(--faint)}
+  .fchip.clear{color:var(--muted);background:var(--panel2);border-color:var(--line)}
+
+  .tbadge{display:inline-flex;align-items:center;gap:.4rem;font-size:.8rem;font-weight:600;color:var(--muted);padding:.4rem .75rem;border-radius:10px;background:var(--panel2);border:1px solid var(--line)}
+  .tbadge .tbn{font-size:1.1rem;font-weight:900}
+  .expbtn{display:inline-flex;align-items:center;gap:.45rem;font-size:.78rem;font-weight:700;color:#000;background:var(--lime);border:1px solid var(--lime);border-radius:999px;padding:.44rem .9rem;cursor:pointer;transition:background .14s}
+  .expbtn:hover{background:#f2ff4d}
+  .chartcard .dlegend{max-width:270px}
+  .abar{display:flex;align-items:center;gap:.55rem;font-size:.74rem;margin-bottom:.55rem}
+  .abar:last-child{margin-bottom:0}
+  .abar .albl{width:46px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums;flex-shrink:0}
+  .abar .atrack{flex:1;height:18px;background:var(--raised);border-radius:6px;overflow:hidden;cursor:pointer;border:1px solid var(--line2)}
+  .abar .afill{display:block;height:100%;border-radius:6px;transition:width .35s cubic-bezier(.2,.8,.2,1)}
+  .abar .acnt{width:24px;color:var(--soft);font-weight:700;font-variant-numeric:tabular-nums;flex-shrink:0}
+  .abar.off{opacity:.4}
+
+  .rail-divider{height:1px;background:var(--line2);margin:1.1rem .55rem .4rem}
+  .scnflow{display:flex;align-items:center;flex-wrap:wrap;gap:.4rem;margin-bottom:.75rem}
+  .scnflow .fstep{font-size:.72rem;font-weight:600;color:var(--soft);background:rgba(229,255,0,.07);border:1px solid rgba(229,255,0,.24);border-radius:999px;padding:.28rem .6rem}
+  .scnflow .fsar{font-size:.62rem;color:var(--lime)}
+  .abar .acval{width:104px;text-align:right;font-size:.7rem;color:var(--soft);font-weight:700;font-variant-numeric:tabular-nums;flex-shrink:0}
+  .amttotal{font-size:.74rem;color:var(--muted);text-align:right;margin-bottom:.55rem}
+  .amttotal b{color:var(--lime);font-size:.86rem;font-weight:800}
+  .statuscard{display:flex;align-items:flex-start;gap:.7rem;padding:.72rem .9rem;border:1px solid var(--line);border-radius:11px;background:var(--panel);min-height:62px}
+  .statuscard .sdot{width:11px;height:11px;border-radius:50%;flex-shrink:0;margin-top:.28rem}
+  .statuscard .stt{font-weight:700;font-size:.86rem}
+  .statuscard .sdd{font-size:.78rem;color:var(--muted);line-height:1.35;margin-top:.1rem}
+  .statuscard.tipcard{border-color:rgba(229,255,0,.25);background:rgba(229,255,0,.04)}
+  .phase-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.6rem;padding-bottom:.55rem;border-bottom:1px solid var(--line)}
+  .phase-h .pnum{font-size:.6rem;color:var(--faint);text-transform:uppercase;letter-spacing:.09em;font-weight:700}
+  .phase-h .pname{font-weight:800;font-size:.92rem}
+  .pstep{display:flex;align-items:center;gap:.6rem;padding:.26rem 0}
+  .pstep .psn{width:22px;height:22px;border-radius:50%;background:var(--raised);border:1px solid var(--line2);color:var(--lime);font-weight:800;font-size:.66rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .pstep .psi{width:15px;text-align:center;color:var(--faint);font-size:.76rem;flex-shrink:0}
+  .pstep .psl{font-size:.82rem;color:var(--soft)}
+  .fbadge{display:inline-flex;align-items:center;gap:.35rem;font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--soft);background:rgba(255,255,255,.06);border:1px solid var(--line2);border-radius:999px;padding:.16rem .5rem}
+
+  .hstat{display:flex;align-items:center;gap:.6rem;padding:.55rem .8rem;border:1px solid var(--line);border-radius:12px;background:var(--panel2)}
+  .hstat .hn{font-size:1.3rem;font-weight:900;line-height:1}
+  .hstat .hl{font-size:.68rem;color:var(--muted)}
+  .acard{padding:.85rem 1rem;display:flex;flex-direction:column;gap:.55rem}
+  .acard .ahead{display:flex;align-items:center;gap:.5rem}
+  .acard .aname{font-weight:800;font-size:1rem}
+  .acard .abig{font-size:1.95rem;font-weight:900;line-height:1}
+  .acard .acctdot{width:11px;height:11px;border-radius:3px}
+  .acard .abd{display:grid;grid-template-columns:1fr 1fr;gap:.28rem .9rem;font-size:.76rem}
+  .acard .abd>div{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:.26rem}
+  .acard .abd .k{color:var(--muted)}
+  .acard .abd .v{font-weight:800}
+  .riskbar{height:6px;border-radius:4px;background:var(--raised);overflow:hidden}
+  .riskbar i{display:block;height:100%;border-radius:4px}
+  .chd{font-weight:800;font-size:.92rem;margin-bottom:.55rem}
+  .dtbl2{width:100%;font-size:.77rem;border-collapse:collapse}
+  .dtbl2 th{text-align:left;color:var(--faint);font-weight:600;font-size:.62rem;text-transform:uppercase;letter-spacing:.04em;padding:.2rem .3rem .35rem}
+  .dtbl2 th.r{text-align:right}
+  .dtbl2 td{padding:.25rem .3rem;border-top:1px solid var(--line)}
+  .dtbl2 td.r{text-align:right;font-variant-numeric:tabular-nums;font-weight:700;color:var(--soft)}
+  .dtbl2 .lbl{display:flex;align-items:center;gap:.5rem}
+  .dtbl2 .ld{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+  .dtbl2 tr.totalrow td{border-top:1.5px solid var(--line2);font-weight:800;color:var(--text);padding-top:.4rem}
+  .notif-banner{display:flex;align-items:center;gap:.9rem;padding:.7rem 1rem;border:1px solid var(--line);border-radius:12px;background:var(--panel2)}
+
+  .dleg2{display:flex;flex-direction:column;gap:.34rem;flex:1;min-width:0}
+  .dleg2 .lr{display:flex;align-items:center;gap:.45rem;font-size:.76rem;color:var(--muted)}
+  .dleg2 .lr .ld{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+  .dleg2 .lr .lc{margin-left:auto;font-weight:700;color:var(--soft);font-variant-numeric:tabular-nums;padding-left:.6rem}
+  .abar .acval{width:124px}
+  .acard{padding:.9rem 1rem;display:flex;flex-direction:column;gap:0}
+  .acard .abig{font-size:1.9rem;font-weight:900;line-height:1}
+
+  p.lead{margin-bottom:1.5rem}
+  .nav.accent{color:var(--lime)!important;font-weight:800}
+  .nav.accent .ni{color:var(--lime)!important}
+  .pin.purple{background:#9AA0A8;color:#04121f}
+  .legrow .lp.purple{background:#9AA0A8}
+  .eyebrow i{font-size:.85em}
+
+  /* interactive step cards (smart disputes + cycle) - clickable, solid when selected */
+  .sdgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:.55rem;align-items:stretch}
+  .sdstep{position:relative;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:.7rem .7rem .75rem;display:flex;flex-direction:column;gap:.4rem;cursor:pointer;transition:border-color .15s,background .15s,box-shadow .15s}
+  .sdstep:hover{border-color:var(--line2)}
+  .sdstep.on{background:var(--raised);border-color:var(--lime);box-shadow:0 0 0 3px rgba(229,255,0,.10)}
+  .sdstep .sdtop{display:flex;align-items:center;gap:.45rem}
+  .sdstep .sdn{width:20px;height:20px;border-radius:50%;background:var(--raised);border:1px solid var(--line2);color:var(--soft);font-weight:800;font-size:.68rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .sdstep.on .sdn{background:var(--lime);border-color:var(--lime);color:#000}
+  .sdstep .sdt{font-weight:700;font-size:.82rem;line-height:1.12}
+  .sdstep .sdtag{font-size:.74rem;font-weight:600;color:var(--muted)}
+  .sdstep.on .sdtag{color:var(--lime)}
+  .sdstep .sdar{position:absolute;right:-.52rem;top:1.15rem;z-index:3;color:var(--faint);font-size:.62rem;background:var(--bg);width:15px;height:15px;display:flex;align-items:center;justify-content:center;border-radius:50%;border:1px solid var(--line)}
+  @media (max-width:900px){.sdgrid{grid-template-columns:1fr 1fr}.sdstep .sdar{display:none}}
+
+  /* "Full Article" / reference buttons - shared template pattern */
+  .refrow{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap}
+  .refbtn{display:inline-flex;align-items:center;gap:.5rem;font-size:.78rem;font-weight:700;color:var(--lime);background:rgba(229,255,0,.08);border:1px solid rgba(229,255,0,.28);border-radius:999px;padding:.42rem .85rem;text-decoration:none;transition:all .15s;white-space:nowrap}
+  .refbtn:hover{background:rgba(229,255,0,.16);border-color:var(--lime);color:#fff}
+  .refbtn .ext{font-size:.62rem;opacity:.8}
+  .refbtn.stripe{color:var(--soft);background:var(--raised);border-color:var(--line2)}
+  .refbtn.stripe:hover{background:var(--raised2);border-color:var(--line);color:#fff}
+
+  /* visible step / stage badge */
+  .stepbadge{display:inline-flex;align-items:center;gap:.4rem;font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#000;background:var(--lime);border-radius:999px;padding:.22rem .6rem;flex-shrink:0}
+  .stepbadge .n{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:rgba(0,0,0,.22);color:#000;font-size:.66rem;font-weight:900}
+  .stepbadge.blue{background:var(--blue);color:#fff}
+  .stepbadge.blue .n{background:rgba(255,255,255,.25);color:#fff}
+
+  /* info tooltip on hover */
+  .tipwrap{position:relative;display:inline-flex;align-items:center}
+  .tip-ic{width:15px;height:15px;border-radius:50%;border:1px solid var(--line2);color:var(--muted);font-size:.6rem;display:inline-flex;align-items:center;justify-content:center;cursor:help;margin-left:.35rem}
+  .tip-ic:hover{border-color:var(--lime);color:var(--lime)}
+  .tipwrap .tiptip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%) translateY(4px);width:max-content;max-width:260px;background:var(--raised2);border:1px solid var(--line2);border-radius:9px;padding:.5rem .65rem;font-size:.74rem;font-weight:400;line-height:1.4;color:var(--soft);box-shadow:var(--shadow-sm);opacity:0;visibility:hidden;transition:opacity .15s,transform .15s;z-index:20;text-transform:none;letter-spacing:normal}
+  .tipwrap:hover .tiptip{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
+
+  /* collapsible card */
+  details.collapse{background:var(--panel2);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  details.collapse+details.collapse{margin-top:.5rem}
+  details.collapse>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:.7rem;padding:.7rem .9rem;font-weight:700;font-size:.9rem;color:var(--text)}
+  details.collapse>summary::-webkit-details-marker{display:none}
+  details.collapse>summary .chev{margin-left:auto;color:var(--faint);transition:transform .2s;font-size:.8rem}
+  details.collapse[open]>summary .chev{transform:rotate(90deg);color:var(--lime)}
+  details.collapse .cbody{padding:0 .9rem .85rem;font-size:.84rem;color:var(--muted);line-height:1.5}
+
+  /* overview stat chips */
+  .statchips{display:flex;flex-wrap:wrap;gap:.5rem}
+  .statchip{display:inline-flex;align-items:baseline;gap:.4rem;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:.4rem .7rem}
+  .statchip .sv{font-family:'Sora',sans-serif;font-weight:800;font-size:.98rem;line-height:1}
+  .statchip .sl{font-size:.72rem;color:var(--muted)}
+  .statchip.alert .sv{color:var(--red)}
+
+  /* ================= WORKFLOW (image 7) ================= */
+  .wfflow{margin-top:.9rem;display:flex;flex-direction:column;gap:.7rem}
+  .wftop{display:flex;align-items:stretch;gap:.28rem}
+  .wfc{position:relative;flex:1;min-width:0;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:.6rem .55rem .58rem;display:flex;flex-direction:column;gap:.3rem;transition:transform .2s,border-color .2s,box-shadow .2s}
+  .wfc:hover{transform:translateY(-3px);box-shadow:var(--shadow-sm)}
+  .wfc .wfcn{position:absolute;top:.5rem;left:.5rem;width:19px;height:19px;border-radius:50%;font-size:.62rem;font-weight:800;display:flex;align-items:center;justify-content:center;color:#000;background:var(--lime)}
+  .wfcn.blue{background:var(--blue);color:#fff}.wfcn.gray{background:var(--raised2);color:var(--soft)}
+  .wfc .wfci{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.9rem;background:var(--raised);border:1px solid var(--line2);color:var(--soft);align-self:flex-end}
+  .wfc .wfct{font-weight:700;font-size:.8rem;line-height:1.1;margin-top:.05rem}
+  .wfc .wfcs{font-size:.68rem;color:var(--muted);line-height:1.28}
+  .wfc .wfcd{margin-top:auto;padding-top:.4rem;border-top:1px dashed var(--line);font-size:.6rem;color:var(--faint);display:flex;align-items:center;gap:.3rem}
+  .wfc .wfcd i{color:var(--blue)}
+  .wfc.dec{border-color:rgba(229,255,0,.34);background:rgba(229,255,0,.05)}
+  .wfc.dec .wfci{background:rgba(229,255,0,.13);border-color:rgba(229,255,0,.32);color:var(--lime)}
+  .wfa{flex:0 0 14px;display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:.66rem}
+  .wfbr{display:grid;grid-template-columns:1.65fr 1fr;gap:.55rem;align-items:stretch}
+  .wfpanel{border-radius:13px;padding:.7rem .8rem;border:1px solid var(--line)}
+  .wfpanel.yes{border-color:rgba(229,255,0,.28);background:rgba(229,255,0,.04)}
+  .wfpanel.no{border-color:rgba(45,81,255,.26);background:rgba(45,81,255,.05)}
+  .wfpl{font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;display:flex;align-items:center;gap:.4rem;margin-bottom:.6rem}
+  .wfpanel.yes .wfpl{color:var(--lime)}.wfpanel.no .wfpl{color:var(--blue)}
+  .wfsteps{display:flex;align-items:stretch;gap:.25rem}
+  .wfs{flex:1;min-width:0;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:.5rem .5rem;display:flex;flex-direction:column;gap:.2rem}
+  .wfs .wfsn{font-size:.58rem;font-weight:800;color:var(--lime)}
+  .wfs .wfst{font-weight:700;font-size:.72rem;line-height:1.1;display:flex;align-items:center;gap:.3rem}
+  .wfs .wfss{font-size:.63rem;color:var(--muted);line-height:1.25}
+  .wfsa{flex:0 0 10px;display:flex;align-items:center;justify-content:center;color:var(--lime);font-size:.6rem}
+  .wfout2{display:flex;gap:.45rem}
+  .wfo{flex:1;border-radius:11px;padding:.55rem .6rem;border:1px solid var(--line2);text-align:center}
+  .wfo .woh{display:flex;align-items:center;justify-content:center;gap:.35rem;font-weight:800;font-size:.82rem}
+  .wfo .wof{font-size:.62rem;color:var(--muted);margin-top:.2rem}
+  .wfo.win{border-color:rgba(229,255,0,.4);background:rgba(229,255,0,.06)}.wfo.win .woh{color:var(--lime)}
+  .wfo.lose{border-color:rgba(199,75,75,.4);background:rgba(199,75,75,.07)}.wfo.lose .woh{color:var(--red)}
+
+  /* ================= PLAYBOOK (image 8) ================= */
+  .pbwrap{margin-top:1rem;display:grid;grid-template-columns:.86fr 1.14fr;gap:1rem;align-items:start}
+  .pbcard{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:1rem 1.05rem}
+  .pbh{font-size:.72rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--blue);display:flex;align-items:center;gap:.45rem}
+  .pbhs{font-size:.76rem;color:var(--muted);margin:.25rem 0 .8rem}
+  .pbchk{display:flex;align-items:flex-start;gap:.6rem;padding:.4rem 0;border-top:1px solid var(--line)}
+  .pbchk:first-of-type{border-top:none}
+  .pbchk i{color:var(--soft);font-size:.8rem;width:18px;text-align:center;margin-top:.12rem;flex-shrink:0}
+  .pbchk .pk{font-weight:600;font-size:.82rem;line-height:1.25}
+  .pbchk .pk span{display:block;font-weight:400;font-size:.72rem;color:var(--muted)}
+  .pbremember{margin-top:.85rem;border:1px solid rgba(45,81,255,.4);background:rgba(45,81,255,.07);border-radius:11px;padding:.6rem .75rem;display:flex;gap:.6rem;align-items:flex-start}
+  .pbremember i{color:var(--blue);margin-top:.1rem}
+  .pbremember .rt{font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--blue)}
+  .pbremember .rd{font-size:.8rem;color:var(--soft);margin-top:.12rem;line-height:1.35}
+  .flowc{background:var(--panel2);border:1px solid var(--line);border-radius:13px;padding:.62rem .8rem;display:flex;align-items:center;gap:.6rem;transition:transform .2s,box-shadow .2s,border-color .2s}
+  .flowc:hover{transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+  .flowc .fcic{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.82rem;flex-shrink:0;background:var(--raised);border:1px solid var(--line2);color:var(--soft)}
+  .flowc .fct{font-weight:700;font-size:.84rem;line-height:1.18}
+  .flowc .fcs{font-size:.72rem;color:var(--muted);line-height:1.3;margin-top:.1rem}
+  .flowc.q .fcic{background:rgba(45,81,255,.14);border-color:rgba(45,81,255,.4);color:var(--blue)}
+  .flowc.reach{border-color:rgba(229,255,0,.32);background:rgba(229,255,0,.04)}.flowc.reach .fcic{background:rgba(229,255,0,.13);border-color:rgba(229,255,0,.32);color:var(--lime)}
+  .flowc.refund{border-color:rgba(229,255,0,.4);background:rgba(229,255,0,.06)}.flowc.refund .fcic{background:rgba(229,255,0,.14);border-color:rgba(229,255,0,.4);color:var(--lime)}.flowc.refund .fct{color:var(--lime)}
+  .flowc.counter{border-color:rgba(45,81,255,.42);background:rgba(45,81,255,.08)}.flowc.counter .fcic{background:rgba(45,81,255,.16);border-color:rgba(45,81,255,.45);color:var(--blue)}.flowc.counter .fct{color:var(--blue)}
+  .flowc.accept{border-color:rgba(199,75,75,.4);background:rgba(199,75,75,.07)}.flowc.accept .fcic{background:rgba(199,75,75,.14);border-color:rgba(199,75,75,.4);color:var(--red)}.flowc.accept .fct{color:var(--red)}
+  .yarrow{display:flex;align-items:center;gap:.35rem;font-size:.62rem;font-weight:800;letter-spacing:.04em;padding:.15rem 0}
+  .yarrow.y{color:var(--lime)}.yarrow.n{color:var(--red)}
+  .yarrow .ln{flex:1;height:1px;background:currentColor;opacity:.4}
+  .pbkey{margin-top:1rem;border:1px solid var(--line2);background:var(--raised);border-radius:12px;padding:.7rem 1rem;display:flex;align-items:center;gap:.7rem;font-size:.88rem;color:var(--soft)}
+  .pbkey i{color:var(--lime)}
+
+  /* ================= v21 · WORKFLOW (interactive branching map) ================= */
+  .wfmap{margin-top:1rem;display:flex;flex-direction:column;gap:.55rem}
+  .wfrow{display:flex;align-items:stretch;gap:.32rem}
+  .wfn{position:relative;flex:1;min-width:0;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:.6rem .58rem;cursor:pointer;display:flex;flex-direction:column;gap:.26rem;transition:transform .22s cubic-bezier(.2,.8,.2,1),border-color .18s,box-shadow .2s,background .18s}
+  .wfn:hover{transform:translateY(-3px);border-color:var(--line2);box-shadow:var(--shadow-sm)}
+  .wfn.on{border-color:var(--lime);background:var(--raised);box-shadow:0 0 0 3px rgba(229,255,0,.12)}
+  .wfn .wnh{display:flex;align-items:center;gap:.45rem}
+  .wfn .wnn{width:19px;height:19px;border-radius:50%;font-size:.6rem;font-weight:800;display:flex;align-items:center;justify-content:center;color:#000;background:var(--lime);flex-shrink:0}
+  .wfn.blue .wnn{background:var(--blue);color:#fff}.wfn.gray .wnn{background:var(--raised2);color:var(--soft)}
+  .wfn .wni{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.78rem;background:var(--raised);border:1px solid var(--line2);color:var(--soft);margin-left:auto;flex-shrink:0}
+  .wfn.on .wni{background:rgba(229,255,0,.13);border-color:rgba(229,255,0,.32);color:var(--lime)}
+  .wfn .wnt{font-weight:700;font-size:.78rem;line-height:1.12}
+  .wfn .wns{font-size:.66rem;color:var(--muted);line-height:1.26}
+  .wfn.dec{border-color:rgba(229,255,0,.34);background:rgba(229,255,0,.05)}
+  .wfn.dec .wni{background:rgba(229,255,0,.13);border-color:rgba(229,255,0,.32);color:var(--lime)}
+  .wfn.win{border-color:rgba(229,255,0,.34)}.wfn.win .wnn{background:var(--lime);color:#000}
+  .wfn.lose{border-color:rgba(199,75,75,.34)}.wfn.lose .wnn{background:var(--red);color:#fff}
+  .wfn.done .wni{color:var(--lime)}
+  .wfarr{flex:0 0 15px;display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:.62rem;transition:color .2s}
+  .wfarr.lit{color:var(--lime)}.wfarr.litn{color:var(--blue)}
+  .wfspine{flex:0 0 auto}
+  /* fork conditions */
+  .wffork{display:grid;grid-template-columns:1fr 1fr;gap:.55rem;margin-top:.1rem}
+  .wfcond{border-radius:11px;padding:.5rem .7rem;display:flex;align-items:center;gap:.5rem;font-size:.74rem;font-weight:700}
+  .wfcond .wcl{display:inline-flex;align-items:center;gap:.35rem;font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:.14rem .5rem;border-radius:999px}
+  .wfcond.yes{border:1px solid rgba(229,255,0,.28);background:rgba(229,255,0,.05);color:var(--soft)}
+  .wfcond.yes .wcl{background:rgba(229,255,0,.14);color:var(--lime)}
+  .wfcond.no{border:1px solid rgba(45,81,255,.26);background:rgba(45,81,255,.06);color:var(--soft)}
+  .wfcond.no .wcl{background:rgba(45,81,255,.18);color:var(--blue)}
+  /* branch bands */
+  .wftrack{border-radius:13px;padding:.6rem .7rem;border:1px solid var(--line);opacity:0;transform:translateY(10px);transition:opacity .45s cubic-bezier(.16,1,.3,1),transform .45s cubic-bezier(.16,1,.3,1)}
+  .wftrack.in{opacity:1;transform:none}
+  .wftrack.yes{border-color:rgba(229,255,0,.26);background:rgba(229,255,0,.035)}
+  .wftrack.no{border-color:rgba(45,81,255,.24);background:rgba(45,81,255,.045)}
+  .wftl{font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;display:flex;align-items:center;gap:.45rem;margin-bottom:.5rem}
+  .wftrack.yes .wftl{color:var(--lime)}.wftrack.no .wftl{color:var(--blue)}
+  .wftl .end{margin-left:auto;font-size:.58rem;font-weight:700;color:var(--muted);text-transform:none;letter-spacing:normal;display:inline-flex;align-items:center;gap:.3rem}
+  .wfterm{flex:0 0 auto;align-self:center;color:var(--lime);font-size:.72rem;display:flex;align-items:center;gap:.28rem;font-weight:800;padding-left:.15rem}
+  .wfsplit{flex:0 0 auto;display:flex;flex-direction:column;gap:.3rem;justify-content:center}
+  /* detail panel */
+  .wfdetail{margin-top:.5rem;min-height:120px;display:flex;align-items:center}
+  @media (max-width:900px){.wffork{grid-template-columns:1fr}.wfrow{flex-wrap:wrap}.wfn{flex:1 1 45%}.wfarr{display:none}}
+
+  /* ================= v21 · PLAYBOOK (central decision tree) ================= */
+  .pbgrid{margin-top:1rem;display:grid;grid-template-columns:.82fr 1.18fr;gap:1.1rem;align-items:start}
+  .pbside{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:.95rem 1.05rem}
+  .pbside .psh{font-size:.68rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--blue);display:flex;align-items:center;gap:.45rem}
+  .pbside .pss{font-size:.75rem;color:var(--muted);margin:.25rem 0 .75rem}
+  .pbcheck{display:grid;grid-template-columns:1fr 1fr;gap:.4rem .8rem}
+  .pbcheck .pci{display:flex;align-items:center;gap:.5rem;font-size:.78rem;color:var(--soft);padding:.28rem 0}
+  .pbcheck .pci i{color:var(--lime);font-size:.72rem;width:15px;text-align:center;flex-shrink:0}
+  .pbnote{margin-top:.85rem;border:1px solid rgba(45,81,255,.38);background:rgba(45,81,255,.07);border-radius:11px;padding:.55rem .7rem;display:flex;gap:.55rem;align-items:flex-start}
+  .pbnote i{color:var(--blue);margin-top:.1rem}
+  .pbnote .nt{font-size:.64rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--blue)}
+  .pbnote .nd{font-size:.78rem;color:var(--soft);margin-top:.1rem;line-height:1.35}
+  /* tree */
+  .pbtree{position:relative}
+  .pbth{font-size:.68rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--blue);display:flex;align-items:center;gap:.45rem;margin-bottom:.7rem}
+  .pbnode{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:.55rem .7rem;display:flex;align-items:center;gap:.6rem;transition:transform .2s,box-shadow .2s,border-color .2s}
+  .pbnode:hover{transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+  .pbnode .pnic{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.82rem;flex-shrink:0;background:var(--raised);border:1px solid var(--line2);color:var(--soft)}
+  .pbnode .pnt{font-weight:700;font-size:.84rem;line-height:1.16}
+  .pbnode .pns{font-size:.72rem;color:var(--muted);line-height:1.3;margin-top:.06rem}
+  .pbnode.q{border-color:rgba(45,81,255,.34);background:rgba(45,81,255,.05)}
+  .pbnode.q .pnic{background:rgba(45,81,255,.14);border-color:rgba(45,81,255,.4);color:var(--blue)}
+  .pbnode.yes{border-color:rgba(229,255,0,.3);background:rgba(229,255,0,.04)}.pbnode.yes .pnic{background:rgba(229,255,0,.13);border-color:rgba(229,255,0,.32);color:var(--lime)}
+  .pbnode.term{border-color:rgba(229,255,0,.42);background:rgba(229,255,0,.07)}.pbnode.term .pnic{background:rgba(229,255,0,.15);border-color:rgba(229,255,0,.42);color:var(--lime)}.pbnode.term .pnt{color:var(--lime)}
+  .pbnode.counter{border-color:rgba(45,81,255,.44);background:rgba(45,81,255,.08)}.pbnode.counter .pnic{background:rgba(45,81,255,.16);border-color:rgba(45,81,255,.45);color:var(--blue)}.pbnode.counter .pnt{color:var(--blue)}
+  .pbnode.accept{border-color:rgba(199,75,75,.42);background:rgba(199,75,75,.07)}.pbnode.accept .pnic{background:rgba(199,75,75,.14);border-color:rgba(199,75,75,.4);color:var(--red)}.pbnode.accept .pnt{color:var(--red)}
+  .pbconn{display:flex;align-items:center;gap:.4rem;padding:.16rem 0 .16rem .9rem;font-size:.6rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+  .pbconn.y{color:var(--lime)}.pbconn.n{color:var(--red)}.pbconn .cl{flex:1;height:1px;background:currentColor;opacity:.32}
+  .pbsplit{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-top:.35rem}
+  .pbcol{display:flex;flex-direction:column;gap:.3rem}
+  .pbveil{opacity:0;transform:translateY(12px)}
+  .pbtree.lit .pbveil{animation:rev .5s cubic-bezier(.16,1,.3,1) forwards;animation-delay:var(--pd,0s)}
+  @media (max-width:900px){.pbgrid{grid-template-columns:1fr}.pbcheck{grid-template-columns:1fr}}
+
+  /* ================= v21 · EVIDENCE (expandable) ================= */
+  .evcol{border-radius:14px;padding:.85rem .95rem;min-height:300px;display:flex;flex-direction:column}
+  .evhh{display:flex;align-items:center;gap:.5rem;font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.6rem}
+  .evcol.claim{border:1px solid rgba(199,75,75,.24);background:rgba(199,75,75,.03)}.evcol.claim .evhh{color:var(--red)}
+  .evcol.evid{border:1px solid rgba(229,255,0,.26);background:rgba(229,255,0,.03)}.evcol.evid .evhh{color:var(--lime)}
+  .evcol.res{border:1px solid rgba(74,222,128,.26);background:rgba(229,255,0,.03)}.evcol.res .evhh{color:var(--green)}
+  .evitem{border:1px solid var(--line);background:var(--panel2);border-radius:10px;overflow:hidden;transition:border-color .18s,background .18s}
+  .evitem+.evitem{margin-top:.4rem}
+  .evitem:hover{border-color:var(--line2)}
+  .evitem.open{border-color:rgba(229,255,0,.32);background:var(--raised)}
+  .evhead{display:flex;align-items:center;gap:.6rem;padding:.5rem .6rem;cursor:pointer}
+  .evhead .eic{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.76rem;flex-shrink:0;background:rgba(229,255,0,.12);border:1px solid rgba(229,255,0,.3);color:var(--lime)}
+  .evhead .etx{min-width:0;flex:1}
+  .evhead .ent{font-weight:700;font-size:.82rem;line-height:1.15}
+  .evhead .ewhy{font-size:.62rem;font-weight:700;color:var(--faint);display:inline-flex;align-items:center;gap:.28rem;flex-shrink:0;transition:color .16s}
+  .evitem:hover .ewhy{color:var(--muted)}.evitem.open .ewhy{color:var(--lime)}
+  .evhead .ewhy i{transition:transform .22s}
+  .evitem.open .ewhy i{transform:rotate(90deg)}
+  .evbody{max-height:0;opacity:0;overflow:hidden;transition:max-height .3s ease,opacity .25s ease,padding .3s ease;padding:0 .6rem 0 3rem;font-size:.75rem;color:var(--muted);line-height:1.45}
+  .evitem.open .evbody{max-height:120px;opacity:1;padding:0 .6rem .55rem 3rem}
+  .evadd{margin-top:.4rem;border:1px dashed rgba(229,255,0,.34);border-radius:10px;padding:.5rem .6rem;display:flex;align-items:center;gap:.6rem;color:var(--lime);font-size:.76rem;font-weight:700}
+  .evadd .eic{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(229,255,0,.1);border:1px solid rgba(229,255,0,.3)}
+  .evadd small{display:block;font-weight:400;font-size:.66rem;color:var(--muted);margin-top:.05rem}
+  .evproves{border:1px solid rgba(229,255,0,.24);background:rgba(229,255,0,.05);border-radius:10px;padding:.55rem .65rem;margin-top:.5rem}
+  .evproves .pl{font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--lime);display:flex;align-items:center;gap:.35rem;margin-bottom:.35rem}
+  .evproves .pr{display:flex;align-items:center;gap:.45rem;font-size:.76rem;color:var(--soft);padding:.12rem 0}
+  .evproves .pr i{color:var(--green);font-size:.7rem}
+  .evstrip{margin-top:.9rem;display:grid;grid-template-columns:1.5fr 1fr;gap:.7rem;align-items:stretch}
+  .evkey{border:1px solid var(--line);background:var(--panel2);border-radius:12px;padding:.6rem .8rem;display:flex;align-items:center;gap:.9rem;flex-wrap:wrap}
+  .evkey .ekl{font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);line-height:1.2;flex-shrink:0}
+  .evkey .eki{display:inline-flex;align-items:center;gap:.35rem;font-size:.72rem;color:var(--muted);font-weight:600}
+  .evkey .eki i{color:var(--lime);font-size:.72rem}
+  .evauto{border:1px solid rgba(45,81,255,.4);background:rgba(45,81,255,.08);border-radius:12px;padding:.6rem .8rem;display:flex;align-items:center;gap:.6rem}
+  .evauto .aic{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;background:rgba(45,81,255,.16);border:1px solid rgba(45,81,255,.42);color:var(--blue);flex-shrink:0}
+  .evauto .at{font-size:.72rem;font-weight:800;color:var(--blue)}
+  .evauto .ad{font-size:.68rem;color:var(--muted);line-height:1.3;margin-top:.05rem}
+  .evstat{display:inline-flex;align-items:center;gap:.5rem;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:.4rem .7rem}
+  .evstat .esv{font-family:'Sora',sans-serif;font-weight:800;font-size:.95rem;color:var(--lime);line-height:1}
+  .evstat .esl{font-size:.68rem;color:var(--muted);line-height:1.15}
+  @media (max-width:900px){.evstrip{grid-template-columns:1fr}}
+
+  /* ================= v21 · SMART DISPUTES (card icons + richer detail) ================= */
+  .sdstep .sdicon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.78rem;background:var(--raised);border:1px solid var(--line2);color:var(--soft);margin-bottom:.15rem;transition:all .16s}
+  .sdstep.on .sdicon{background:rgba(229,255,0,.13);border-color:rgba(229,255,0,.32);color:var(--lime)}
+  .sdmeta{display:flex;flex-direction:column;gap:.45rem;flex-shrink:0;min-width:190px}
+  .sdmc{display:flex;align-items:center;gap:.6rem;padding:.5rem .65rem;border-radius:11px;background:var(--raised);border:1px solid var(--line2)}
+  .sdmc .mic{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.82rem;flex-shrink:0}
+  .sdmc .ml{font-size:.6rem;color:var(--faint);text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+  .sdmc .mv{font-weight:800;font-size:.95rem;line-height:1.1}
+  .sdmc.info{background:rgba(45,81,255,.06);border-color:rgba(45,81,255,.28);align-items:flex-start}
+  .sdmc.info .mic{color:var(--blue);font-size:.72rem;margin-top:.1rem}
+  .sdmc.info .mtext{font-size:.7rem;color:var(--muted);line-height:1.4}
+  @media (max-width:900px){.sdmeta{min-width:0;flex-direction:row;flex-wrap:wrap}.sdmc{flex:1 1 45%}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="rail">
+    <div class="rail-top">
+      <div class="brand" id="brandHome" title="Back to start"><img class="mark" alt="WSC" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAABWCAYAAAAt6W9WAAALBUlEQVR4AeRdaYgcRRSu2VmMSBSFmHgkP4xKohgPPMAlHuAdRGMUohE1KiYq3gf+8MfuCP5QYyQK3lHxR9SIRgPxJqBoFkVBEjDkh5IfxoMVBDVEJev4fTNvJ7O7M9P1uru6X3eWqnm9M6+q3uv6XnXVq6P76vX6CkSr4Tyn+IMSCxCthht8VdlRd3MQn0esFzTW+iqVyn2+CufA95GmTOjyHvh/RLQYVgPx+/oIdnjFbUNchlgB/xJ8bAUtTIDcg30i7SlCzRFUxgqlUAuV/FmyP6MtDJX02mEVd+wU52Yi7QuIpgMAdR0FBHUOlv6Nc+4HRIvhXoBrf1/BRJevfPkz5lsKXQ6KU+a0itsBkI21YnONtmLbD624V6lfA1i8QDTbakG2VxA14VwNc8a8m5OWB4BtYytWdW4q8jLTigHsp0KeRmgBC5b+O755A9FiWARLP8tXMOjyJ3hvRbQYZu6u716YhmCHVNxOgKzRioGiXt0wPkbTyDtGHmsA9t/G0rWAJV/cJNQieUknVG01+P9CNBeqrvp6CKEArgFUbj/AtQj570LcEwJfofVc1l5EX/s/Yuk3tn9n6Ho2Wq3TfeWpVIb+HXWj1/jyZ8w3BbrcEqpMgGsdQLYfIjDm1uNjJFRZku96tp5y3SDjgMVvAC5ly8BUmcVNmpL6K/3vgN/qoORpgGsG5AsaAK5LAbTp/zl3AgoaRkw9sIyJmU4CljDMEmqOoDLK5H5YldUNnlVxmwGAAUQ0YO4hlLsdMXFAZh37vh2BhVaLTsbPE5caJgOt+2ELxHgb0WJYnIdQANcg4hEoey5i7FElQDWC1vAz5DEpdASWcF0l1CL5QiMUDOVyDX+WvGiB/86yvPayAK6Whx8gYYefDUo7S89rgGp6N4auwEJlsBCrlj4PFeLdkRflrQ5K2JFfIDLmRgASdvhniYefj8ooWTb2YugKrGaiGlutf5rX5j7XaySCoXBQ0vKzaNKG4R2X64Zx/+X4j3j4+aisCMg69cV24bdre4nZE1gcsiPx3YgWwzS0WipLh/vBrJ8Oujyb1U3+qe7W7qi7TVERLcqbkOlnRD69QFrhMQKw9V+Hi57AIj8snROnJh2NkG8DKsRrxQB4nbgfJt4k/mQhLocu3nOiCQU+DunZlfCNnABHEufQFxtB32zQRfxFAkvSl2kekTdT1DJHPjEn0WSBvJzOXsBCq7UN+ffsrOH3vMJiWLr3igHowhbLqi6nQZesWi11faG12opO/oc+Cb2AJRmlMnEqeaVNvtZkCHCdo+HPmPePjMvzLg5gudiXGbx+rKgMrhiwuvpBNY8oGltd/eDQagWbRxTd1aTu3CrMB3pPj3kDqylJjUNMq0N27TJmDkradWmqaOPzURti7JGi37kH9/wXfaUClrgfHojONheOqbB0rWtkfi6SRhdKXZ6MZsuGA32rRWitdmpKUwGLGeORSEcjLy3GlRqhoAsHJVbnRG+HoUzT6BOKFx32ddq81cCSAg4Qao6gMr5UCsXZBWWSzNgteOQ5Ua1WOBawYOnsyFu1dA7ZWw69qDsCXeh+sDoooS7zonQI+PswnKFs1dVFxAIWS0GFnEFqNHJ/obdo0OVKb+bsGRNvvogrMkA1EDdtbGBJgUNCrRGufvDeeSzCny/UHMHjPXIKJYDQsddpUZZEwIKl15AJ5irxGSAkzPIRTXro8jH4rbofMjVgjAJH0VqN2xyBe6MKiYAlJV0g1Brh6oeyuB/oNH0/qxsMZ+jDSctKDCxY+qcQwmqrtbJeH9oH8nkF6MKOqtVByYV4JM7xUiQZ0y60VokfvYmBJTocKNQgGXxXKdQlSv4s2Rvb10MWWHWOS2oSF5EKsGDpXLet3QafWHjPDGjp3PrkxQ5duCM80z6Nl2BNJrofZjQvg3xugYfdez6wlwSpAEsKuEOoRaJa5wRwcVBiUQ/K9As/QkQ8Ao9PK9/UgIXKoNPUqqWzI691P5hd3Ii+lnZQEokXdNhT3eOoA1aEeAAXLd3qkJ07j72XMUMXHu3EPYkRWufyMwYldW9doiSEe2FEu3ohKs9UgSWFXSHUGpkCgbTrnK5GGquBfre0ZFuOvpVq9UJUwakDC5ZO90MqHcAo4WP8Tkv37vxCF7ZYVvdWzscjMQ33w3Cc1QtR9z51YDULrB3TpCY/VfsRocFSRKtBNSjppAQeg0HcK0GAJQsCn+qkiIHvOGTXuB84KHncgNydREh6iNtGtFZB+sRBgMU7gMeIZffDt5TRN0IXsydLV11VvQhvTG+4F4JtKukbKyQQtXpeAufetO4Hy6sftEc7OVR843TjLvWe+GvknziPrhnA0rmM2WpHnkdJdpV94g/QhaMwduYn/mThf9XRThR47HRjXoeIQYElAmtbBkkWnmBU9bKyFNWbMpR5J2X/TpHBmQreWKzBgQVLp/shlnAZJFKN+KDLr5DpOUSLYSYMxcv9EKrD3n5TggOLhaFCMKrllb2IyvheKdX94Ld6SEpi9wN0SyVkAiyR1OrqB+6iPllkjCQwErof1J3lyIzTYUjqfkhHCuSSGbBQIdejPKtBe/YD50RN6lJN4H5IU6G+NDPzyKtMQ/YjPfRNjUWTER7vb2n4Q/BmCiy0Whyycx9fCF2S5nkbKkRzHBLdKFbdD3xFTK7HIWUKLKn5jueCy295Eq5+UG3Rd65mds0WbmTot1GgiO4hc2Ch1aKlM3aXKr9f+No37/MSZE7Uqvsh19OYMwcWMQNwme2fQD7V2Q/Q5WaksRpyA30uwJJasLqMeXaM175ZXRBIp2kuMx+5AQuWziG7yf2IVeVr36DLGjEWi0Q1J5qWAn1pZRQzH75mI2bSoMnYP+l98Nnk4i2/2CqzM+THbkuuwIKl81QYqx15HnymcT/QjWL1NGaeIe+9JHsMHElorsASwS2vGHhRZPQlS3wZc+BTvesxqXy5AwutFlssq5ZOR6P3wWfQhasfrJ7GzDnRzIw4d2DRMlAhwZbIMv+EkY9rRRY1dpZNDkqgRGY7jkwACwozWF3GzCG798ugxGmayxCfNzEi8jTmxCfJRJTR+NkMsNBqcRmzVUtXHTILXeh+CLL7pVFryT6GMCcafB7RDLDkXh0lNAYJmwSVoV2DdVJYiRLlvjZRao/EpoAFS+eQ3erBZ6olP6JLZn0aj7puZ/E+jK49kebaFLBE8KDbkqSMrIjVqZ7g+psDFiyd7gerrZaqQqALD6Sz6n5Q6aJlNgcsKoAKsXyGPEX0jtDF8sugvPXQMpoElihxj9AykDvLoIRGB7PAgqU/AUWsbrOCaP4ButD94J+gBJwhgZXG7bG89Fern9kXW2kV8eE3DSxYuuVz133ub4sHunA/4getL0p+YRpYcu8vE1p4AnBdVHglPBUwDyxUBqdGymTpe4X7wTywaCAAFy29LB15uh9KoQvrplssBLBE+OVCy0DOLoMSvXQoDLDQanHIzsdiL30K8Rt04RnynBcthLyRQnZgKAywRHbLKwZERG9ytDdnARkLBSxYOq28TPOIuW0oDY3VQgFLbob3ak7ht0zusixcEtkKByy0WnQ0Wj13XVUX0IWrHwZUiQrCXDhg8b6iQsyeu075NBG6DIO/FIMS6NEKhQSWSF8mSw/y2hG5T7mQwgKrTJYuuqR4iFsuWBpXaGGBRS1QIQeTliFCl9TebmrhfhQaWHIDrZ7GLOKpiNWjnVRKkLkMwOK569Sl8BGtFo92KrweVKDwwEJlcERl9RV2vMfaeKI2gUX+/wEAAP//xTpEfwAAAAZJREFUAwA3NOxehuQmKQAAAABJRU5ErkJggg==" /><span>SE Support<br><span class="sub">Stripe Disputes</span></span></div>
+    </div>
+    <nav class="rail-scroll" id="rail"></nav>
+  </aside>
+
+  <main class="main">
+    <div class="top-progress"><i id="topBar"></i></div>
+
+    <div class="stage" id="stage">
+
+      <!-- 1 OVERVIEW DASHBOARD -->
+      <section class="slide active">
+        <div class="wrap" style="max-width:1080px">
+          <span class="eyebrow" data-rev><i class="fa-solid fa-chart-simple"></i> Report</span>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap">
+            <div>
+              <h1 class="title" data-rev style="--d:.06s;margin:.85rem 0 .7rem">Disputes overview</h1>
+              <div class="statchips" data-rev style="--d:.12s">
+                <div class="statchip"><span class="sv">154</span><span class="sl">disputes</span></div>
+                <div class="statchip"><span class="sv">4</span><span class="sl">accounts</span></div>
+                <div class="statchip alert"><span class="sv">10</span><span class="sl">awaiting response</span></div>
+              </div>
+            </div>
+            <button class="expbtn" id="exportBtn" data-rev style="--d:.14s"><i class="fa-solid fa-download"></i> Export CSV</button>
+          </div>
+
+          <div class="g4" id="acctCards" data-rev style="--d:.22s;margin-top:1.5rem"></div>
+
+          <div class="g3" data-rev style="--d:.3s;margin-top:1.15rem;align-items:stretch">
+            <div class="card" id="chartReason" style="padding:.95rem 1.1rem"></div>
+            <div class="card" id="chartStatus" style="padding:.95rem 1.1rem"></div>
+            <div class="card" id="chartAmount" style="padding:.95rem 1.1rem"></div>
+          </div>
+
+          <div data-rev style="--d:.4s;margin-top:1.1rem;display:flex;align-items:center;gap:.5rem;font-size:.82rem;color:var(--muted)">
+            <i class="fa-solid fa-bell" style="color:var(--lime)"></i> Disputes can arrive at any time -
+            <button id="notifBtn" style="background:none;border:none;color:var(--lime);font-weight:700;cursor:pointer;font-size:.82rem;padding:0">set up Stripe notifications <i class="fa-solid fa-arrow-right" style="font-size:.7rem"></i></button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2 WHAT ARE DISPUTES (merged) -->
+      <section class="slide">
+        <div class="wrap">
+          <span class="eyebrow" data-rev><i class="fa-solid fa-circle-info"></i> The basics</span>
+          <h1 class="title" data-rev style="--d:.08s">What a dispute is, and how it moves</h1>
+          <p class="lead" data-rev style="--d:.14s">A customer asks their bank to reverse a charge. Stripe pulls the funds and a fee at once, then gives us one window to respond - and the bank decides. <span class="muted">Tap a stage for detail.</span></p>
+          <div class="refrow" data-rev style="--d:.18s;margin-top:.85rem">
+            <a class="refbtn" href="https://docs.stripe.com/disputes/how-disputes-work" target="_blank" rel="noopener">Full Article <i class="fa-solid fa-arrow-up-right-from-square ext"></i></a>
+          </div>
+
+          <div class="card" data-rev style="--d:.24s;margin-top:1.2rem;padding:1.15rem 1.35rem">
+            <div class="lc" id="cyc">
+              <div class="lc-node on" data-i="0"><div class="lcd"><i class="fa-solid fa-credit-card"></i></div><div class="lcl">Charged</div><div class="lcw">normal</div></div>
+              <div class="lc-node" data-i="1"><div class="lcd"><i class="fa-solid fa-gavel"></i></div><div class="lcl">Disputes</div><div class="lcw">with their bank</div></div>
+              <div class="lc-node" data-i="2"><div class="lcd"><i class="fa-solid fa-money-bill-transfer"></i></div><div class="lcl">We're notified</div><div class="lcw">funds + fee pulled</div></div>
+              <div class="lc-node" data-i="3"><div class="lcd"><i class="fa-solid fa-reply"></i></div><div class="lcl">We respond</div><div class="lcw">7-21 days</div></div>
+              <div class="lc-node" data-i="4"><div class="lcd"><i class="fa-solid fa-magnifying-glass"></i></div><div class="lcl">Bank reviews</div><div class="lcw">up to 75 days</div></div>
+              <div class="lc-node" data-i="5"><div class="lcd"><i class="fa-solid fa-flag-checkered"></i></div><div class="lcl">Bank decides</div><div class="lcw">final</div></div>
+            </div>
+          </div>
+
+          <div class="card raise" data-rev style="--d:.3s;margin-top:.85rem;min-height:118px;display:flex;align-items:center"><div id="cycDetail" class="fade-in" style="width:100%"></div></div>
+
+          <div data-rev style="--d:.4s;margin-top:1.1rem;margin-bottom:.6rem;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--faint)">Two things to keep in mind</div>
+          <div class="g2" data-rev style="--d:.46s;gap:.8rem">
+            <div class="card" style="display:flex;gap:.85rem;align-items:flex-start;border-color:rgba(45,81,255,.28)"><span class="ico blue sm"><i class="fa-solid fa-circle-question"></i></span><div><div style="font-weight:800;font-size:.94rem">Inquiry &ne; dispute</div><div style="font-size:.84rem;color:var(--muted);line-height:1.5;margin-top:.2rem">An inquiry is a question <em>before</em> money moves - answer it and it closes with <strong>no fee</strong> and no hit to our rate. A dispute means the funds are already pulled.</div></div></div>
+            <div class="card" style="display:flex;gap:.85rem;align-items:flex-start;border-color:rgba(199,75,75,.28)"><span class="ico red sm"><i class="fa-solid fa-clock"></i></span><div><div style="font-weight:800;font-size:.94rem">The window is short</div><div style="font-size:.84rem;color:var(--muted);line-height:1.5;margin-top:.2rem">Miss the 7-21 day deadline and the dispute is lost automatically - responding late is the most common way we lose. Evidence can be submitted only once.</div></div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3 WHY + EVIDENCE -->
+      <section class="slide">
+        <div class="wrap" style="max-width:960px">
+          <span class="eyebrow" data-rev><i class="fa-solid fa-tags"></i> Reasons &amp; evidence</span>
+          <h1 class="title" data-rev style="--d:.08s">Why customers dispute &mdash; and what wins</h1>
+          <p class="lead" data-rev style="--d:.14s">Four categories drive almost all of our disputes. <span class="muted">Pick one to see the claim, the evidence, and the result.</span></p>
+
+          <div class="tabs" id="catTabs" data-rev style="--d:.2s;margin-top:.9rem;align-items:center">
+            <button class="tab on" data-k="fraud"><i class="fa-solid fa-user-secret ti"></i> Fraudulent</button>
+            <button class="tab" data-k="subcancel"><i class="fa-solid fa-rotate-left ti"></i> Subscription canceled</button>
+            <button class="tab" data-k="notrecv"><i class="fa-solid fa-box-open ti"></i> Product not received</button>
+            <button class="tab" data-k="credit"><i class="fa-solid fa-receipt ti"></i> Credit not processed</button>
+            <span class="evstat" id="evStat" style="margin-left:auto"><span class="esv" id="evStatV">&ndash;</span><span class="esl">of our<br>disputes</span></span>
+          </div>
+
+          <div class="g3" id="evGrid" style="margin-top:.9rem;align-items:stretch">
+            <div class="evcol claim"><div class="evhh"><i class="fa-solid fa-comment-dots"></i> The claim</div><div id="evClaim" class="fade-in"></div></div>
+            <div class="evcol evid"><div class="evhh"><i class="fa-solid fa-folder-open"></i> Evidence to submit <span style="margin-left:auto;font-size:.58rem;color:var(--faint);font-weight:600;text-transform:none;letter-spacing:normal">tap a card</span></div><div id="evList"></div></div>
+            <div class="evcol res"><div class="evhh"><i class="fa-solid fa-flag-checkered"></i> The result</div><div id="evResult" class="fade-in"></div></div>
+          </div>
+
+          <div class="evstrip" data-rev style="--d:.42s">
+            <div class="evkey">
+              <span class="ekl">Key evidence<br>we control</span>
+              <span class="eki"><i class="fa-solid fa-right-to-bracket"></i> Login history</span>
+              <span class="eki"><i class="fa-solid fa-play"></i> Viewing activity</span>
+              <span class="eki"><i class="fa-solid fa-mobile-screen"></i> Device data</span>
+              <span class="eki"><i class="fa-solid fa-globe"></i> IP addresses</span>
+              <span class="eki"><i class="fa-solid fa-repeat"></i> Subscription history</span>
+              <span class="eki"><i class="fa-solid fa-comments"></i> Customer comms</span>
+            </div>
+            <div class="evauto" id="evAuto" title="See how we automate this">
+              <span class="aic"><i class="fa-solid fa-robot"></i></span>
+              <div style="min-width:0"><div class="at">Automation opportunity</div><div class="ad">Auto-collect &amp; attach usage data &mdash; faster, stronger responses.</div></div>
+              <i class="fa-solid fa-arrow-right" style="color:var(--blue);margin-left:auto;flex-shrink:0"></i>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4 FEES + WITHDRAWAL vs CHALLENGE -->
+      <section class="slide">
+        <div class="wrap" style="max-width:920px">
+          <span class="eyebrow" data-rev><i class="fa-solid fa-coins"></i> The money</span>
+          <h1 class="title" data-rev style="--d:.08s">What each dispute costs</h1>
+          <p class="lead" data-rev style="--d:.14s">Two fees, ~€15 each<span class="tipwrap"><span class="tip-ic">i</span><span class="tiptip">Amounts ≈ €15 (US $15 · UK £20); confirm against our Stripe pricing.</span></span>. <span class="muted">Pick an outcome to see the math on a €40 subscription charge.</span></p>
+
+          <div class="g2" style="margin-top:.9rem;align-items:start;gap:1.1rem">
+            <div>
+              <div class="g2" style="gap:.7rem">
+                <div class="card" data-rev style="--d:.18s"><div style="font-weight:700;font-size:.9rem;margin-bottom:.4rem">Received fee</div><div style="font-size:.8rem;color:var(--muted);margin-bottom:.5rem">Charged when the dispute opens.</div><span class="tipwrap"><span class="chip red">Never refunded</span><span class="tip-ic">i</span><span class="tiptip">Returned only in Mexico.</span></span></div>
+                <div class="card" data-rev style="--d:.26s"><div style="font-weight:700;font-size:.9rem;margin-bottom:.4rem">Countered fee</div><div style="font-size:.8rem;color:var(--muted);margin-bottom:.5rem">Charged when we submit evidence.</div><span class="tipwrap"><span class="chip green">Back if we win</span><span class="tip-ic">i</span><span class="tiptip">Waived in Mexico/Japan, and Smart Disputes can waive it.</span></span></div>
+              </div>
+              <div class="scn" id="scn" data-rev style="--d:.34s;margin-top:.8rem">
+                <button class="scn-btn" data-k="nothing"><span class="dotm"></span> Do nothing <span class="tag" style="color:var(--red)">-€55</span></button>
+                <button class="scn-btn on" data-k="withdraw"><span class="dotm"></span> Withdrawn - no refund <span class="tag" style="color:var(--green)">-€15</span></button>
+                <button class="scn-btn" data-k="refund"><span class="dotm"></span> Withdrawn + refunded <span class="tag" style="color:var(--red)">-€55</span></button>
+                <button class="scn-btn" data-k="fightwin"><span class="dotm"></span> We challenge → win <span class="tag" style="color:var(--green)">-€15</span></button>
+                <button class="scn-btn" data-k="fightlose"><span class="dotm"></span> We challenge → lose <span class="tag" style="color:var(--red)">-€70</span></button>
+              </div>
+            </div>
+            <div class="card raise" data-rev style="--d:.3s;min-height:348px">
+              <div style="font-weight:700;font-size:.86rem;color:var(--lime);margin-bottom:.6rem" id="scnTitle"></div>
+              <div class="ledger" id="scnLedger"></div>
+              <div class="total"><span style="font-weight:700;font-size:.9rem">Net position</span><span class="tv" id="scnTotal"></span></div>
+              <div id="scnNote" style="font-size:.8rem;color:var(--muted);margin-top:.7rem;line-height:1.45"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5 SMART DISPUTES + GAP -->
+      <section class="slide">
+        <div class="wrap">
+          <span class="eyebrow purple" data-rev><i class="fa-solid fa-wand-magic-sparkles"></i> Automation in Stripe</span>
+          <h1 class="title" data-rev style="--d:.08s">Smart Disputes handles the routine</h1>
+          <p class="lead" data-rev style="--d:.14s">For eligible disputes Stripe assembles a standard evidence packet and files it before the deadline - and can waive the countered fee. <span class="muted">Tap a step for detail.</span></p>
+          <div class="refrow" data-rev style="--d:.18s;margin-top:.8rem">
+            <a class="refbtn" href="https://docs.stripe.com/disputes/smart-disputes" target="_blank" rel="noopener">Full Article <i class="fa-solid fa-arrow-up-right-from-square ext"></i></a>
+          </div>
+          <div class="sdgrid" id="sd" data-rev style="--d:.24s;margin-top:1rem">
+            <div class="sdstep" data-i="0"><span class="sdicon"><i class="fa-solid fa-user"></i></span><div class="sdtop"><span class="sdn">1</span><span class="sdt">Dispute filed</span><i class="fa-solid fa-arrow-right sdar"></i></div><div class="sdtag">Issuer</div></div>
+            <div class="sdstep" data-i="1"><span class="sdicon"><i class="fa-solid fa-file-shield"></i></span><div class="sdtop"><span class="sdn">2</span><span class="sdt">Evidence prepared</span><i class="fa-solid fa-arrow-right sdar"></i></div><div class="sdtag">Stripe AI</div></div>
+            <div class="sdstep" data-i="2"><span class="sdicon"><i class="fa-solid fa-plus"></i></span><div class="sdtop"><span class="sdn">3</span><span class="sdt">We add proof</span><i class="fa-solid fa-arrow-right sdar"></i></div><div class="sdtag">Our part</div></div>
+            <div class="sdstep" data-i="3"><span class="sdicon"><i class="fa-solid fa-paper-plane"></i></span><div class="sdtop"><span class="sdn">4</span><span class="sdt">Auto-submitted</span><i class="fa-solid fa-arrow-right sdar"></i></div><div class="sdtag">Before deadline</div></div>
+            <div class="sdstep" data-i="4"><span class="sdicon"><i class="fa-solid fa-landmark"></i></span><div class="sdtop"><span class="sdn">5</span><span class="sdt">Bank decides</span></div><div class="sdtag">Issuer · ~3 mo</div></div>
+          </div>
+          <div class="card raise" data-rev style="--d:.3s;margin-top:.7rem;min-height:112px;display:flex;align-items:center"><div id="sdDetail" class="fade-in" style="width:100%"></div></div>
+        </div>
+      </section>
+
+      <!-- 6 READING THE LIST -->
+      <section class="slide">
+        <div class="wrap" style="max-width:920px">
+          <span class="eyebrow purple" data-rev><i class="fa-solid fa-table-list"></i> In Stripe</span>
+          <h1 class="title" data-rev style="--d:.08s">Reading the disputes list</h1>
+          <p class="lead" data-rev style="--d:.14s">Everything you need at a glance. <span class="muted">Tap a filter to focus the list.</span></p>
+          <div class="g2" style="margin-top:.8rem;grid-template-columns:1.55fr 1fr;align-items:start;gap:1.1rem">
+            <div class="mock" data-rev style="--d:.16s">
+              <div class="mock-bar"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span><span class="mock-url"><i class="fa-solid fa-lock"></i> dashboard.stripe.com/disputes</span></div>
+              <div class="mock-body">
+                <div class="m-h">Disputes</div>
+                <div class="m-filters" id="mFilters">
+                  <div class="m-filter on" data-f="all">All</div>
+                  <div class="m-filter" data-f="need">Needs response</div>
+                  <div class="m-filter" data-f="rev">In review</div>
+                  <div class="m-filter" data-f="won">Won</div>
+                  <div class="m-filter" data-f="lost">Lost</div>
+                </div>
+                <table class="m-tbl" id="mTbl">
+                  <thead><tr><th>Amount</th><th>Status</th><th>Reason</th><th>Customer</th><th>Respond by</th></tr></thead>
+                  <tbody>
+                    <tr data-s="need"><td class="amt">€42.99</td><td><span class="spill need">31d to auto-submit</span></td><td>Fraudulent</td><td>dane…@hotmail.co.uk</td><td>Aug 28</td></tr>
+                    <tr data-s="need"><td class="amt">$13.99</td><td><span class="spill need">5d to respond</span></td><td>Subscription canceled</td><td>carolyn…@gmail.com</td><td>Aug 2</td></tr>
+                    <tr data-s="rev"><td class="amt">$39.99</td><td><span class="spill rev">33d till results</span></td><td>Product not received</td><td>kelly…@k12.sd.us</td><td>-</td></tr>
+                    <tr data-s="need"><td class="amt">$49.99</td><td><span class="spill need">16d to respond</span></td><td>Fraudulent</td><td>tubewatch…@bell.net</td><td>Aug 13</td></tr>
+                    <tr data-s="rev"><td class="amt">CA$69.99</td><td><span class="spill rev">50d till results</span></td><td>Credit not processed</td><td>susan…@epic.ca</td><td>-</td></tr>
+                    <tr data-s="won"><td class="amt">$49.99</td><td><span class="spill won">Won</span></td><td>Fraudulent</td><td>lonnie…@gmail.com</td><td>-</td></tr>
+                    <tr data-s="lost"><td class="amt">£37.99</td><td><span class="spill lost">Lost</span></td><td>Fraudulent</td><td>penny…@outlook.com</td><td>-</td></tr>
+                    <tr data-s="lost"><td class="amt">€11.99</td><td><span class="spill lost">Deadline missed</span></td><td>Subscription canceled</td><td>vitines…@hotmail.com</td><td>-</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div data-rev style="--d:.3s;display:flex;flex-direction:column;gap:.6rem">
+              <div class="statuscard"><span class="sdot" style="background:var(--amber)"></span><div><div class="stt">Needs response</div><div class="sdd">Action required before the deadline</div></div></div>
+              <div class="statuscard"><span class="sdot" style="background:var(--blue)"></span><div><div class="stt">Under review</div><div class="sdd">Bank is reviewing our submitted evidence</div></div></div>
+              <div class="statuscard"><span class="sdot" style="background:var(--green)"></span><div><div class="stt">Won</div><div class="sdd">Case resolved in our favour</div></div></div>
+              <div class="statuscard"><span class="sdot" style="background:var(--red)"></span><div><div class="stt">Lost</div><div class="sdd">Case resolved against us</div></div></div>
+              <div class="statuscard tipcard"><span class="sdot" style="background:var(--lime)"></span><div><div class="stt">Countdown = auto-submit</div><div class="sdd">Stripe files evidence before it hits zero - the default packet may be weak</div></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7 WORKFLOW -->
+      <section class="slide">
+        <div class="wrap" style="max-width:1180px">
+          <span class="eyebrow" data-rev><i class="fa-solid fa-diagram-project"></i> Workflow</span>
+          <h1 class="title" data-rev style="--d:.08s">The dispute response workflow</h1>
+          <p class="lead" data-rev style="--d:.14s">From the first alert to final resolution - with a smart option to resolve with the customer when it makes sense.</p>
+
+          <div class="wfmap"><div class="wfrow wfspine" data-rev style="--d:.2s"><div class="wfn blue on" data-w="dispute"><div class="wnh"><span class="wnn">1</span><span class="wni"><i class="fa-solid fa-bell"></i></span></div><div class="wnt">Dispute opens</div><div class="wns">Stripe alerts us</div></div><div class="wfarr"><i class="fa-solid fa-arrow-right"></i></div><div class="wfn blue" data-w="review"><div class="wnh"><span class="wnn">2</span><span class="wni"><i class="fa-solid fa-magnifying-glass"></i></span></div><div class="wnt">Review dispute</div><div class="wns">Read the reason</div></div><div class="wfarr"><i class="fa-solid fa-arrow-right"></i></div><div class="wfn dec" data-w="decision"><div class="wnh"><span class="wnn">3</span><span class="wni"><i class="fa-solid fa-code-branch"></i></span></div><div class="wnt">Decision</div><div class="wns">Refund eligible?</div></div></div><div class="wffork" data-rev style="--d:.28s"><div class="wfcond yes"><span class="wcl">Yes</span> Cooperative &middot; delivered &middot; policy allows<span class="tipwrap" style="margin-left:auto"><span class="tip-ic">i</span><span class="tiptip">Resolve with the customer when they are cooperative, the service was delivered or a refund fits policy, and the case is low-risk.</span></span></div><div class="wfcond no"><span class="wcl">No</span> High-risk / fraud &middot; won&rsquo;t cooperate<span class="tipwrap" style="margin-left:auto"><span class="tip-ic">i</span><span class="tiptip">Run the standard dispute when the case is high-risk or fraud is suspected, policy blocks a refund, or the customer is unlikely to cooperate.</span></span></div></div><div class="wftrack yes" id="wfYes"><div class="wftl"><i class="fa-solid fa-handshake"></i> Customer resolution path<span class="end">ends here <i class="fa-solid fa-flag-checkered"></i></span></div><div class="wfrow"><div class="wfn " data-w="y1"><div class="wnh"><span class="wni" style="margin-left:0"><i class="fa-solid fa-envelope"></i></span><span style="font-size:.58rem;font-weight:800;color:var(--lime);margin-left:auto">3.1</span></div><div class="wnt">Contact customer</div><div class="wns">Support</div></div><div class="wfarr lit"><i class="fa-solid fa-arrow-right"></i></div><div class="wfn " data-w="y2"><div class="wnh"><span class="wni" style="margin-left:0"><i class="fa-solid fa-building-columns"></i></span><span style="font-size:.58rem;font-weight:800;color:var(--lime);margin-left:auto">3.2</span></div><div class="wnt">Customer withdraws</div><div class="wns">With their bank</div></div><div class="wfarr lit"><i class="fa-solid fa-arrow-right"></i></div><div class="wfn " data-w="y3"><div class="wnh"><span class="wni" style="margin-left:0"><i class="fa-solid fa-rotate"></i></span><span style="font-size:.58rem;font-weight:800;color:var(--lime);margin-left:auto">3.3</span></div><div class="wnt">Refund in Stripe</div><div class="wns">Support</div></div><div class="wfarr lit"><i class="fa-solid fa-arrow-right"></i></div><div class="wfn win" data-w="y4"><div class="wnh"><span class="wni" style="margin-left:0"><i class="fa-solid fa-circle-check"></i></span><span style="font-size:.58rem;font-weight:800;color:var(--lime);margin-left:auto">3.4</span></div><div class="wnt">Case closed</div><div class="wns">No fees</div></div></div></div><div class="wftrack no" id="wfNo"><div class="wftl"><i class="fa-solid fa-shield-halved"></i> Standard dispute<span class="end">bank decides <i class="fa-solid fa-landmark"></i></span></div><div class="wfrow"><div class="wfn " data-w="n1"><div class="wnh"><span class="wni" style="margin-left:0"><i class="fa-solid fa-folder-plus"></i></span><span style="font-size:.58rem;font-weight:800;color:var(--blue);margin-left:auto">4</span></div><div class="wnt">Build evidence</div><div class="wns">Proof of use</div></div><div class="wfarr litn"><i class="fa-solid fa-arrow-right"></i></div><div class="wfn " data-w="n2"><div class="wnh"><span class="wni" style="margin-left:0"><i class="fa-solid fa-paper-plane"></i></span><span style="font-size:.58rem;font-weight:800;color:var(--blue);margin-left:auto">5</span></div><div class="wnt">Submit response</div><div class="wns">Once only</div></div><div class="wfarr litn"><i class="fa-solid fa-arrow-right"></i></div><div class="wfn " data-w="n3"><div class="wnh"><span class="wni" style="margin-left:0"><i class="fa-solid fa-hourglass-half"></i></span><span style="font-size:.58rem;font-weight:800;color:var(--blue);margin-left:auto">6</span></div><div class="wnt">Issuer review</div><div class="wns">&le;75 days</div></div><div class="wfarr litn"><i class="fa-solid fa-arrow-right"></i></div><div class="wfsplit"><div class="wfn win" data-w="win"><div class="wnh"><span class="wni" style="margin-left:0"><i class="fa-solid fa-trophy"></i></span><span style="font-size:.58rem;font-weight:800;color:var(--lime);margin-left:auto">WIN</span></div><div class="wnt" style="color:var(--lime)">Win</div><div class="wns">Fee only on win</div></div><div class="wfn lose" data-w="lose"><div class="wnh"><span class="wni" style="margin-left:0"><i class="fa-solid fa-xmark"></i></span><span style="font-size:.58rem;font-weight:800;color:var(--red);margin-left:auto">LOSE</span></div><div class="wnt" style="color:var(--red)">Lose</div><div class="wns">No extra fees</div></div></div></div></div></div><div class="card raise wfdetail" data-rev style="--d:.4s"><div id="wfDetail" class="fade-in" style="width:100%"></div></div><div data-rev style="--d:.5s;margin-top:.7rem;display:flex;align-items:center;gap:.5rem;font-size:.78rem;color:var(--muted)"><i class="fa-solid fa-lightbulb" style="color:var(--lime)"></i> Deadlines vary by card brand and reason code &mdash; the YES path ends at case closed and never rejoins the standard dispute.</div>
+        </div>
+      </section>
+
+      <!-- 8 AUTOMATE -->
+      <section class="slide">
+        <div class="wrap" style="max-width:920px">
+          <span class="eyebrow" data-rev><i class="fa-solid fa-diagram-project"></i> Target state</span>
+          <h1 class="title" data-rev style="--d:.08s">Automating evidence from our own systems</h1>
+          <p class="lead" data-rev style="--d:.14s">The proof already lives in our platforms. A small service pulls it on every dispute and files it for us.</p>
+          <div class="refrow" data-rev style="--d:.18s;margin-top:.8rem">
+            <a class="refbtn stripe" href="https://docs.stripe.com/api/disputes?api-version=2025-10-29.preview" target="_blank" rel="noopener">Stripe Dispute API <i class="fa-solid fa-arrow-up-right-from-square ext"></i></a>
+          </div>
+
+          <div class="card" data-rev style="--d:.22s;margin-top:1.1rem;padding:1.1rem 1.1rem">
+            <div style="display:grid;grid-template-columns:auto auto 1fr auto auto;gap:.7rem;align-items:center">
+              <div style="display:flex;flex-direction:column;gap:.4rem">
+                <div class="chip blue" style="justify-content:flex-start"><i class="fa-solid fa-right-to-bracket"></i> Auth · login times</div>
+                <div class="chip blue" style="justify-content:flex-start"><i class="fa-solid fa-globe"></i> Gateway · IP + geo</div>
+                <div class="chip blue" style="justify-content:flex-start"><i class="fa-solid fa-play"></i> Playback · viewing logs</div>
+                <div class="chip blue" style="justify-content:flex-start"><i class="fa-solid fa-database"></i> Stream Engine · account</div>
+              </div>
+              <i class="fa-solid fa-arrow-right" style="color:var(--faint)"></i>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:.5rem">
+                <div class="ico lime" style="width:52px;height:52px;font-size:1.3rem"><i class="fa-solid fa-gears"></i></div>
+                <div style="font-weight:700;font-size:.85rem;text-align:center">Evidence service</div>
+                <div style="font-size:.72rem;color:var(--faint);text-align:center">on <span class="mono" style="color:var(--muted)">dispute.created</span> → build proof-of-use PDF</div>
+              </div>
+              <i class="fa-solid fa-arrow-right" style="color:var(--faint)"></i>
+              <div style="display:flex;flex-direction:column;gap:.5rem;align-items:center">
+                <div class="ico blue" style="width:48px;height:48px;font-size:1.15rem"><i class="fa-brands fa-stripe-s"></i></div>
+                <div style="font-weight:700;font-size:.82rem;text-align:center">Stripe API</div>
+                <div style="font-size:.7rem;color:var(--faint);text-align:center">attach → merge with<br>Smart Disputes → bank</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="g2" style="margin-top:.9rem;align-items:stretch">
+            <div class="codeblock" data-rev style="--d:.32s">
+<span class="c"># webhook: a new dispute arrives</span><br>proof = <span class="k">gather</span>(logins, ips, devices, plays)<br>pdf&nbsp;&nbsp;= <span class="k">render_pdf</span>(proof)<br>f&nbsp;&nbsp;&nbsp;&nbsp;= stripe.<span class="k">files.create</span>(pdf, purpose=<span class="s">"dispute_evidence"</span>)<br>stripe.<span class="k">disputes.update</span>(id, evidence={<br>&nbsp;&nbsp;<span class="s">"customer_communication"</span>: f,<br>&nbsp;&nbsp;<span class="s">"access_activity_log"</span>: f })
+            </div>
+            <div style="display:flex;flex-direction:column;gap:.6rem">
+              <div class="callout good" style="padding:.7rem .9rem"><div class="ico green sm"><i class="fa-solid fa-bolt"></i></div><div><div class="ct">No agent per dispute</div><div class="cd">Every dispute gets consistent proof of use automatically - even the 10 open now.</div></div></div>
+              <div class="callout tip" style="padding:.7rem .9rem"><div class="ico lime sm"><i class="fa-solid fa-flask"></i></div><div><div class="ct">Start small</div><div class="cd">Stripe Workflows/Apps can automate parts from the Dashboard before we build the full service.</div></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 9 NOTIFICATIONS -->
+      <section class="slide">
+        <div class="wrap">
+          <span class="eyebrow" data-rev><i class="fa-solid fa-bell"></i> Don't miss one</span>
+          <h1 class="title" data-rev style="--d:.08s">Stay notified the moment a dispute opens</h1>
+          <p class="lead" data-rev style="--d:.14s">A dispute is only winnable if we see it in time. Turning on Stripe's alerts keeps any case from sitting until its deadline.</p>
+          <div class="g2" style="margin-top:1rem;align-items:stretch">
+            <div class="card" data-rev style="--d:.2s">
+              <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.75rem"><span class="ico lime sm"><i class="fa-solid fa-toggle-on"></i></span><span style="font-weight:800;font-size:1rem">Turn on now</span><span class="chip green" style="margin-left:auto">Available today</span></div>
+              <div style="display:flex;flex-direction:column;gap:.6rem;font-size:.86rem;color:var(--soft)">
+                <div style="display:flex;gap:.6rem"><i class="fa-solid fa-envelope" style="color:var(--lime);width:16px;margin-top:.15rem"></i><div>Enable <strong>dispute email + Dashboard alerts</strong> in Stripe (Settings &rarr; Notifications).</div></div>
+                <div style="display:flex;gap:.6rem"><i class="fa-solid fa-users" style="color:var(--lime);width:16px;margin-top:.15rem"></i><div>Point them at the shared <strong>Support inbox</strong> so every new dispute reaches the team.</div></div>
+                <div style="display:flex;gap:.6rem"><i class="fa-solid fa-mobile-screen" style="color:var(--lime);width:16px;margin-top:.15rem"></i><div>Optional: push notifications via the Stripe mobile app for time-critical cases.</div></div>
+              </div>
+            </div>
+            <div class="card" data-rev style="--d:.32s;border-color:rgba(255,255,255,.3)">
+              <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.75rem"><span class="ico purple sm"><i class="fa-brands fa-slack"></i></span><span style="font-weight:800;font-size:1rem">Slack alerts</span><span class="fbadge" style="margin-left:auto"><i class="fa-solid fa-lightbulb"></i> Future idea</span></div>
+              <div style="display:flex;flex-direction:column;gap:.6rem;font-size:.86rem;color:var(--soft)">
+                <div style="display:flex;gap:.6rem"><i class="fa-solid fa-bolt" style="color:#9AA0A8;width:16px;margin-top:.15rem"></i><div>Forward <span class="mono" style="color:var(--muted)">charge.dispute.created</span> events into a <strong>#disputes</strong> Slack channel.</div></div>
+                <div style="display:flex;gap:.6rem"><i class="fa-solid fa-arrows-rotate" style="color:#9AA0A8;width:16px;margin-top:.15rem"></i><div>The same pattern our <strong>Help Scout</strong> ticket alerts already use.</div></div>
+                <div style="display:flex;gap:.6rem"><i class="fa-solid fa-clock" style="color:#9AA0A8;width:16px;margin-top:.15rem"></i><div>Not built yet - a proposed improvement so we react in minutes, not hours.</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="callout tip" data-rev style="--d:.44s;margin-top:1rem"><div class="ico lime sm"><i class="fa-solid fa-bolt"></i></div><div><div class="ct">Why it matters</div><div class="cd">Seeing a dispute - or an inquiry - early is what lets us resolve it before the fee and the deadline bite.</div></div></div>
+        </div>
+      </section>
+
+      <!-- 10 PLAYBOOK -->
+      <section class="slide">
+        <div class="wrap" style="max-width:1160px">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap">
+            <div>
+              <span class="eyebrow" data-rev><i class="fa-solid fa-clipboard-check"></i> Playbook</span>
+              <h1 class="title" data-rev style="--d:.08s">Choosing the best response</h1>
+              <p class="lead" data-rev style="--d:.14s">Always try to resolve with the customer first.</p>
+            </div>
+            <a class="refbtn stripe" data-rev style="--d:.14s" href="https://docs.stripe.com/disputes" target="_blank" rel="noopener">Stripe full article <i class="fa-solid fa-arrow-up-right-from-square ext"></i></a>
+          </div>
+
+          <div class="pbgrid"><div class="pbside" data-rev style="--d:.22s"><div class="psh"><i class="fa-solid fa-magnifying-glass"></i> Investigate first</div><div class="pss">Check these before you decide.</div><div class="pbcheck"><div class="pci"><i class="fa-solid fa-comment-dots"></i> Dispute reason</div><div class="pci"><i class="fa-solid fa-clock-rotate-left"></i> Customer history</div><div class="pci"><i class="fa-solid fa-circle-play"></i> Service delivery</div><div class="pci"><i class="fa-solid fa-chart-line"></i> Viewing activity</div><div class="pci"><i class="fa-solid fa-file-contract"></i> Refund policy</div><div class="pci"><i class="fa-solid fa-folder-open"></i> Evidence quality</div></div><div class="pbnote"><i class="fa-solid fa-lightbulb"></i><div><div class="nt">Remember</div><div class="nd">A response can be submitted only once.</div></div></div></div><div class="pbtree" data-rev style="--d:.3s"><div class="pbth"><i class="fa-solid fa-code-branch"></i> Follow the decision flow</div><div class="pbnode q pbveil" style="--pd:.04s"><span class="pnic"><i class="fa-solid fa-user"></i></span><div style="min-width:0"><div class="pnt">Is the customer eligible for a refund?</div><div class="pns">Cooperative &middot; service delivered &middot; policy allows &middot; low-risk</div></div><span class="tipwrap" style="margin-left:auto"><span class="tip-ic">i</span><span class="tiptip">Yes when the customer is cooperative, the service was not delivered or a refund fits policy, and the case is low-risk.</span></span></div><div class="pbconn y pbveil" style="--pd:.1s"><i class="fa-solid fa-arrow-down"></i> Yes &mdash; resolve with the customer<span class="cl"></span></div><div class="pbnode yes pbveil" style="--pd:.14s"><span class="pnic"><i class="fa-solid fa-handshake"></i></span><div style="min-width:0"><div class="pnt">Reach out &amp; offer a refund</div><div class="pns">Ask them to withdraw the dispute.</div></div></div><div class="pbconn pbveil" style="--pd:.18s;color:var(--faint)"><i class="fa-solid fa-arrow-down"></i><span class="cl"></span></div><div class="pbnode q pbveil" style="--pd:.22s"><span class="pnic"><i class="fa-solid fa-user-check"></i></span><div class="pnt">Did they withdraw?</div></div><div class="pbsplit pbveil" style="--pd:.26s"><div class="pbcol"><div class="pbconn y"><i class="fa-solid fa-arrow-down"></i> Yes<span class="cl"></span></div><div class="pbnode term"><span class="pnic"><i class="fa-solid fa-circle-check"></i></span><div style="min-width:0"><div class="pnt">Refund &rarr; case closed</div><div class="pns">No fees. Best outcome.</div></div></div></div><div class="pbcol"><div class="pbconn n"><i class="fa-solid fa-arrow-down"></i> No / declined<span class="cl"></span></div><div class="pbnode" style="border-style:dashed"><span class="pnic"><i class="fa-solid fa-arrow-turn-down"></i></span><div class="pnt" style="font-size:.78rem;color:var(--muted)">Decide on evidence &darr;</div></div></div></div><div class="pbconn n pbveil" style="--pd:.32s"><i class="fa-solid fa-arrow-down"></i> No refund, or withdrawal declined<span class="cl"></span></div><div class="pbnode q pbveil" style="--pd:.36s"><span class="pnic"><i class="fa-solid fa-shield-halved"></i></span><div class="pnt">Do we have strong evidence to win?</div><span class="tipwrap" style="margin-left:auto"><span class="tip-ic">i</span><span class="tiptip">Strong = clear proof of use or delivery: logins, IPs, viewing history, signed terms, delivery records.</span></span></div><div class="pbsplit pbveil" style="--pd:.4s"><div class="pbcol"><div class="pbconn y"><i class="fa-solid fa-arrow-down"></i> Yes<span class="cl"></span></div><div class="pbnode counter"><span class="pnic"><i class="fa-solid fa-shield-halved"></i></span><div style="min-width:0"><div class="pnt">Counter the dispute</div><div class="pns">Submit strong evidence.</div></div></div></div><div class="pbcol"><div class="pbconn n"><i class="fa-solid fa-arrow-down"></i> No<span class="cl"></span></div><div class="pbnode accept"><span class="pnic"><i class="fa-solid fa-xmark"></i></span><div style="min-width:0"><div class="pnt">Accept the dispute</div><div class="pns">No path to win.</div></div></div></div></div></div></div>
+
+          <div class="pbkey" data-rev style="--d:.5s"><i class="fa-solid fa-star"></i> <span><strong>Key takeaway.</strong> Resolve with the customer when we can. Fight when we should. Accept only when we must.</span></div>
+        </div>
+      </section>
+
+    </div>
+
+    <div class="controls">
+      <div style="display:flex;align-items:center;gap:.6rem">
+        <button class="btn home" id="homeBtn"><i class="fa-solid fa-house"></i> Home</button>
+        <button class="btn" id="prevBtn"><i class="fa-solid fa-arrow-left"></i> Back</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:1rem"><div class="dots" id="dots"></div><div class="counter" id="counter">01 / 10</div></div>
+      <button class="btn prime" id="nextBtn">Next <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+  </main>
+</div>
+
+<script>
+  const LESSONS = [
+    {sec:'Report', title:'Report', icon:'fa-chart-simple', hideSecTitle:true},
+    {sec:'Basics', title:'What are disputes', icon:'fa-circle-info', divider:true},
+    {sec:'Basics', title:'Why customers dispute', icon:'fa-tags'},
+    {sec:'Basics', title:'Scenarios and costs', icon:'fa-coins'},
+    {sec:'In Stripe', title:'Smart Disputes', icon:'fa-wand-magic-sparkles'},
+    {sec:'In Stripe', title:'Disputes view', icon:'fa-table-list'},
+    {sec:'In Stripe', title:'Workflow', icon:'fa-reply'},
+    {sec:'In Stripe', title:'Automating the flow', icon:'fa-diagram-project'},
+    {sec:'In Stripe', title:'Notifications', icon:'fa-bell'},
+    {sec:'Playbook', title:'Playbook', icon:'fa-clipboard-check', divider:true, hideSecTitle:true},
+  ];
+  const SEC_ICON = {'Report':'fa-chart-simple','Basics':'fa-compass','In Stripe':'fa-desktop','Playbook':'fa-clipboard-check'};
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total = slides.length;
+  const WF_IDX = slides.findIndex(s=>s.querySelector('#wfDetail'));
+  const PB_IDX = slides.findIndex(s=>s.querySelector('.pbtree'));
+  const visited = new Set([0]);
+  let cur = 0;
+  const rail = document.getElementById('rail');
+  let lastSec=null;
+  LESSONS.forEach((l,i)=>{
+    if(l.sec!==lastSec){if(l.divider){const dv=document.createElement('div');dv.className='rail-divider';rail.appendChild(dv);}if(!l.hideSecTitle){const t=document.createElement('div');t.className='sec-title';t.innerHTML=`<i class="fa-solid ${SEC_ICON[l.sec]||'fa-folder'}"></i> ${l.sec}`;rail.appendChild(t);}lastSec=l.sec;}
+    const n=document.createElement('div');n.className='nav'+(l.accent?' accent':'');n.dataset.i=i;
+    n.innerHTML=`<i class="fa-solid ${l.icon} ni"></i> <span>${l.title}</span> <i class="fa-solid fa-check tick"></i>`;
+    n.addEventListener('click',()=>go(i));rail.appendChild(n);
+  });
+  const navs=Array.from(rail.querySelectorAll('.nav'));
+  const dots=document.getElementById('dots');
+  slides.forEach((_,i)=>{const d=document.createElement('i');d.addEventListener('click',()=>go(i));dots.appendChild(d);});
+  const dotEls=Array.from(dots.children);
+  const topBar=document.getElementById('topBar'),railBar=document.getElementById('railBar'),railPct=document.getElementById('railPct'),counter=document.getElementById('counter'),prevBtn=document.getElementById('prevBtn'),nextBtn=document.getElementById('nextBtn'),homeBtn=document.getElementById('homeBtn');
+  const pad=n=>String(n).padStart(2,'0');
+  function render(){
+    slides.forEach((s,i)=>s.classList.toggle('active',i===cur));
+    if(cur===WF_IDX&&typeof revealWF==='function')revealWF();
+    if(cur===PB_IDX){const t=slides[PB_IDX]&&slides[PB_IDX].querySelector('.pbtree');if(t){t.classList.remove('lit');void t.offsetWidth;t.classList.add('lit');}}
+    navs.forEach((n,i)=>{n.classList.toggle('active',i===cur);n.classList.toggle('done',visited.has(i)&&i!==cur);});
+    dotEls.forEach((d,i)=>d.classList.toggle('on',i===cur));
+    const pct=((cur+1)/total)*100;
+    if(topBar)topBar.style.width=pct+'%';if(railBar)railBar.style.width=pct+'%';if(railPct)railPct.textContent=Math.round(pct)+'%';
+    counter.textContent=`${pad(cur+1)} / ${pad(total)}`;
+    prevBtn.disabled=cur===0;
+    if(cur===total-1){nextBtn.innerHTML='Home <i class="fa-solid fa-house"></i>';nextBtn.onclick=goHome;}
+    else{nextBtn.innerHTML='Next <i class="fa-solid fa-arrow-right"></i>';nextBtn.onclick=next;}
+    homeBtn.style.display=(cur===total-1)?'none':'inline-flex';
+    const an=navs[cur];if(an)an.scrollIntoView({block:'nearest'});
+  }
+  function go(i){if(i<0||i>=total)return;cur=i;visited.add(i);render();}
+  function next(){go(cur+1);}function prev(){go(cur-1);}
+  function goHome(){visited.clear();visited.add(0);resetAll();go(0);}
+  prevBtn.addEventListener('click',prev);
+  homeBtn.addEventListener('click',goHome);
+  document.getElementById('brandHome').addEventListener('click',goHome);
+  document.addEventListener('keydown',e=>{const tag=(e.target.tagName||'').toLowerCase();if(tag==='button')return;if(['ArrowRight','ArrowDown',' '].includes(e.key)){e.preventDefault();next();}else if(['ArrowLeft','ArrowUp'].includes(e.key)){e.preventDefault();prev();}});
+
+
+  /* ---- interactive: evidence categories ---- */
+  const EV={
+    fraud:{claim:'"I didn\'t authorise this payment." The most common - and hardest - category to win.',
+      quotes:['I don\'t recognise this charge on my statement.','My card was used without my permission.','This wasn\'t me - I never signed up for this.'],
+      list:[['fa-location-dot','Device & location','Login IP + geo consistent with the billing address; known device; no VPN.'],['fa-lock','Authentication log','Login, 2FA and 3D&nbsp;Secure completed at purchase time.'],['fa-shield-halved','AVS + CVV match','Address and security code verified - Stripe often supplies these.'],['fa-clock-rotate-left','Account history','Prior successful charges from the same customer.']],
+      result:'A verified-legitimate packet: the transaction matches the customer\'s own pattern and passed every check.'},
+    subcancel:{claim:'"You charged me after I cancelled my subscription."',
+      quotes:['I cancelled weeks ago but I\'m still being billed.','I thought this was a one-time payment, not a subscription.','Nobody told me it would auto-renew.'],
+      list:[['fa-file-signature','Terms accepted','Signup record with timestamp + IP showing the cancellation policy was agreed.'],['fa-magnifying-glass','No cancellation on file','System logs proving no cancellation request was ever submitted.'],['fa-play','Usage after the date','Logins and viewing after the alleged cancellation - the account was live.'],['fa-envelope','Renewal reminder','Email sent before the billing date that went unanswered.']],
+      result:'Proof the subscription was active and never cancelled through any channel.'},
+    notrecv:{claim:'"I never received / couldn\'t access the service."',
+      quotes:['I paid but the stream never worked.','I couldn\'t log in to watch anything.','The event I bought access to never showed up.'],
+      list:[['fa-file-contract','Terms of service','Delivery = access on login; agreed at checkout.'],['fa-right-to-bracket','Access log','Downloaded / activated / streamed, with timestamps + IP.'],['fa-envelope-open','Delivery emails','Activation and welcome emails delivered and opened.'],['fa-clock','Timeline','Access occurred before the dispute was filed.']],
+      result:'Access records show the customer used the service - "not received" doesn\'t hold.'},
+    credit:{claim:'"I was owed a refund and it never came."',
+      quotes:['They promised me a refund that never arrived.','I cancelled but was never credited back.','Support said I\'d be refunded and nothing happened.'],
+      list:[['fa-rotate','Refund confirmation','Refund ID, amount and date, marked completed.'],['fa-receipt','Processor log','Line-by-line log of the refund being authorised and processed.'],['fa-building-columns','Bank statement','Merchant record showing the credit issued to the card.'],['fa-comments','Customer comms','Any message where the refund was confirmed to them.']],
+      result:'Documented proof the refund was already issued to the same card.'},
+  };
+  const EVX={
+    fraud:{proves:['The transaction matches the customer','Every security check passed','The account has real history'],outcome:'The hardest category to win, but a clean match beats a blanket "fraud" claim.'},
+    subcancel:{proves:['The subscription was active','No cancellation was ever filed','The account was used after the date'],outcome:'We win when logs show no cancellation and continued use.'},
+    notrecv:{proves:['The service was available','The customer gained access','They used the service'],outcome:'We win because the evidence shows delivery and use.'},
+    credit:{proves:['The refund was issued','It went to the same card','It was confirmed to the customer'],outcome:'We win when the refund is already documented.'},
+  };
+  const REV_MAP={fraud:'fraudulent',subcancel:'subscription_canceled',notrecv:'product_not_received',credit:'credit_not_processed'};
+  const evClaim=document.getElementById('evClaim'),evList=document.getElementById('evList'),evResult=document.getElementById('evResult');
+  function setEV(k){
+    const e=EV[k], x=EVX[k];
+    document.querySelectorAll('#catTabs .tab').forEach(t=>t.classList.toggle('on',t.dataset.k===k));
+    const quotes=(e.quotes||[]).map(q=>`<div style="display:flex;gap:.5rem;align-items:flex-start;font-size:.8rem;color:var(--soft);line-height:1.4"><i class="fa-solid fa-quote-left" style="color:var(--red);font-size:.6rem;margin-top:.28rem;flex-shrink:0"></i><span>${q}</span></div>`).join('');
+    evClaim.innerHTML=`<div style="font-size:.88rem;color:var(--soft);line-height:1.5;margin-bottom:.65rem">${e.claim}</div><div style="font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);margin-bottom:.4rem">How cardholders phrase it</div><div style="display:flex;flex-direction:column;gap:.4rem">${quotes}</div>`;
+    evList.innerHTML=e.list.map((it,idx)=>`<div class="evitem${idx===0?' open':''}" data-e="${idx}"><div class="evhead"><span class="eic"><i class="fa-solid ${it[0]}"></i></span><div class="etx"><div class="ent">${it[1]}</div></div><span class="ewhy">Why it helps <i class="fa-solid fa-chevron-right"></i></span></div><div class="evbody">${it[2]}</div></div>`).join('');
+    evList.querySelectorAll('.evitem .evhead').forEach(h=>h.addEventListener('click',()=>h.parentElement.classList.toggle('open')));
+    evResult.innerHTML=`<span class="chip green"><i class="fa-solid fa-check"></i> Strong response</span><div style="margin-top:.55rem;color:var(--soft);font-size:.86rem;line-height:1.5">${e.result}</div><div class="evproves"><div class="pl"><i class="fa-solid fa-shield-halved"></i> What this proves</div>${x.proves.map(p=>`<div class="pr"><i class="fa-solid fa-check"></i> ${p}</div>`).join('')}</div><div style="margin-top:.5rem;display:flex;gap:.5rem;align-items:flex-start;font-size:.78rem;color:var(--muted);line-height:1.4"><i class="fa-solid fa-trophy" style="color:var(--lime);margin-top:.15rem;flex-shrink:0"></i><span><strong style="color:var(--soft)">Typical outcome.</strong> ${x.outcome}</span></div>`;
+    const sv=document.getElementById('evStatV');
+    if(sv&&typeof DATA!=='undefined'){const c=DATA.filter(r=>r.reason===REV_MAP[k]).length;sv.textContent=Math.round(c/DATA.length*100)+'%';}
+    const grid=document.getElementById('evGrid');
+    if(grid)grid.querySelectorAll('.evcol').forEach((c,idx)=>{c.style.animation='none';void c.offsetWidth;c.style.animation=`fade .36s ease ${idx*0.05}s both`;});
+  }
+  document.querySelectorAll('#catTabs .tab').forEach(t=>t.addEventListener('click',()=>setEV(t.dataset.k)));
+  {const ea=document.getElementById('evAuto');if(ea)ea.addEventListener('click',()=>go(7));}
+
+  /* ---- interactive: fee scenarios ---- */
+  const SCN={
+    nothing:{title:'Do nothing - auto-lost',rows:[['Disputed amount (already pulled)','-€40','neg'],['Received fee','-€15','neg'],['Countered fee','€0 (no challenge filed)','zero']],total:'-€55',note:'Recorded as a loss. The charge and the fee are gone and we recover nothing - the worst outcome for our dispute rate.'},
+    withdraw:{title:'Withdrawn - no refund (preferred)',rows:[['Disputed amount','kept','pos'],['Received fee','-€15','neg'],['Countered fee','refunded on win','zero']],total:'-€15',flow:['Dispute opens','Contact & resolve','Customer withdraws','We submit evidence','Resolved in our favour'],note:'Our preferred play. We settle the complaint, the customer withdraws with their bank, and we still submit evidence so it resolves in our favour. We keep the funds - only the received fee is lost, and the -€70 downside disappears.'},
+    refund:{title:'Withdrawn + refunded',rows:[['Received fee','-€15','neg'],['Countered fee','refunded on win','zero'],['Goodwill refund to customer','-€40','neg']],total:'-€55',flow:['Dispute opens','Contact & resolve','Customer withdraws','We submit evidence → win','Then refund the customer'],note:'Same net as doing nothing, but recorded as a win and the customer is made whole. A disputed charge cannot be refunded until the issuer rules in our favour, so the goodwill refund happens after we win - never during the open dispute.'},
+    fightwin:{title:'We challenge → win',rows:[['Disputed amount','returned','pos'],['Received fee','-€15','neg'],['Countered fee','refunded on win','zero']],total:'-€15',note:'Same net as a withdrawal - but only if we win. Strong proof of use is what gets us here.'},
+    fightlose:{title:'We challenge → lose',rows:[['Disputed amount','-€40','neg'],['Received fee','-€15','neg'],['Countered fee','-€15','neg']],total:'-€70',note:'The worst case: the charge and both fees are gone. This is the downside that resolving-and-withdrawing removes.'},
+  };
+  const scnTitle=document.getElementById('scnTitle'),scnLedger=document.getElementById('scnLedger'),scnTotal=document.getElementById('scnTotal'),scnNote=document.getElementById('scnNote');
+  function setSCN(k){
+    const s=SCN[k];
+    document.querySelectorAll('#scn .scn-btn').forEach(b=>b.classList.toggle('on',b.dataset.k===k));
+    scnTitle.textContent=s.title;
+    scnLedger.innerHTML='<div class="fade-in ledger">'+s.rows.map(r=>`<div class="ledrow"><span>${r[0]}</span><span class="lv ${r[2]}">${r[1]}</span></div>`).join('')+'</div>';
+    scnTotal.textContent=s.total;
+    scnTotal.style.color=(s.total==='-€15')?'var(--green)':'var(--red)';
+    const flowHTML=s.flow?('<div class="scnflow">'+s.flow.map((f,idx)=>'<span class="fstep">'+f+'</span>'+(idx<s.flow.length-1?'<i class="fa-solid fa-arrow-right fsar"></i>':'')).join('')+'</div>'):'';
+    scnNote.innerHTML=flowHTML+s.note;
+  }
+  document.querySelectorAll('#scn .scn-btn').forEach(b=>b.addEventListener('click',()=>setSCN(b.dataset.k)));
+
+  /* ---- interactive: list filter ---- */
+  function setFilter(k){
+    document.querySelectorAll('#mFilters .m-filter').forEach(x=>x.classList.toggle('on',x.dataset.f===k));
+    document.querySelectorAll('#mTbl tbody tr').forEach(tr=>{
+      const match=(k==='all')||tr.dataset.s===k;
+      tr.classList.toggle('dim',!match);tr.classList.toggle('hot',match&&k!=='all');
+    });
+  }
+  document.querySelectorAll('#mFilters .m-filter').forEach(f=>f.addEventListener('click',()=>setFilter(f.dataset.f)));
+
+
+  /* ---- interactive: dispute cycle (how disputes work) ---- */
+  const CYC=[
+    {t:'Cardholder charged',icon:'fa-credit-card',tag:'Normal',d:'The customer is charged for their subscription. Everything is normal - no dispute exists yet.',stats:[['fa-circle-check','Status','Normal','green'],['fa-repeat','Type','Recurring','blue']]},
+    {t:'Cardholder disputes',icon:'fa-gavel',tag:'With their bank',d:'The customer asks their bank to reverse the charge. Their bank - the issuer - opens a chargeback and retrieves the funds from Stripe.',stats:[['fa-building-columns','Opened by','Issuer','blue'],['fa-money-bill-transfer','Funds','Retrieved','red']]},
+    {t:'We&rsquo;re notified',icon:'fa-money-bill-transfer',tag:'Funds + fee pulled',d:'Stripe recovers the disputed amount and a dispute fee from our balance, and alerts us by email, in the Dashboard and via a <span class="mono" style="color:var(--soft)">charge.dispute.created</span> event.',stats:[['fa-bell','Alert','Email + Dashboard','lime'],['fa-coins','Fee','~€15','red']]},
+    {t:'We respond',icon:'fa-reply',tag:'7-21 days',d:'Within the window we choose: submit evidence (Stripe forwards it to the issuer), accept the dispute, or do nothing - which loses it by default.',stats:[['fa-clock','Window','7-21 days','amber'],['fa-file-arrow-up','Submit','Once only','blue']]},
+    {t:'Bank reviews',icon:'fa-magnifying-glass',tag:'Wait',d:'The issuer weighs our evidence. There is nothing to do but wait - this can take up to about 75 days.',stats:[['fa-hourglass-half','Takes','≤75 days','blue'],['fa-eye','Action','Wait','gray']]},
+    {t:'Bank decides',icon:'fa-flag-checkered',tag:'Final',d:'The issuer makes the final call. A win returns the charge (and, in some regions, the fee); a loss is permanent and the fee is not returned.',stats:[['fa-trophy','Win','Charge back','green'],['fa-xmark','Lose','Forfeited','red']]},
+  ];
+  const cycDetail=document.getElementById('cycDetail');
+  function setCYC(i){
+    document.querySelectorAll('#cyc .lc-node').forEach(n=>n.classList.toggle('on',+n.dataset.i===i));
+    const s=CYC[i];
+    cycDetail.innerHTML=`<div class="fade-in" style="display:flex;gap:1.4rem;align-items:center;width:100%"><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:.55rem;margin-bottom:.4rem;flex-wrap:wrap"><span class="ico lime sm"><i class="fa-solid ${s.icon}"></i></span><span style="font-weight:800;font-size:1.02rem">${s.t}</span><span class="stepbadge blue">Stage <span class="n">${i+1}</span> / 6</span></div><div style="font-size:.78rem;color:var(--muted);font-weight:600;margin-bottom:.3rem">${s.tag}</div><div style="font-size:.88rem;color:var(--soft);line-height:1.5">${s.d}</div></div><div style="display:flex;gap:.5rem;flex-wrap:wrap;justify-content:flex-end;flex-shrink:0;max-width:42%">`+s.stats.map(st=>`<div class="statmini" style="padding:.4rem .55rem"><span class="ico ${st[3]} sm" style="width:26px;height:26px;font-size:.72rem"><i class="fa-solid ${st[0]}"></i></span><div><div class="sml">${st[1]}</div><div class="smv" style="color:var(--${st[3]})">${st[2]}</div></div></div>`).join('')+`</div></div>`;
+  }
+  document.querySelectorAll('#cyc .lc-node').forEach(n=>n.addEventListener('click',()=>setCYC(+n.dataset.i)));
+
+  /* ---- interactive: smart disputes steps ---- */
+  const SD=[
+    {t:'Dispute filed',icon:'fa-user',tag:'Issuer',d:'The issuer opens a chargeback on the customer&rsquo;s behalf. Stripe notifies us by email, in the Dashboard and via a <span class="mono" style="color:var(--soft)">charge.dispute.created</span> event, then scores Smart Disputes eligibility.',stats:[['fa-list-check','Eligibility','Reason + method','blue'],['fa-clock','Window','7-21 days','amber']]},
+    {t:'Evidence prepared',icon:'fa-file-shield',tag:'Stripe AI',d:'An AI rules engine pulls our transaction data, Stripe network data and cardholder data into an evidence packet tailored to the dispute reason - automatically, whenever enough data exists.',stats:[['fa-robot','Built by','Stripe AI','blue'],['fa-database','Sources','Txn + network','blue']]},
+    {t:'We add proof',icon:'fa-plus',tag:'Our part',d:'The default packet is built for shipped goods, so we attach the streaming proof it lacks - logins, IPs, viewing history. With <span class="mono" style="color:var(--soft)">prefer_smart_disputes</span> Stripe merges it into one stronger packet.',stats:[['fa-right-to-bracket','Add','Logins + IPs','lime'],['fa-code-merge','Mode','Merge','blue']]},
+    {t:'Auto-submitted',icon:'fa-paper-plane',tag:'Before deadline',d:'If we do nothing, Stripe files the packet just before the deadline so we never time out. We can also submit earlier or accept - but only once, with no edits after.',stats:[['fa-paper-plane','Files','Automatic','lime'],['fa-file-arrow-up','Submit','Once only','amber']]},
+    {t:'Bank decides',icon:'fa-landmark',tag:'Issuer · ~3 mo',d:'The issuer makes the final call - up to about three months. A Smart Disputes fee applies only if we win; nothing on a loss, and the countered fee can be waived.',stats:[['fa-hourglass-half','Takes','~3 months','blue'],['fa-coins','Fee','Only on win','green']]},
+  ];
+  const SDINFO=[
+    'Stripe scores eligibility from the reason code and payment method.',
+    'Only fires when enough transaction and network data exists.',
+    'Streaming proof is what turns a generic packet into a winning one.',
+    'Filed automatically &mdash; but submitted only once, with no edits after.',
+    'Same net as doing nothing, but recorded as a win. Refund only after we win.'
+  ];
+  const sdDetail=document.getElementById('sdDetail');
+  function setSD(i){
+    document.querySelectorAll('#sd .sdstep').forEach(n=>n.classList.toggle('on',+n.dataset.i===i));
+    const s=SD[i];
+    const meta=s.stats.map(st=>`<div class="sdmc"><span class="ico ${st[3]} mic"><i class="fa-solid ${st[0]}"></i></span><div><div class="ml">${st[1]}</div><div class="mv" style="color:var(--${st[3]})">${st[2]}</div></div></div>`).join('');
+    sdDetail.innerHTML=`<div class="fade-in" style="display:flex;gap:1.4rem;align-items:stretch;width:100%"><div style="flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center"><div style="display:flex;align-items:center;gap:.55rem;margin-bottom:.4rem;flex-wrap:wrap"><span class="stepbadge">Step <span class="n">${i+1}</span> / 5</span><span style="font-weight:800;font-size:1.14rem">${s.t}</span></div><div style="font-size:.78rem;color:var(--lime);font-weight:700;margin-bottom:.4rem">${s.tag}</div><div style="font-size:.88rem;color:var(--soft);line-height:1.5">${s.d}</div></div><div class="sdmeta">${meta}<div class="sdmc info"><span class="mic"><i class="fa-solid fa-circle-info"></i></span><div class="mtext">${SDINFO[i]}</div></div></div></div>`;
+  }
+  document.querySelectorAll('#sd .sdstep').forEach(n=>n.addEventListener('click',()=>setSD(+n.dataset.i)));
+
+  /* ---- interactive: workflow (branching map) ---- */
+  const WF={
+    dispute:{icon:'fa-bell',t:'Dispute opens',tag:'Issuer alert',d:'Stripe alerts us the moment the customer&rsquo;s bank opens a dispute &mdash; by email, in the Dashboard and via <span class="mono" style="color:var(--soft)">charge.dispute.created</span>.',stats:[['fa-bell','Alert','Email + Dashboard','lime'],['fa-money-bill-transfer','Funds','Pulled + fee','red']]},
+    review:{icon:'fa-magnifying-glass',t:'Review dispute',tag:'Read the case',d:'Read the reason code and details, check customer history and service delivery, and note the deadline before deciding.',stats:[['fa-clock','Deadline','Varies by brand','amber'],['fa-list-check','Check','Reason + history','blue']]},
+    decision:{icon:'fa-code-branch',t:'Decision point',tag:'Is the customer eligible for a refund?',d:'The single fork in the flow. If the customer is cooperative and a refund fits policy, resolve with them &mdash; otherwise run the standard dispute.',stats:[['fa-handshake','Yes','Resolve','lime'],['fa-shield-halved','No','Challenge','blue']]},
+    y1:{icon:'fa-envelope',t:'Contact customer',tag:'Support &middot; step 3.1',d:'Reach out, offer the refund, and ask them to withdraw the dispute with their bank.',stats:[['fa-user-headset','Owner','Support','lime'],['fa-comments','Action','Offer + ask','blue']]},
+    y2:{icon:'fa-building-columns',t:'Customer withdraws',tag:'Customer &middot; step 3.2',d:'They confirm the withdrawal with their issuing bank. The dispute must be withdrawn before any refund can move.',stats:[['fa-building-columns','Owner','Customer','blue'],['fa-hourglass-half','Then','Wait to clear','amber']]},
+    y3:{icon:'fa-rotate',t:'Refund in Stripe',tag:'Support &middot; step 3.3',d:'Once the case clears in our favour, issue the goodwill refund in Stripe. A disputed charge can&rsquo;t be refunded while the dispute is still open.',stats:[['fa-rotate','Owner','Support','lime'],['fa-triangle-exclamation','Only','After it clears','amber']]},
+    y4:{icon:'fa-circle-check',t:'Case closed',tag:'Ends here &middot; no fees',d:'The customer is made whole and the case resolves without a challenge. This path does not reconnect to the standard dispute flow.',stats:[['fa-circle-check','Result','Resolved','green'],['fa-coins','Fees','None','green']]},
+    n1:{icon:'fa-folder-plus',t:'Build evidence',tag:'~7-14 days',d:'Assemble proof of use and delivery &mdash; logins, IPs, viewing history, signed terms. Smart Disputes drafts a packet we strengthen.',stats:[['fa-folder-plus','Add','Usage proof','lime'],['fa-clock','Window','7-14 days','amber']]},
+    n2:{icon:'fa-paper-plane',t:'Submit response',tag:'Before the deadline',d:'Counter the dispute in Stripe. Evidence can be submitted only once &mdash; there are no edits after it is filed.',stats:[['fa-paper-plane','Submit','Once only','blue'],['fa-file-arrow-up','Edits','None after','amber']]},
+    n3:{icon:'fa-hourglass-half',t:'Issuer review',tag:'Up to ~75 days',d:'The bank weighs our evidence and makes the final call. There is nothing to do but wait.',stats:[['fa-hourglass-half','Takes','&le;75 days','blue'],['fa-eye','Action','Wait','gray']]},
+    win:{icon:'fa-trophy',t:'Win',tag:'Ruled in our favour',d:'The charge is returned. A Smart Disputes fee applies only on a win, and the countered fee comes back.',stats:[['fa-trophy','Charge','Returned','green'],['fa-coins','Fee','Only on win','green']]},
+    lose:{icon:'fa-xmark',t:'Lose',tag:'Ruled against us',d:'The charge and fees are forfeited &mdash; but nothing beyond that. Recorded as a loss for our dispute rate.',stats:[['fa-xmark','Charge','Forfeited','red'],['fa-coins','Fees','No extra','gray']]},
+  };
+  const wfDetail=document.getElementById('wfDetail');
+  function setWF(k){
+    document.querySelectorAll('.wfn[data-w]').forEach(n=>n.classList.toggle('on',n.dataset.w===k));
+    const s=WF[k];if(!s||!wfDetail)return;
+    const stats=s.stats.map(st=>`<div class="statmini" style="padding:.4rem .55rem"><span class="ico ${st[3]} sm" style="width:26px;height:26px;font-size:.72rem"><i class="fa-solid ${st[0]}"></i></span><div><div class="sml">${st[1]}</div><div class="smv" style="color:var(--${st[3]})">${st[2]}</div></div></div>`).join('');
+    wfDetail.innerHTML=`<div class="fade-in" style="display:flex;gap:1.4rem;align-items:center;width:100%"><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:.55rem;margin-bottom:.4rem;flex-wrap:wrap"><span class="ico lime sm"><i class="fa-solid ${s.icon}"></i></span><span style="font-weight:800;font-size:1.05rem">${s.t}</span></div><div style="font-size:.8rem;color:var(--lime);font-weight:700;margin-bottom:.35rem">${s.tag}</div><div style="font-size:.88rem;color:var(--soft);line-height:1.5">${s.d}</div></div><div style="display:flex;gap:.5rem;flex-wrap:wrap;justify-content:flex-end;flex-shrink:0;max-width:44%">${stats}</div></div>`;
+  }
+  document.querySelectorAll('.wfn[data-w]').forEach(n=>n.addEventListener('click',()=>setWF(n.dataset.w)));
+  function revealWF(){
+    const y=document.getElementById('wfYes'),n=document.getElementById('wfNo');
+    if(!y||!n)return;
+    y.classList.remove('in');n.classList.remove('in');void y.offsetWidth;
+    setTimeout(()=>y.classList.add('in'),120);
+    setTimeout(()=>n.classList.add('in'),240);
+  }
+
+  /* ---- reset everything ---- */
+  function resetAll(){setCYC(0);setSD(0);setEV('fraud');setSCN('withdraw');setFilter('all');setWF('dispute');if(window.__clearDash)window.__clearDash();}
+
+
+  /* ===== live disputes overview (slide 1) ===== */
+  const DATA=[{"acct":"CEV","amount":9.99,"reason":"subscription_canceled","status":"needs_response","due":"2026-08-11"},{"acct":"CEV","amount":8.0,"reason":"subscription_canceled","status":"needs_response","due":"2026-07-28"},{"acct":"CEV","amount":7.99,"reason":"fraudulent","status":"lost","due":"2026-08-06"},{"acct":"CEV","amount":4.5,"reason":"product_unacceptable","status":"won","due":"2026-07-20"},{"acct":"CEV","amount":7.99,"reason":"product_not_received","status":"lost","due":"2026-07-11"},{"acct":"CEV","amount":7.99,"reason":"subscription_canceled","status":"lost","due":"2026-07-14"},{"acct":"CEV","amount":11.99,"reason":"fraudulent","status":"lost","due":"2026-07-25"},{"acct":"CEV","amount":1.99,"reason":"fraudulent","status":"needs_response","due":"2026-08-20"},{"acct":"CEV","amount":7.99,"reason":"fraudulent","status":"won","due":"2026-06-23"},{"acct":"CEV","amount":7.99,"reason":"product_unacceptable","status":"under_review","due":"2026-07-26"},{"acct":"CEV","amount":15.99,"reason":"product_not_received","status":"won","due":"2026-06-21"},{"acct":"CEV","amount":20.99,"reason":"fraudulent","status":"needs_response","due":"2026-09-04"},{"acct":"CEV","amount":7.99,"reason":"fraudulent","status":"won","due":"2026-06-12"},{"acct":"CEV","amount":4.5,"reason":"product_unacceptable","status":"won","due":"2026-06-12"},{"acct":"CEV","amount":4.49,"reason":"product_not_received","status":"warning_closed","due":"2026-06-06"},{"acct":"CEV","amount":5.99,"reason":"product_unacceptable","status":"won","due":"2026-06-12"},{"acct":"CEV","amount":4.5,"reason":"product_unacceptable","status":"won","due":"2026-05-23"},{"acct":"CEV","amount":29.99,"reason":"fraudulent","status":"lost","due":"2026-06-24"},{"acct":"CEV","amount":179.99,"reason":"fraudulent","status":"lost","due":"2026-06-11"},{"acct":"CEV","amount":4.99,"reason":"product_not_received","status":"warning_closed","due":"2026-05-22"},{"acct":"CEV","amount":3.99,"reason":"product_not_received","status":"won","due":"2026-05-13"},{"acct":"CEV","amount":23.27,"reason":"product_unacceptable","status":"lost","due":"2026-06-15"},{"acct":"CEV","amount":4.99,"reason":"product_not_received","status":"warning_closed","due":"2026-05-22"},{"acct":"CEV","amount":17.42,"reason":"fraudulent","status":"lost","due":"2026-06-22"},{"acct":"CEV","amount":29.99,"reason":"fraudulent","status":"lost","due":"2026-06-28"},{"acct":"CEV","amount":7.9,"reason":"product_not_received","status":"won","due":"2026-05-13"},{"acct":"CEV","amount":54.99,"reason":"product_not_received","status":"won","due":"2026-05-01"},{"acct":"CEV","amount":20.99,"reason":"fraudulent","status":"lost","due":"2026-06-15"},{"acct":"CEV","amount":9.99,"reason":"subscription_canceled","status":"lost","due":"2026-05-28"},{"acct":"CEV","amount":7.99,"reason":"fraudulent","status":"won","due":"2026-04-21"},{"acct":"CEV","amount":15.99,"reason":"fraudulent","status":"lost","due":"2026-06-01"},{"acct":"CEV","amount":179.99,"reason":"fraudulent","status":"lost","due":"2026-06-11"},{"acct":"CEV","amount":9999.99,"reason":"fraudulent","status":"lost","due":"2026-04-05"},{"acct":"CEV","amount":9.99,"reason":"subscription_canceled","status":"lost","due":"2026-05-28"},{"acct":"CEV","amount":4.5,"reason":"fraudulent","status":"won","due":"2026-02-20"},{"acct":"CEV","amount":9.99,"reason":"product_unacceptable","status":"lost","due":"2026-03-26"},{"acct":"CEV","amount":29.99,"reason":"fraudulent","status":"lost","due":"2026-04-01"},{"acct":"CEV","amount":4.99,"reason":"product_unacceptable","status":"lost","due":"2026-02-09"},{"acct":"CEV","amount":7.99,"reason":"fraudulent","status":"won","due":"2026-01-31"},{"acct":"CEV","amount":8.05,"reason":"subscription_canceled","status":"lost","due":"2026-01-25"},{"acct":"CEV","amount":4.5,"reason":"product_not_received","status":"won","due":"2025-12-23"},{"acct":"CEV","amount":7.99,"reason":"subscription_canceled","status":"lost","due":"2025-12-20"},{"acct":"CEV","amount":7.94,"reason":"subscription_canceled","status":"lost","due":"2026-01-25"},{"acct":"CEV","amount":15.99,"reason":"subscription_canceled","status":"lost","due":"2026-02-18"},{"acct":"CEV","amount":8.02,"reason":"subscription_canceled","status":"lost","due":"2025-12-20"},{"acct":"CEV","amount":7.96,"reason":"subscription_canceled","status":"lost","due":"2026-01-25"},{"acct":"CEV","amount":8.08,"reason":"subscription_canceled","status":"lost","due":"2025-12-20"},{"acct":"CEV","amount":7.99,"reason":"fraudulent","status":"won","due":"2025-09-26"},{"acct":"CEV","amount":15.99,"reason":"product_not_received","status":"lost","due":"2025-09-16"},{"acct":"CEV","amount":8.15,"reason":"fraudulent","status":"lost","due":"2025-09-25"},{"acct":"CEV","amount":8.06,"reason":"subscription_canceled","status":"lost","due":"2025-12-20"},{"acct":"CEV","amount":7.99,"reason":"product_not_received","status":"lost","due":"2025-09-28"},{"acct":"CEV","amount":7.99,"reason":"subscription_canceled","status":"lost","due":"2025-09-10"},{"acct":"CEV","amount":15.99,"reason":"product_unacceptable","status":"lost","due":"2025-09-23"},{"acct":"CEV","amount":7.99,"reason":"fraudulent","status":"won","due":"2025-09-26"},{"acct":"CEV","amount":16.1,"reason":"fraudulent","status":"lost","due":"2025-08-22"},{"acct":"CEV","amount":7.99,"reason":"product_not_received","status":"lost","due":"2025-08-11"},{"acct":"CEV","amount":7.99,"reason":"fraudulent","status":"lost","due":"2025-09-21"},{"acct":"CEV","amount":7.99,"reason":"fraudulent","status":"won","due":"2025-09-26"},{"acct":"CEV","amount":54.99,"reason":"fraudulent","status":"lost","due":"2025-08-24"},{"acct":"CEV","amount":7.99,"reason":"fraudulent","status":"lost","due":"2025-09-12"},{"acct":"CEV","amount":7.99,"reason":"product_unacceptable","status":"lost","due":"2025-09-04"},{"acct":"CEV","amount":7.99,"reason":"fraudulent","status":"won","due":"2025-09-26"},{"acct":"CEV","amount":15.99,"reason":"product_not_received","status":"lost","due":"2025-06-23"},{"acct":"CEV","amount":5.99,"reason":"product_not_received","status":"won","due":"2025-06-08"},{"acct":"CEV","amount":7.99,"reason":"product_not_received","status":"won","due":"2025-06-07"},{"acct":"CEV","amount":7.99,"reason":"fraudulent","status":"won","due":"2025-06-07"},{"acct":"CEV","amount":16.32,"reason":"fraudulent","status":"lost","due":"2025-06-06"},{"acct":"CEV","amount":4.99,"reason":"fraudulent","status":"lost","due":"2025-07-03"},{"acct":"CEV","amount":16.52,"reason":"subscription_canceled","status":"lost","due":"2025-05-19"},{"acct":"CEV","amount":8.05,"reason":"subscription_canceled","status":"lost","due":"2025-05-11"},{"acct":"CEV","amount":8.1,"reason":"subscription_canceled","status":"lost","due":"2025-04-15"},{"acct":"CEV","amount":15.99,"reason":"product_not_received","status":"lost","due":"2025-02-22"},{"acct":"CEV","amount":7.99,"reason":"fraudulent","status":"lost","due":"2025-04-03"},{"acct":"CEV","amount":8.09,"reason":"subscription_canceled","status":"lost","due":"2025-02-27"},{"acct":"CEV","amount":7.99,"reason":"fraudulent","status":"lost","due":"2025-04-03"},{"acct":"CEV","amount":8.16,"reason":"credit_not_processed","status":"lost","due":"2025-02-24"},{"acct":"CEV","amount":8.11,"reason":"subscription_canceled","status":"lost","due":"2025-01-02"},{"acct":"CEV","amount":1.99,"reason":"fraudulent","status":"won","due":"2024-12-01"},{"acct":"CEV","amount":7.99,"reason":"product_unacceptable","status":"won","due":"2024-12-10"},{"acct":"CEV","amount":8.14,"reason":"credit_not_processed","status":"lost","due":"2024-12-12"},{"acct":"CEV","amount":8.26,"reason":"credit_not_processed","status":"lost","due":"2025-02-24"},{"acct":"CEV","amount":15.99,"reason":"fraudulent","status":"lost","due":"2025-01-11"},{"acct":"CEV","amount":2.07,"reason":"product_unacceptable","status":"lost","due":"2024-12-06"},{"acct":"CEV","amount":8.32,"reason":"subscription_canceled","status":"lost","due":"2024-12-22"},{"acct":"CEV","amount":7.98,"reason":"unrecognized","status":"lost","due":"2024-11-17"},{"acct":"CEV","amount":7.99,"reason":"subscription_canceled","status":"lost","due":"2024-11-23"},{"acct":"CEV","amount":8.37,"reason":"credit_not_processed","status":"lost","due":"2024-12-12"},{"acct":"CEV","amount":8.49,"reason":"credit_not_processed","status":"lost","due":"2025-02-24"},{"acct":"CEV","amount":8.49,"reason":"credit_not_processed","status":"lost","due":"2024-12-12"},{"acct":"CEV","amount":7.97,"reason":"subscription_canceled","status":"lost","due":"2024-10-14"},{"acct":"CEV","amount":8.11,"reason":"subscription_canceled","status":"lost","due":"2024-10-10"},{"acct":"CEV","amount":7.99,"reason":"product_unacceptable","status":"won","due":"2024-10-07"},{"acct":"CEV","amount":16.13,"reason":"subscription_canceled","status":"lost","due":"2024-09-09"},{"acct":"CEV","amount":54.99,"reason":"product_unacceptable","status":"won","due":"2024-09-14"},{"acct":"EHFTV","amount":2.49,"reason":"product_unacceptable","status":"lost","due":"2026-05-04"},{"acct":"EHFTV","amount":19.99,"reason":"fraudulent","status":"lost","due":"2026-03-12"},{"acct":"EHFTV","amount":7.99,"reason":"fraudulent","status":"lost","due":"2026-03-22"},{"acct":"EHFTV","amount":7.99,"reason":"product_unacceptable","status":"lost","due":"2026-02-05"},{"acct":"EHFTV","amount":47.48,"reason":"subscription_canceled","status":"lost","due":"2025-11-18"},{"acct":"EHFTV","amount":7.99,"reason":"product_unacceptable","status":"lost","due":"2026-02-05"},{"acct":"EHFTV","amount":7.99,"reason":"product_unacceptable","status":"lost","due":"2026-02-02"},{"acct":"EHFTV","amount":7.99,"reason":"product_unacceptable","status":"lost","due":"2025-09-27"},{"acct":"EHFTV","amount":7.99,"reason":"product_unacceptable","status":"lost","due":"2025-08-24"},{"acct":"EHFTV","amount":7.99,"reason":"product_unacceptable","status":"lost","due":"2025-08-09"},{"acct":"EHFTV","amount":7.99,"reason":"product_unacceptable","status":"lost","due":"2025-07-14"},{"acct":"EHFTV","amount":7.99,"reason":"product_unacceptable","status":"lost","due":"2025-03-21"},{"acct":"EHFTV","amount":46.82,"reason":"fraudulent","status":"lost","due":"2025-01-01"},{"acct":"EHFTV","amount":45.48,"reason":"fraudulent","status":"lost","due":"2024-12-09"},{"acct":"EHFTV","amount":45.99,"reason":"product_unacceptable","status":"lost","due":"2024-11-11"},{"acct":"IIHFTV","amount":30.0,"reason":"fraudulent","status":"needs_response","due":"2026-07-30"},{"acct":"IIHFTV","amount":10.0,"reason":"subscription_canceled","status":"lost","due":"2026-05-21"},{"acct":"IIHFTV","amount":15.0,"reason":"product_unacceptable","status":"under_review","due":"2026-07-06"},{"acct":"IIHFTV","amount":9.97,"reason":"duplicate","status":"lost","due":"2026-05-01"},{"acct":"IIHFTV","amount":9.19,"reason":"subscription_canceled","status":"lost","due":"2026-03-21"},{"acct":"IIHFTV","amount":8.99,"reason":"product_unacceptable","status":"lost","due":"2026-03-30"},{"acct":"IIHFTV","amount":20.0,"reason":"credit_not_processed","status":"lost","due":"2026-01-28"},{"acct":"IIHFTV","amount":20.0,"reason":"product_unacceptable","status":"lost","due":"2026-02-10"},{"acct":"IIHFTV","amount":20.0,"reason":"product_not_received","status":"lost","due":"2026-01-17"},{"acct":"IIHFTV","amount":20.0,"reason":"product_not_received","status":"lost","due":"2026-01-23"},{"acct":"IIHFTV","amount":20.0,"reason":"credit_not_processed","status":"lost","due":"2026-02-22"},{"acct":"IIHFTV","amount":20.0,"reason":"product_not_received","status":"lost","due":"2026-01-30"},{"acct":"IIHFTV","amount":20.0,"reason":"credit_not_processed","status":"lost","due":"2026-02-22"},{"acct":"IIHFTV","amount":9.99,"reason":"fraudulent","status":"lost","due":"2026-01-29"},{"acct":"IIHFTV","amount":8.99,"reason":"product_unacceptable","status":"lost","due":"2026-01-15"},{"acct":"IIHFTV","amount":4.0,"reason":"credit_not_processed","status":"lost","due":"2026-01-12"},{"acct":"IIHFTV","amount":10.0,"reason":"general","status":"lost","due":"2026-01-14"},{"acct":"IIHFTV","amount":27.0,"reason":"product_not_received","status":"lost","due":"2025-11-29"},{"acct":"IIHFTV","amount":15.12,"reason":"product_not_received","status":"lost","due":"2025-07-25"},{"acct":"IIHFTV","amount":6.0,"reason":"product_unacceptable","status":"lost","due":"2025-06-29"},{"acct":"IIHFTV","amount":15.17,"reason":"fraudulent","status":"lost","due":"2025-05-31"},{"acct":"TriLive","amount":13.99,"reason":"subscription_canceled","status":"needs_response","due":"2026-08-02"},{"acct":"TriLive","amount":43.18,"reason":"subscription_canceled","status":"lost","due":"2026-07-26"},{"acct":"TriLive","amount":37.99,"reason":"fraudulent","status":"needs_response","due":"2026-08-28"},{"acct":"TriLive","amount":49.99,"reason":"fraudulent","status":"needs_response","due":"2026-08-13"},{"acct":"TriLive","amount":37.99,"reason":"fraudulent","status":"lost","due":"2026-07-06"},{"acct":"TriLive","amount":158.99,"reason":"product_unacceptable","status":"needs_response","due":"2026-08-08"},{"acct":"TriLive","amount":74.99,"reason":"fraudulent","status":"needs_response","due":"2026-07-29"},{"acct":"TriLive","amount":39.99,"reason":"product_not_received","status":"under_review","due":"2026-07-25"},{"acct":"TriLive","amount":69.99,"reason":"credit_not_processed","status":"under_review","due":"2026-07-01"},{"acct":"TriLive","amount":49.99,"reason":"fraudulent","status":"won","due":"2026-06-21"},{"acct":"TriLive","amount":13.99,"reason":"subscription_canceled","status":"lost","due":"2026-06-29"},{"acct":"TriLive","amount":39.99,"reason":"product_not_received","status":"lost","due":"2026-07-19"},{"acct":"TriLive","amount":39.99,"reason":"subscription_canceled","status":"lost","due":"2026-05-19"},{"acct":"TriLive","amount":11.99,"reason":"subscription_canceled","status":"lost","due":"2026-05-22"},{"acct":"TriLive","amount":11.99,"reason":"subscription_canceled","status":"lost","due":"2026-05-23"},{"acct":"TriLive","amount":228.99,"reason":"fraudulent","status":"won","due":"2026-05-04"},{"acct":"TriLive","amount":39.99,"reason":"subscription_canceled","status":"lost","due":"2026-05-03"},{"acct":"TriLive","amount":74.99,"reason":"product_unacceptable","status":"lost","due":"2026-04-23"},{"acct":"TriLive","amount":39.99,"reason":"credit_not_processed","status":"lost","due":"2026-04-04"},{"acct":"TriLive","amount":11.99,"reason":"subscription_canceled","status":"lost","due":"2026-04-19"},{"acct":"TriLive","amount":228.99,"reason":"fraudulent","status":"won","due":"2026-05-04"},{"acct":"TriLive","amount":11.99,"reason":"subscription_canceled","status":"lost","due":"2026-02-26"},{"acct":"TriLive","amount":11.99,"reason":"subscription_canceled","status":"lost","due":"2026-02-26"}];
+  const N=DATA.length;
+  const ACOL={CEV:'#E5FF00',EHFTV:'#5C79FF',IIHFTV:'#8A8F98',TriLive:'#CDD2D8'};
+  const ACCTS=['CEV','EHFTV','IIHFTV','TriLive'];
+  const money=v=>'€'+v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const cs=(rows,s)=>rows.filter(r=>r.status===s).length;
+  const RLIST=[['Fraudulent','#C74B4B',['fraudulent']],['Subscription canceled','#5C79FF',['subscription_canceled']],['Product unacceptable','#9AA0A8',['product_unacceptable']],['Product not received','#767C84',['product_not_received']],['Credit not processed','#585D65',['credit_not_processed']],['Other','#3F444B',['unrecognized','duplicate','general']]];
+  const SLIST=[['Lost','#C74B4B',['lost']],['Won','#E5FF00',['won']],['Needs response','#B8BDC4',['needs_response']],['Under review','#5C79FF',['under_review']],['Warning closed','#4E535A',['warning_closed']]];
+  const BLIST=[['<€10',0,10,'#B8BDC4'],['€10-25',10,25,'#9AA0A8'],['€25-50',25,50,'#767C84'],['€50-100',50,100,'#585D65'],['>€100',100,1e15,'#C74B4B']];
+  function donutSVG(entries){const total=N,r=42,c=2*Math.PI*r;let off=0,seg='';
+    entries.forEach(e=>{if(!e.count)return;const len=e.count/total*c;seg+='<circle cx="50" cy="50" r="'+r+'" fill="none" stroke="'+e.color+'" stroke-width="14" stroke-dasharray="'+len.toFixed(2)+' '+(c-len).toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'" transform="rotate(-90 50 50)"></circle>';off+=len;});
+    return '<svg viewBox="0 0 100 100" width="78" height="78">'+seg+'<text x="50" y="47" text-anchor="middle" font-size="15" font-weight="800" fill="#f4f7f9">'+total+'</text><text x="50" y="60" text-anchor="middle" font-size="7" fill="#8a939e">total</text></svg>';
+  }
+  function chartDonut(title,entries){
+    const leg='<div class="dleg2">'+entries.map(e=>'<div class="lr"><span class="ld" style="background:'+e.color+'"></span>'+e.label+'<span class="lc">'+e.count+' &middot; '+Math.round(e.count/N*100)+'%</span></div>').join('')+'</div>';
+    return '<div class="chd">'+title+'</div><div style="display:flex;gap:1rem;align-items:center"><div style="flex-shrink:0">'+donutSVG(entries)+'</div>'+leg+'</div>';
+  }
+  function renderAccts(){
+    document.getElementById('acctCards').innerHTML=ACCTS.map(a=>{
+      const rows=DATA.filter(r=>r.acct===a);const need=cs(rows,'needs_response'),won=cs(rows,'won'),lost=cs(rows,'lost'),tot=rows.length;
+      const wr=(won+lost)?Math.round(won/(won+lost)*100):0;const wrc=wr>=50?'var(--green)':wr>=25?'var(--amber)':'var(--red)';
+      const pill=need>0?'<span class="chip red flash">Needs attention &middot; '+need+'</span>':'<span class="chip green">All clear</span>';
+      return '<div class="card acard"><div style="display:flex;align-items:center;gap:.55rem"><span class="acctdot" style="width:11px;height:11px;border-radius:3px;background:'+ACOL[a]+'"></span><span class="aname" style="font-weight:800;font-size:1.02rem">'+a+'</span><span style="margin-left:auto">'+pill+'</span></div>'
+        +'<div style="display:flex;align-items:flex-end;justify-content:space-between;margin-top:1rem"><div><div style="font-size:.62rem;color:var(--faint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.15rem">Win rate</div><div style="font-family:\'Sora\',sans-serif;font-size:1.7rem;font-weight:800;line-height:1;color:'+wrc+'">'+wr+'%</div></div><div style="text-align:right"><div style="font-size:.62rem;color:var(--faint);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.15rem">Total</div><div style="font-size:1.15rem;font-weight:700;line-height:1">'+tot+'</div></div></div>'
+        +'<div style="display:flex;gap:.5rem;margin-top:.95rem;padding-top:.75rem;border-top:1px solid var(--line)"><div style="flex:1"><div style="font-size:1rem;font-weight:800;color:var(--lime);line-height:1">'+won+'</div><div style="font-size:.68rem;color:var(--muted);margin-top:.15rem">won</div></div><div style="flex:1"><div style="font-size:1rem;font-weight:800;color:var(--red);line-height:1">'+lost+'</div><div style="font-size:.68rem;color:var(--muted);margin-top:.15rem">lost</div></div><div style="flex:1"><div style="font-size:1rem;font-weight:800;color:var(--soft);line-height:1">'+(need+cs(rows,'under_review'))+'</div><div style="font-size:.68rem;color:var(--muted);margin-top:.15rem">open</div></div></div></div>';
+    }).join('');
+  }
+  function renderCharts(){
+    document.getElementById('chartReason').innerHTML=chartDonut('Disputes by reason',RLIST.map(x=>({label:x[0],color:x[1],count:DATA.filter(r=>x[2].includes(r.reason)).length})));
+    document.getElementById('chartStatus').innerHTML=chartDonut('Disputes by status',SLIST.map(x=>({label:x[0],color:x[1],count:DATA.filter(r=>x[2].includes(r.status)).length})));
+    const sv=(a,ss)=>DATA.filter(r=>r.acct===a&&ss.includes(r.status)).reduce((x,r)=>x+r.amount,0);
+    let TL=0,TW=0,TO=0;
+    const rws=ACCTS.map(a=>{const lost=sv(a,['lost']),won=sv(a,['won']),open=sv(a,['needs_response','under_review']);TL+=lost;TW+=won;TO+=open;
+      return '<tr><td><span class="lbl"><span class="ld" style="background:'+ACOL[a]+'"></span>'+a+'</span></td><td class="r" style="color:var(--red)">'+money(lost)+'</td><td class="r" style="color:var(--green)">'+money(won)+'</td><td class="r" style="color:var(--muted)">'+money(open)+'</td></tr>';}).join('');
+    document.getElementById('chartAmount').innerHTML='<div class="chd" style="display:flex;justify-content:space-between;align-items:baseline">Money by account <span style="font-size:.74rem;color:var(--red);font-weight:700">'+money(TL)+' lost</span></div><table class="dtbl2"><thead><tr><th>Account</th><th class="r">Lost</th><th class="r">Won</th><th class="r">Open</th></tr></thead><tbody>'+rws+'<tr class="totalrow"><td>Total</td><td class="r" style="color:var(--red)">'+money(TL)+'</td><td class="r" style="color:var(--green)">'+money(TW)+'</td><td class="r" style="color:var(--muted)">'+money(TO)+'</td></tr></tbody></table>';
+  }
+  function exportCSV(){
+    const RL={fraudulent:'Fraudulent',subscription_canceled:'Subscription canceled',product_unacceptable:'Product unacceptable',product_not_received:'Product not received',credit_not_processed:'Credit not processed',unrecognized:'Unrecognized',duplicate:'Duplicate',general:'General'};
+    const SL={needs_response:'Needs response',lost:'Lost',won:'Won',under_review:'Under review',warning_closed:'Warning closed'};
+    const esc=v=>('"'+String(v).replace(/"/g,'""')+'"');
+    const head=['Account','Amount','Reason','Status','Evidence Due'].join(',');
+    const body=DATA.map(r=>[r.acct,r.amount.toFixed(2),RL[r.reason]||r.reason,SL[r.status]||r.status,r.due||''].map(esc).join(',')).join('\n');
+    const blob=new Blob([head+'\n'+body],{type:'text/csv;charset=utf-8'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='disputes_report.csv';document.body.appendChild(a);a.click();a.remove();
+  }
+  document.getElementById('exportBtn').addEventListener('click',exportCSV);
+  document.getElementById('notifBtn').addEventListener('click',()=>go(8));
+  renderAccts();renderCharts();
+
+  resetAll();
+  render();
+</script>
+</body>
+</html>
