@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EuroVolley TV — Help Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#0f0f0f;
+  --gray1:#1a1a1a;
+  --gray2:#2e2e2e;
+  --gray3:#6b6b6b;
+  --gray4:#9e9e9e;
+  --gray5:#d4d4d4;
+  --gray6:#ebebeb;
+  --gray7:#f5f5f5;
+  --white:#ffffff;
+  --blue:#1a56db;
+  --blue-hover:#1447c0;
+  --blue-light:#eef3ff;
+  --border:#e4e4e4;
+  --font:'Inter',system-ui,sans-serif;
+  --radius:8px;
+}
+body{font-family:var(--font);background:var(--white);color:var(--black);font-size:14px;line-height:1.6;min-height:100vh}
+.view{display:none}.view.active{display:block}
+
+/* ── ICONS (inline SVG via background) ── */
+svg{display:block}
+
+/* ── NAV ── */
+.nav{border-bottom:1px solid var(--border);padding:0 48px;height:56px;display:flex;align-items:center;justify-content:space-between;background:var(--white);position:sticky;top:0;z-index:100}
+.nav-brand{display:flex;align-items:center;gap:12px;cursor:pointer;text-decoration:none}
+.nav-brand-logo{width:28px;height:28px;background:var(--black);border-radius:6px;display:flex;align-items:center;justify-content:center}
+.nav-brand-logo svg{width:16px;height:16px;fill:var(--white)}
+.nav-brand-name{font-size:14px;font-weight:600;color:var(--black);letter-spacing:-.1px}
+.nav-brand-sep{width:1px;height:16px;background:var(--gray5);margin:0 2px}
+.nav-brand-help{font-size:14px;color:var(--gray3);font-weight:400}
+.nav-right{display:flex;align-items:center;gap:20px}
+.nav-link{font-size:13px;color:var(--gray3);cursor:pointer;text-decoration:none;border:none;background:none;font-family:var(--font)}
+.nav-link:hover{color:var(--black)}
+.nav-btn{font-size:13px;color:var(--black);border:1px solid var(--border);padding:6px 14px;border-radius:6px;cursor:pointer;background:var(--white);font-family:var(--font);font-weight:500}
+.nav-btn:hover{background:var(--gray7)}
+
+/* ── HOME ── */
+.hero{padding:72px 48px 64px;text-align:center;background:var(--gray7);border-bottom:1px solid var(--border)}
+.hero h1{font-size:32px;font-weight:600;color:var(--black);letter-spacing:-.5px;margin-bottom:24px;line-height:1.2}
+.search-wrap{max-width:520px;margin:0 auto;position:relative}
+.search-wrap input{width:100%;padding:12px 48px 12px 44px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:15px;font-family:var(--font);outline:none;color:var(--black);background:var(--white);transition:.15s}
+.search-wrap input:focus{border-color:var(--black)}
+.search-wrap input::placeholder{color:var(--gray4)}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);pointer-events:none}
+.search-icon svg{width:18px;height:18px;stroke:var(--gray4);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.search-clear{position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--gray4);font-size:18px;line-height:1;border:none;background:none;display:none}
+.popular{margin-top:16px;font-size:13px;color:var(--gray3)}
+.popular a{color:var(--black);font-weight:500;text-decoration:underline;text-decoration-color:var(--gray5);text-underline-offset:2px;cursor:pointer}
+.popular a:hover{text-decoration-color:var(--black)}
+
+/* search results */
+.sr-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--white);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 4px 16px rgba(0,0,0,.08);z-index:50;overflow:hidden;display:none}
+.sr-dropdown.show{display:block}
+.sr-item{padding:10px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--black);border-bottom:1px solid var(--gray6)}
+.sr-item:last-child{border-bottom:none}
+.sr-item:hover{background:var(--gray7)}
+.sr-item-cat{font-size:12px;color:var(--gray4)}
+
+/* ── HOME: categories ── */
+.home-cats{padding:48px 48px 64px;max-width:1100px;margin:0 auto}
+.home-cats-title{font-size:13px;font-weight:600;color:var(--gray3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:20px}
+.cats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.cat-block{background:var(--white);padding:28px 28px 24px}
+.cat-block:hover{background:var(--gray7)}
+.cat-block-hd{display:flex;align-items:center;gap:10px;margin-bottom:16px;cursor:pointer}
+.cat-icon{width:32px;height:32px;border:1px solid var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cat-icon svg{width:16px;height:16px;stroke:var(--black);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.cat-block-hd h3{font-size:14px;font-weight:600;color:var(--black);cursor:pointer}
+.cat-block-hd .cnt{font-size:12px;color:var(--gray4);margin-left:auto}
+.cat-links{list-style:none;display:flex;flex-direction:column;gap:1px}
+.cat-links li a{font-size:13px;color:var(--gray2);text-decoration:none;cursor:pointer;display:block;padding:5px 0;border-bottom:1px solid transparent}
+.cat-links li a:hover{color:var(--blue)}
+.cat-more{font-size:12px;color:var(--gray4);margin-top:10px;cursor:pointer;display:inline-block}
+.cat-more:hover{color:var(--blue)}
+
+/* ── HOME: quick links ── */
+.quick-links{border-top:1px solid var(--border);padding:40px 48px;max-width:1100px;margin:0 auto}
+.quick-links h2{font-size:13px;font-weight:600;color:var(--gray3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px}
+.ql-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.ql-item{border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:10px;transition:.12s}
+.ql-item:hover{border-color:var(--gray3);background:var(--gray7)}
+.ql-item svg{width:14px;height:14px;stroke:var(--gray3);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.ql-item span{font-size:13px;color:var(--black);font-weight:500}
+
+/* ── BREADCRUMB ── */
+.bc{padding:14px 48px;border-bottom:1px solid var(--border);font-size:13px;color:var(--gray3);display:flex;align-items:center;gap:6px}
+.bc a{color:var(--gray3);text-decoration:none;cursor:pointer}.bc a:hover{color:var(--black)}
+.bc-sep{color:var(--gray5)}
+
+/* ── CATEGORY VIEW ── */
+.cat-view{display:grid;grid-template-columns:220px 1fr;max-width:1100px;margin:0 auto}
+.cat-sb{border-right:1px solid var(--border);padding:28px 0;position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto}
+.cat-sb-head{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--gray4);padding:0 20px 12px;cursor:pointer}
+.cat-sb-head:hover{color:var(--black)}
+.sb-sec{margin-bottom:4px}
+.sb-sec-lbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--gray4);padding:10px 20px 4px}
+.sb-lnk{font-size:13px;color:var(--gray2);padding:6px 20px;cursor:pointer;border-left:2px solid transparent;display:block;line-height:1.4;text-decoration:none}
+.sb-lnk:hover{color:var(--black);border-left-color:var(--gray5)}
+.sb-lnk.on{color:var(--black);border-left-color:var(--black);font-weight:500}
+
+.cat-main{padding:36px 40px}
+.cat-main-hd{margin-bottom:32px;padding-bottom:24px;border-bottom:1px solid var(--border)}
+.cat-main-hd h2{font-size:22px;font-weight:600;color:var(--black);letter-spacing:-.3px;margin-bottom:4px}
+.cat-main-hd p{font-size:14px;color:var(--gray3)}
+.art-section{margin-bottom:32px}
+.art-section h3{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--gray4);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--gray6)}
+.art-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--gray6);cursor:pointer}
+.art-row:last-child{border-bottom:none}
+.art-row:hover .art-row-title{color:var(--blue)}
+.art-row-title{font-size:14px;color:var(--black);font-weight:400}
+.art-row-desc{font-size:12px;color:var(--gray4);margin-top:2px}
+.art-row-arr{color:var(--gray5);font-size:14px;flex-shrink:0;margin-left:16px}
+.art-row:hover .art-row-arr{color:var(--gray2)}
+.hot-tag{font-size:11px;color:var(--gray3);border:1px solid var(--gray5);padding:2px 7px;border-radius:10px;margin-left:8px;font-weight:400;vertical-align:middle}
+
+/* ── ARTICLE VIEW ── */
+.art-view{display:grid;grid-template-columns:1fr 240px;gap:64px;max-width:1100px;margin:0 auto;padding:40px 48px}
+.art-body h1{font-size:24px;font-weight:600;color:var(--black);letter-spacing:-.3px;line-height:1.3;margin-bottom:8px}
+.art-lead{font-size:15px;color:var(--gray2);line-height:1.7;padding-bottom:24px;border-bottom:1px solid var(--border);margin-bottom:28px}
+.art-meta{display:flex;align-items:center;gap:16px;margin-bottom:20px}
+.art-cat-lnk{font-size:12px;color:var(--gray3);text-decoration:none;cursor:pointer}
+.art-cat-lnk:hover{color:var(--black)}
+.art-date{font-size:12px;color:var(--gray4)}
+.art-priority{font-size:11px;color:var(--gray3);border:1px solid var(--gray5);padding:2px 7px;border-radius:10px}
+
+.art-content h2{font-size:17px;font-weight:600;color:var(--black);margin:28px 0 10px;letter-spacing:-.15px}
+.art-content h3{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--gray3);margin:22px 0 8px}
+.art-content p{font-size:14px;color:var(--gray2);line-height:1.75;margin:8px 0}
+.art-content ul,.art-content ol{padding-left:0;list-style:none;margin:10px 0;display:flex;flex-direction:column;gap:6px}
+.art-content ul li{font-size:14px;color:var(--gray2);padding:8px 12px 8px 12px;background:var(--gray7);border-radius:6px;border-left:2px solid var(--gray5);line-height:1.6}
+.art-content ol{counter-reset:s}
+.art-content ol li{counter-increment:s;font-size:14px;color:var(--gray2);padding:10px 12px 10px 40px;position:relative;border:1px solid var(--border);border-radius:6px;line-height:1.55}
+.art-content ol li::before{content:counter(s);position:absolute;left:12px;top:12px;width:18px;height:18px;background:var(--black);color:var(--white);border-radius:50%;font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;line-height:18px;text-align:center}
+.art-content a{color:var(--blue);text-decoration:none;cursor:pointer}
+.art-content a:hover{text-decoration:underline}
+
+.note{border-left:3px solid var(--gray5);padding:12px 16px;margin:16px 0;background:var(--gray7);border-radius:0 6px 6px 0}
+.note.info{border-left-color:var(--blue);background:var(--blue-light)}
+.note.warn{border-left-color:#d97706;background:#fffbeb}
+.note p{font-size:13.5px;color:var(--gray1);margin:0;line-height:1.6}
+.note strong{font-weight:600}
+
+.dv-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.dv-card{border:1px solid var(--border);border-radius:6px;padding:14px 16px}
+.dv-card h4{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--gray3);margin-bottom:10px}
+.dv-card ol{counter-reset:d;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:5px}
+.dv-card ol li{counter-increment:d;font-size:12.5px;color:var(--gray2);padding-left:18px;position:relative;line-height:1.5}
+.dv-card ol li::before{content:counter(d)'.';position:absolute;left:0;color:var(--gray4);font-weight:500;font-size:11px;top:1px}
+
+.esc{margin:32px 0 0;padding:20px 22px;border:1px solid var(--border);border-radius:var(--radius)}
+.esc h3{font-size:15px;font-weight:600;margin-bottom:4px}
+.esc p{font-size:13px;color:var(--gray3);margin-bottom:12px}
+.esc ul{list-style:none;display:flex;flex-direction:column;gap:4px;margin-bottom:14px}
+.esc ul li{font-size:13px;color:var(--gray2);padding-left:14px;position:relative}
+.esc ul li::before{content:'–';position:absolute;left:0;color:var(--gray4)}
+.btn{display:inline-flex;align-items:center;gap:6px;background:var(--black);color:var(--white);font-size:13px;font-weight:500;padding:9px 18px;border-radius:6px;text-decoration:none;border:none;cursor:pointer;font-family:var(--font)}
+.btn:hover{background:var(--gray1)}
+.btn-outline{background:var(--white);color:var(--black);border:1px solid var(--border)}
+.btn-outline:hover{background:var(--gray7)}
+
+/* Article sidebar */
+.art-sb{}
+.art-sb-section{margin-bottom:28px}
+.art-sb-section h4{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--gray4);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--gray6)}
+.toc-link{display:block;font-size:13px;color:var(--gray3);padding:4px 0 4px 10px;border-left:1px solid var(--gray6);cursor:pointer;text-decoration:none;line-height:1.4}
+.toc-link:hover{color:var(--black);border-left-color:var(--gray3)}
+.toc-link.on{color:var(--black);border-left-color:var(--black);font-weight:500}
+.toc-links{display:flex;flex-direction:column;gap:3px}
+.rel-link{display:flex;align-items:flex-start;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--gray6);cursor:pointer;gap:8px}
+.rel-link:last-child{border-bottom:none}
+.rel-link span{font-size:13px;color:var(--gray2);line-height:1.4}
+.rel-link:hover span{color:var(--blue)}
+.rel-link-arr{color:var(--gray5);font-size:12px;flex-shrink:0;margin-top:2px}
+.helpful{border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.helpful p{font-size:13px;color:var(--gray3);margin-bottom:10px}
+.helpful-btns{display:flex;gap:6px}
+.helpful-btn{flex:1;padding:7px;border:1px solid var(--border);border-radius:6px;background:var(--white);cursor:pointer;font-size:13px;color:var(--gray2);font-family:var(--font);transition:.1s}
+.helpful-btn:hover{border-color:var(--black)}
+
+/* ── FOOTER ── */
+.footer{border-top:1px solid var(--border);padding:32px 48px;display:flex;align-items:center;justify-content:space-between;margin-top:60px}
+.footer-left{display:flex;align-items:center;gap:20px}
+.footer-left span{font-size:12px;color:var(--gray4)}
+.footer-left a{font-size:12px;color:var(--gray4);text-decoration:none;cursor:pointer}
+.footer-left a:hover{color:var(--black)}
+.footer-right{font-size:12px;color:var(--gray4)}
+
+/* ── BEACON ── */
+.beacon-btn{position:fixed;bottom:20px;right:20px;width:44px;height:44px;border-radius:50%;background:var(--black);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:1000;box-shadow:0 2px 12px rgba(0,0,0,.2)}
+.beacon-btn:hover{background:var(--gray1)}
+.beacon-btn svg{width:20px;height:20px;fill:var(--white)}
+.beacon-panel{position:fixed;bottom:72px;right:20px;width:320px;background:var(--white);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.12);z-index:999;overflow:hidden;display:none;animation:su .15s ease}
+.beacon-panel.open{display:block}
+@keyframes su{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.bp-hd{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.bp-av{width:32px;height:32px;background:var(--black);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.bp-av svg{width:16px;height:16px;fill:var(--white)}
+.bp-hd-info .bp-name{font-size:13px;font-weight:600;color:var(--black)}
+.bp-hd-info .bp-stat{font-size:12px;color:var(--gray3);display:flex;align-items:center;gap:4px}
+.bp-hd-info .bp-stat::before{content:'';width:5px;height:5px;border-radius:50%;background:#16a34a;display:inline-block}
+.bp-body{padding:14px}
+.bp-search{position:relative;margin-bottom:12px}
+.bp-search input{width:100%;padding:8px 11px 8px 32px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:var(--font);outline:none;color:var(--black)}
+.bp-search input:focus{border-color:var(--gray3)}
+.bp-si{position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none}
+.bp-si svg{width:13px;height:13px;stroke:var(--gray4);fill:none;stroke-width:2;stroke-linecap:round}
+.bp-sugg h5{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--gray4);margin-bottom:8px}
+.bp-art{display:flex;align-items:center;gap:8px;padding:8px;border-radius:6px;cursor:pointer}
+.bp-art:hover{background:var(--gray7)}
+.bp-art-ic{width:24px;height:24px;border:1px solid var(--border);border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.bp-art-ic svg{width:12px;height:12px;stroke:var(--gray3);fill:none;stroke-width:1.5;stroke-linecap:round}
+.bp-art-txt{font-size:13px;color:var(--gray2);line-height:1.3}
+.bp-foot{border-top:1px solid var(--gray6);padding:10px 14px;display:flex;gap:6px}
+.bp-fb{flex:1;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--white);cursor:pointer;font-size:12.5px;color:var(--gray2);font-family:var(--font);font-weight:500}
+.bp-fb:hover{background:var(--gray7)}
+.bp-fb.primary{background:var(--black);color:var(--white);border-color:var(--black)}
+.bp-fb.primary:hover{background:var(--gray1)}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-brand" onclick="goHome()">
+    <div class="nav-brand-logo">
+      <svg viewBox="0 0 18 18"><path d="M9 1L2 5v8l7 4 7-4V5z" fill-opacity=".25"/><path d="M9 1L2 5l7 4 7-4z"/></svg>
+    </div>
+    <span class="nav-brand-name">EuroVolley TV</span>
+    <span class="nav-brand-sep"></span>
+    <span class="nav-brand-help">Help Center</span>
+  </div>
+  <div class="nav-right">
+    <button class="nav-link" onclick="showCat('service')">Service status</button>
+    <button class="nav-btn" onclick="toggleBeacon()">Contact support</button>
+  </div>
+</nav>
+
+<!-- HOME VIEW -->
+<div class="view active" id="v-home">
+
+  <div class="hero">
+    <h1>How can we help you?</h1>
+    <div class="search-wrap">
+      <span class="search-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
+      <input type="text" placeholder="Search for articles…" id="hQ" oninput="hSearch(this.value)" onfocus="hSearch(this.value)" autocomplete="off">
+      <div class="sr-dropdown" id="hRes"></div>
+    </div>
+    <div class="popular">Popular: <a onclick="showArticle('password')">Reset password</a>, <a onclick="showArticle('buffering')">Buffering issues</a>, <a onclick="showArticle('cancel')">Cancel subscription</a>, <a onclick="showArticle('paid-no-access')">Payment &amp; access</a></div>
+  </div>
+
+  <!-- Categories -->
+  <div class="home-cats">
+    <div class="home-cats-title">Browse topics</div>
+    <div class="cats-grid">
+
+      <div class="cat-block">
+        <div class="cat-block-hd" onclick="showCat('getting-started')">
+          <div class="cat-icon"><svg viewBox="0 0 24 24"><path d="M3 12L12 3l9 9"/><path d="M9 21V9h6v12"/></svg></div>
+          <h3>Getting Started</h3>
+          <span class="cnt">9 articles</span>
+        </div>
+        <ul class="cat-links">
+          <li><a onclick="showArticle('create-account')">How to create an account</a></li>
+          <li><a onclick="showArticle('plans')">Subscription plans and pricing</a></li>
+          <li><a onclick="showArticle('download-app')">How to download the app</a></li>
+          <li><a onclick="showArticle('login')">How to log in</a></li>
+          <li><a onclick="showArticle('verify-email')">Verify your email address</a></li>
+        </ul>
+        <span class="cat-more" onclick="showCat('getting-started')">View all 9 articles</span>
+      </div>
+
+      <div class="cat-block">
+        <div class="cat-block-hd" onclick="showCat('streaming')">
+          <div class="cat-icon"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="15" rx="2"/><path d="M17 2l-5 5-5-5"/></svg></div>
+          <h3>Streaming &amp; Playback</h3>
+          <span class="cnt">10 articles</span>
+        </div>
+        <ul class="cat-links">
+          <li><a onclick="showArticle('buffering')">Stream buffering or freezing</a></li>
+          <li><a onclick="showArticle('black-screen')">Stream won't load / black screen</a></li>
+          <li><a onclick="showArticle('loading')">Video stuck on loading screen</a></li>
+          <li><a onclick="showArticle('no-sound')">No sound or commentary</a></li>
+          <li><a onclick="showArticle('replays')">Where to find replays</a></li>
+        </ul>
+        <span class="cat-more" onclick="showCat('streaming')">View all 10 articles</span>
+      </div>
+
+      <div class="cat-block">
+        <div class="cat-block-hd" onclick="showCat('devices')">
+          <div class="cat-icon"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg></div>
+          <h3>Devices &amp; Apps</h3>
+          <span class="cnt">9 articles</span>
+        </div>
+        <ul class="cat-links">
+          <li><a onclick="showArticle('smart-tv')">Smart TV setup guide</a></li>
+          <li><a onclick="showArticle('smart-tv-broken')">Stream not working on Smart TV</a></li>
+          <li><a onclick="showArticle('ios')">iOS app issues</a></li>
+          <li><a onclick="showArticle('browser')">Stream not working in browser</a></li>
+          <li><a onclick="showArticle('streaming-devices')">Apple TV / Fire TV / Roku</a></li>
+        </ul>
+        <span class="cat-more" onclick="showCat('devices')">View all 9 articles</span>
+      </div>
+
+      <div class="cat-block">
+        <div class="cat-block-hd" onclick="showCat('billing')">
+          <div class="cat-icon"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg></div>
+          <h3>Billing &amp; Account</h3>
+          <span class="cnt">11 articles</span>
+        </div>
+        <ul class="cat-links">
+          <li><a onclick="showArticle('paid-no-access')">Charged but no access</a></li>
+          <li><a onclick="showArticle('payment-failed')">Payment failed or declined</a></li>
+          <li><a onclick="showArticle('cancel')">How to cancel your subscription</a></li>
+          <li><a onclick="showArticle('refund')">Refund policy</a></li>
+          <li><a onclick="showArticle('password')">How to reset your password</a></li>
+        </ul>
+        <span class="cat-more" onclick="showCat('billing')">View all 11 articles</span>
+      </div>
+
+      <div class="cat-block">
+        <div class="cat-block-hd" onclick="showCat('content')">
+          <div class="cat-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+          <h3>Content &amp; Rights</h3>
+          <span class="cnt">8 articles</span>
+        </div>
+        <ul class="cat-links">
+          <li><a onclick="showArticle('geo')">Content not available in my country</a></li>
+          <li><a onclick="showArticle('vpn')">VPN or proxy detected error</a></li>
+          <li><a onclick="showArticle('blackout')">Blackout restrictions explained</a></li>
+          <li><a onclick="showArticle('schedule')">Where to find the live schedule</a></li>
+          <li><a onclick="showArticle('event-locked')">Event shown as locked</a></li>
+        </ul>
+        <span class="cat-more" onclick="showCat('content')">View all 8 articles</span>
+      </div>
+
+      <div class="cat-block">
+        <div class="cat-block-hd" onclick="showCat('service')">
+          <div class="cat-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <h3>Service Status &amp; Support</h3>
+          <span class="cnt">6 articles</span>
+        </div>
+        <ul class="cat-links">
+          <li><a onclick="showArticle('service-down')">Is the service currently down?</a></li>
+          <li><a onclick="showArticle('contact')">How to contact customer support</a></li>
+          <li><a onclick="showArticle('report')">How to report a technical issue</a></li>
+          <li><a onclick="showArticle('hours')">Support hours and response times</a></li>
+          <li><a onclick="showArticle('what-to-include')">What to include in your request</a></li>
+        </ul>
+        <span class="cat-more" onclick="showCat('service')">View all 6 articles</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Quick links -->
+  <div style="border-top:1px solid var(--border)">
+    <div class="quick-links">
+      <h2>Quick links</h2>
+      <div class="ql-grid">
+        <div class="ql-item" onclick="showArticle('change-email')">
+          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <span>Update email</span>
+        </div>
+        <div class="ql-item" onclick="showArticle('password')">
+          <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <span>Reset password</span>
+        </div>
+        <div class="ql-item" onclick="showArticle('payment-failed')">
+          <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
+          <span>Update payment</span>
+        </div>
+        <div class="ql-item" onclick="showArticle('cancel')">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+          <span>Cancel subscription</span>
+        </div>
+        <div class="ql-item" onclick="showArticle('service-down')">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>Service status</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-left">
+      <span>© 2026 EuroVolley TV</span>
+      <a>Privacy policy</a>
+      <a>Terms of service</a>
+    </div>
+    <div class="footer-right">Powered by Help Scout</div>
+  </footer>
+
+</div>
+
+<!-- CATEGORY VIEW -->
+<div class="view" id="v-category">
+  <div class="bc"><a onclick="goHome()">Help Center</a><span class="bc-sep">›</span><span id="bc-cat-name"></span></div>
+  <div class="cat-view">
+    <div class="cat-sb" id="cat-sb"></div>
+    <div class="cat-main" id="cat-main"></div>
+  </div>
+</div>
+
+<!-- ARTICLE VIEW -->
+<div class="view" id="v-article">
+  <div class="bc"><a onclick="goHome()">Help Center</a><span class="bc-sep">›</span><a id="bc-art-cat"></a><span class="bc-sep">›</span><span id="bc-art-title"></span></div>
+  <div class="art-view">
+    <div id="art-main"></div>
+    <div class="art-sb" id="art-sb"></div>
+  </div>
+</div>
+
+<!-- BEACON -->
+<button class="beacon-btn" onclick="toggleBeacon()">
+  <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+</button>
+<div class="beacon-panel" id="bP">
+  <div class="bp-hd">
+    <div class="bp-av"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+    <div class="bp-hd-info"><div class="bp-name">EuroVolley TV Support</div><div class="bp-stat">Online · Reply in ~3 min</div></div>
+  </div>
+  <div class="bp-body">
+    <div class="bp-search"><span class="bp-si"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span><input type="text" placeholder="Search for answers…"></div>
+    <div class="bp-sugg">
+      <h5>Suggested articles</h5>
+      <div class="bp-art" onclick="showArticle('buffering')"><div class="bp-art-ic"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><div class="bp-art-txt">Stream buffering or freezing</div></div>
+      <div class="bp-art" onclick="showArticle('black-screen')"><div class="bp-art-ic"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="15" rx="2"/><path d="M17 2l-5 5-5-5"/></svg></div><div class="bp-art-txt">Stream won't load / black screen</div></div>
+      <div class="bp-art" onclick="showArticle('paid-no-access')"><div class="bp-art-ic"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg></div><div class="bp-art-txt">Charged but no access to content</div></div>
+      <div class="bp-art" onclick="showArticle('service-down')"><div class="bp-art-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="bp-art-txt">Is the service currently down?</div></div>
+    </div>
+  </div>
+  <div class="bp-foot">
+    <button class="bp-fb" onclick="toggleBeacon()">Browse articles</button>
+    <button class="bp-fb primary">Start a chat</button>
+  </div>
+</div>
+
+<script>
+const CATS={
+  'getting-started':{name:'Getting Started',desc:'Set up your account, choose a plan, and start watching.',sections:[
+    {name:'Creating Your Account',arts:[{id:'create-account',title:'How to create an account',desc:'Register a new account'},{id:'verify-email',title:'How to verify your email address',desc:'Fix a missing verification email'},{id:'payment-methods',title:'Supported payment methods',desc:'Cards, PayPal, Apple Pay and more'}]},
+    {name:'Subscriptions & Plans',arts:[{id:'plans',title:'What subscription plans are available',desc:'Tiers, passes, and pricing'},{id:'subscribe',title:'How to subscribe or purchase a pass',desc:'Step-by-step purchase guide'},{id:'free-trial',title:'Free trial — what\'s included',desc:'Trial duration and auto-renewal'}]},
+    {name:'First-Time Setup',arts:[{id:'download-app',title:'How to download the app',desc:'All supported devices and links'},{id:'login',title:'How to log in for the first time',desc:'First login and troubleshooting'},{id:'profile',title:'Setting up your profile',desc:'Language, notifications, preferences'}]}
+  ]},
+  'streaming':{name:'Streaming & Playback',desc:'Fix buffering, black screens, audio issues, and replay access.',sections:[
+    {name:'Stream Not Starting',arts:[{id:'black-screen',title:'Stream won\'t load / black screen',desc:'Nothing playing — fastest fix',hot:true},{id:'error-message',title:'Error message when trying to play',desc:'What error codes mean'},{id:'loading',title:'Video stuck on loading screen',desc:'Infinite spinner troubleshooting'}]},
+    {name:'Buffering & Quality',arts:[{id:'buffering',title:'Stream buffering or freezing',desc:'Fix pausing, stuttering, and lag',hot:true},{id:'low-quality',title:'Low video quality / pixelated stream',desc:'Improve blurry playback'},{id:'audio-sync',title:'Audio out of sync',desc:'Commentary behind or ahead of video'},{id:'no-sound',title:'No sound or commentary missing',desc:'Silent stream troubleshooting'}]},
+    {name:'Replays & On-Demand',arts:[{id:'replays',title:'Where to find replays',desc:'Locating VOD after events'},{id:'replay-missing',title:'Replay not available yet',desc:'How long until replays appear'},{id:'vod-missing',title:'On-demand content missing or removed',desc:'Why content disappears'}]}
+  ]},
+  'devices':{name:'Devices & Apps',desc:'Setup and troubleshooting for Smart TVs, mobile, browsers, and streaming devices.',sections:[
+    {name:'Smart TVs',arts:[{id:'smart-tv',title:'Smart TV setup guide',desc:'Samsung, LG, Android TV'},{id:'smart-tv-broken',title:'Stream not working on Smart TV',desc:'Fix crashes, buffering, black screen',hot:true},{id:'app-not-found',title:'App not found in Smart TV store',desc:'What to do when the app is missing'}]},
+    {name:'Mobile & Tablet',arts:[{id:'ios',title:'iOS app issues',desc:'iPhone and iPad troubleshooting'},{id:'android',title:'Android app issues',desc:'Android troubleshooting'},{id:'mobile-download',title:'How to download the mobile app',desc:'App Store and Google Play links'}]},
+    {name:'Web Browser',arts:[{id:'browser-support',title:'Supported browsers and compatibility',desc:'Chrome, Firefox, Safari, Edge'},{id:'browser',title:'Stream not working in browser',desc:'Browser playback troubleshooting'},{id:'clear-cache',title:'How to clear cache and cookies',desc:'Step-by-step for all browsers'}]},
+    {name:'Streaming Devices',arts:[{id:'streaming-devices',title:'Apple TV / Fire TV / Roku / Chromecast',desc:'All streaming device setup guides'},{id:'casting',title:'Casting and AirPlay issues',desc:'Fix casting from phone to TV'}]}
+  ]},
+  'billing':{name:'Billing & Account',desc:'Payments, refunds, subscription management, and account settings.',sections:[
+    {name:'Payments & Charges',arts:[{id:'payment-failed',title:'Payment failed or declined',desc:'Why cards fail and how to fix'},{id:'paid-no-access',title:'Charged but no access to content',desc:'Payment through but locked out',hot:true},{id:'receipt',title:'Understanding your charge and receipt',desc:'Statement descriptors and invoices'}]},
+    {name:'Subscriptions',arts:[{id:'cancel',title:'How to cancel your subscription',desc:'Cancel on web, iOS, and Android'},{id:'upgrade',title:'How to change or upgrade your plan',desc:'Switch between tiers'},{id:'auto-renewal',title:'Auto-renewal — how it works',desc:'When you\'re charged and how to stop'}]},
+    {name:'Refunds',arts:[{id:'refund',title:'Refund policy',desc:'Eligibility criteria and timeframes'},{id:'refund-request',title:'How to request a refund',desc:'Step-by-step refund process'}]},
+    {name:'Account Management',arts:[{id:'change-email',title:'How to change your email address',desc:'Update your registered email'},{id:'password',title:'How to reset your password',desc:'Forgot password or locked out'},{id:'delete-account',title:'How to delete your account',desc:'Permanent deletion and GDPR'}]}
+  ]},
+  'content':{name:'Content & Rights',desc:'Geo-restrictions, VPN errors, blackouts, and broadcast rights.',sections:[
+    {name:'Geo-Restrictions',arts:[{id:'geo',title:'Content not available in my country',desc:'Why content is region-locked'},{id:'vpn',title:'VPN or proxy detected error',desc:'Fix the VPN error message'},{id:'blackout',title:'Blackout restrictions explained',desc:'Local broadcaster exclusivity'}]},
+    {name:'Live Events',arts:[{id:'schedule',title:'Where to find the live event schedule',desc:'Finding upcoming matches'},{id:'match-missing',title:'Match not showing in schedule',desc:'Why an event isn\'t listed'},{id:'event-locked',title:'Event shown as unavailable or locked',desc:'Scheduled event you can\'t access'}]},
+    {name:'Rights & Licensing',arts:[{id:'why-no-match',title:'Why some matches aren\'t streamed',desc:'Coverage limitations explained'},{id:'rights',title:'Broadcast rights and exclusivity',desc:'How sports broadcasting rights work'}]}
+  ]},
+  'service':{name:'Service Status & Support',desc:'Check platform status, report issues, and contact the support team.',sections:[
+    {name:'Service Disruptions',arts:[{id:'service-down',title:'Is the service currently down?',desc:'Check for outages before troubleshooting',hot:true},{id:'maintenance',title:'Planned maintenance notice',desc:'Scheduled downtime information'},{id:'report',title:'How to report a technical issue',desc:'What to include for fast resolution'}]},
+    {name:'Contacting Support',arts:[{id:'contact',title:'How to contact customer support',desc:'Chat, email, and response times'},{id:'what-to-include',title:'What to include in your support request',desc:'Checklist for fastest resolution'},{id:'hours',title:'Support hours and response times',desc:'When we\'re available'}]}
+  ]}
+};
+
+const ARTS={
+  'buffering':{title:'Stream Buffering or Freezing',cat:'streaming',catName:'Streaming & Playback',priority:true,
+    summary:'Is your stream pausing, stuttering, or constantly reloading? Start from the top — most buffering issues are resolved quickly.',
+    related:['black-screen','loading','smart-tv-broken','service-down'],
+    toc:['Before you troubleshoot','Quick fixes','Device-specific steps','Advanced troubleshooting'],
+    body:`<h2>Before you troubleshoot</h2>
+    <div class="note info"><p><strong>Check service status first.</strong> If it's a platform-wide issue, personal troubleshooting won't help. <a onclick="showArticle('service-down')">Check the status page →</a></p></div>
+    <ul><li>Run a speed test at speedtest.net — minimum 5 Mbps for HD, 15 Mbps for Full HD</li><li>Check if other devices on your network are streaming, downloading, or on video calls</li><li>Disable any VPN — these significantly reduce stream performance</li></ul>
+    <h2>Quick fixes</h2>
+    <ol><li><strong>Lower the video quality.</strong> Open player settings → select 720p or 480p. This is the fastest fix during a live event.</li><li><strong>Close other browser tabs and extensions.</strong> Ad blockers frequently interfere with the media player.</li><li><strong>Refresh the page or restart the app.</strong> A clean reload re-establishes the stream connection.</li><li><strong>Switch to a wired connection.</strong> Ethernet is significantly more stable than Wi-Fi for live streaming.</li><li><strong>Move closer to your Wi-Fi router.</strong> Distance and walls reduce signal quality.</li><li><strong>Restart your router.</strong> Unplug from the wall, wait 30 seconds, plug back in.</li></ol>
+    <div class="note"><p><strong>Diagnostic tip:</strong> Connect your device to your mobile phone's hotspot and try the stream. If it plays smoothly, the issue is with your home network — not the platform.</p></div>
+    <h2>Device-specific steps</h2>
+    <div class="dv-grid"><div class="dv-card"><h4>Browser</h4><ol><li>Hard refresh: Ctrl+Shift+R (Mac: Cmd+Shift+R)</li><li>Clear cache and cookies</li><li>Disable all extensions, especially ad blockers</li><li>Switch to Chrome or Edge for best compatibility</li><li>Test in an incognito window</li></ol></div><div class="dv-card"><h4>Smart TV</h4><ol><li>Force-close the app and reopen</li><li>Full power-off from the wall — wait 10 seconds</li><li>Switch Wi-Fi to 5GHz band in TV settings</li><li>Connect via Ethernet cable if possible</li><li>Check for and install app updates</li></ol></div><div class="dv-card"><h4>Mobile</h4><ol><li>Toggle between Wi-Fi and mobile data to test</li><li>Disable any VPN running in background</li><li>Force-close and reopen the app</li><li>Free up device storage — 500 MB minimum</li><li>Update the app via App Store or Play Store</li></ol></div><div class="dv-card"><h4>Apple TV / Fire TV / Roku</h4><ol><li>Restart device from Settings, or unplug it</li><li>Check for system and app updates</li><li>Move closer to router or use a powerline adapter</li><li>Uninstall and reinstall the app</li></ol></div></div>
+    <h2>Advanced troubleshooting</h2>
+    <div class="note warn"><p><strong>Buffering only on one specific event?</strong> Try playing a different video or a recent replay. If other content plays smoothly, the issue may be broadcast-side. Report it with the event name and timestamp.</p></div>
+    <p><strong>DNS settings.</strong> Slow DNS resolution can delay stream startup. Try switching to 1.1.1.1 (Cloudflare) or 8.8.8.8 (Google) in your router settings.</p>
+    <p><strong>Network congestion.</strong> If buffering only happens at peak hours (evenings, weekends), your ISP may be throttling streaming traffic. Try a different network to confirm.</p>`},
+
+  'black-screen':{title:'Stream Won\'t Load / Black Screen',cat:'streaming',catName:'Streaming & Playback',priority:true,
+    summary:'The player loads but shows a black screen, or the stream never starts. Work through these steps in order.',
+    related:['buffering','loading','error-message','service-down','smart-tv-broken'],
+    toc:['Check first','Quick fixes','Device-specific','Contact support'],
+    body:`<h2>Check first</h2>
+    <ul><li>Is the event currently live? Check the <a onclick="showArticle('schedule')">live event schedule</a></li><li>Is the platform experiencing an outage? <a onclick="showArticle('service-down')">Check status →</a></li><li>Is your subscription active? Go to Account → Subscription</li></ul>
+    <h2>Quick fixes</h2>
+    <ol><li><strong>Refresh the page or restart the app.</strong> Use Ctrl+Shift+R in your browser for a hard refresh.</li><li><strong>Log out and log back in.</strong> Session issues cause black screens on otherwise working streams.</li><li><strong>Try a different browser or device.</strong> This instantly tells you whether the issue is device-specific.</li><li><strong>Disable all browser extensions.</strong> Ad blockers and script blockers are a very common cause.</li><li><strong>Check your internet connection.</strong> Minimum 5 Mbps required. Test at speedtest.net.</li></ol>
+    <div class="note info"><p><strong>DRM / content protection issue.</strong> Black screens can be caused by DRM failing. Try a fresh browser profile, or in Chrome go to chrome://settings/content/protectedContent and ensure content protection is enabled.</p></div>
+    <h2>Device-specific steps</h2>
+    <ul><li>Browser: <a onclick="showArticle('browser')">Stream not working in browser →</a></li><li>Smart TV: <a onclick="showArticle('smart-tv-broken')">Stream not working on Smart TV →</a></li><li>Mobile: <a onclick="showArticle('ios')">iOS app issues →</a> / <a onclick="showArticle('android')">Android app issues →</a></li></ul>`},
+
+  'service-down':{title:'Is the Service Currently Down?',cat:'service',catName:'Service Status & Support',priority:false,
+    summary:'How to check if EuroVolley TV is experiencing an outage, and what to do while the team resolves it.',
+    related:['report','contact','buffering','black-screen'],
+    toc:['Check service status','Signs of an outage','If it\'s just you','During an outage'],
+    body:`<h2>Check service status</h2>
+    <div class="note info"><p><strong>Current status: All systems operational.</strong> Last checked just now. No incidents reported in the past 24 hours.</p></div>
+    <p>Always check the status page before troubleshooting your own connection. If there's a confirmed outage, personal troubleshooting steps won't resolve the issue.</p>
+    <h2>Signs of a platform-wide issue</h2>
+    <ul><li>Multiple users reporting the same problem at the same time</li><li>Issues affecting all devices and all browsers simultaneously</li><li>Unusual error messages that appeared suddenly across the platform</li></ul>
+    <h2>If it's just you</h2>
+    <p>If the status page shows all systems operational, the issue is likely local. Start here:</p>
+    <ul><li><a onclick="showArticle('buffering')">Stream buffering or freezing →</a></li><li><a onclick="showArticle('black-screen')">Stream won't load / black screen →</a></li><li><a onclick="showArticle('browser')">Stream not working in browser →</a></li></ul>
+    <h2>During a confirmed outage</h2>
+    <ul><li>Our engineering team is automatically alerted and actively working on a resolution</li><li>Do not submit multiple support tickets — one is sufficient</li><li>Compensation for missed live events is handled on a case-by-case basis after the event</li></ul>`},
+
+  'paid-no-access':{title:'Charged but No Access to Content',cat:'billing',catName:'Billing & Account',priority:true,
+    summary:'Your payment went through but you\'re still seeing the subscribe button or locked out of content.',
+    related:['payment-failed','cancel','refund','contact'],
+    toc:['Immediate steps','Check your account','Contact support'],
+    body:`<h2>Immediate steps</h2>
+    <ol><li><strong>Log out and log back in.</strong> Access sometimes requires a session refresh after payment processes.</li><li><strong>Confirm you're logged in with the correct account.</strong> Use the same email address you used to purchase.</li><li><strong>Check your inbox for a purchase confirmation.</strong> If no confirmation email arrived, the payment may not have fully processed.</li><li><strong>Wait 5–10 minutes.</strong> Access can take a few minutes to activate after a successful payment.</li></ol>
+    <div class="note warn"><p><strong>Still locked out after 15 minutes?</strong> Do not repurchase — this could result in a double charge. Contact support with your payment confirmation and we'll resolve it.</p></div>
+    <h2>Check your account</h2>
+    <ul><li>Go to Account → Subscription to see what's currently showing on your account</li><li>If you subscribed via Apple: access is tied to your Apple ID, not your email login</li><li>If you subscribed via Google Play: same applies — your Google account is the source of truth</li></ul>
+    <h2>Contact support</h2>
+    <p>When you reach out, please include:</p>
+    <ul><li>Email address used to purchase</li><li>Payment confirmation or order number</li><li>Date and approximate time of purchase</li><li>Last 4 digits of the card charged (never the full number)</li></ul>`},
+
+  'cancel':{title:'How to Cancel Your Subscription',cat:'billing',catName:'Billing & Account',priority:false,
+    summary:'Step-by-step instructions to cancel on web, iOS, or Android. Your access continues until the end of your current billing period.',
+    related:['refund','auto-renewal','refund-request'],
+    toc:['Before you cancel','Cancel on web','Cancel on iOS','Cancel on Android'],
+    body:`<div class="note info"><p><strong>Access continues until your billing period ends.</strong> Cancelling stops future renewals but does not cut off access immediately. See the <a onclick="showArticle('refund')">refund policy</a> if you need a refund for the current period.</p></div>
+    <h2>Cancel on web</h2>
+    <ol><li>Log in at eurovolley.tv</li><li>Click your profile → Account Settings</li><li>Go to the Subscription tab</li><li>Click Cancel Subscription</li><li>Follow the on-screen prompts to confirm</li><li>You'll receive a cancellation confirmation by email</li></ol>
+    <h2>Cancel on iOS (App Store)</h2>
+    <div class="note warn"><p><strong>App Store subscriptions must be cancelled through Apple.</strong> You cannot cancel an iOS subscription from our app or website.</p></div>
+    <ol><li>Open iPhone/iPad Settings</li><li>Tap your Apple ID → Subscriptions</li><li>Find EuroVolley TV</li><li>Tap Cancel Subscription</li></ol>
+    <h2>Cancel on Android (Google Play)</h2>
+    <ol><li>Open Google Play Store</li><li>Tap your profile → Payments &amp; subscriptions → Subscriptions</li><li>Tap EuroVolley TV → Cancel subscription</li></ol>`},
+
+  'password':{title:'How to Reset Your Password',cat:'billing',catName:'Billing & Account',priority:false,
+    summary:'Forgotten your password or locked out? Reset it in under two minutes.',
+    related:['login','change-email','contact'],
+    toc:['Reset forgotten password','Email not arriving','Change password when logged in'],
+    body:`<h2>Reset a forgotten password</h2>
+    <ol><li>Go to eurovolley.tv and click Log In</li><li>Click Forgot password? below the login form</li><li>Enter your registered email address</li><li>Click Send reset link</li><li>Check your inbox — the link expires in 1 hour</li><li>Click the link and choose a new password</li></ol>
+    <div class="note"><p><strong>Check spam and junk folders first.</strong> Password reset emails sometimes end up filtered, particularly with Gmail or corporate email accounts.</p></div>
+    <h2>Reset email not arriving?</h2>
+    <ul><li>Confirm you're using the email address registered to your account</li><li>Check spam, junk, and Promotions folders</li><li>Wait up to 5 minutes — delivery can be delayed</li><li>If you registered via Apple Sign In, you may not have a password set — use Sign in with Apple instead</li></ul>
+    <h2>Change password when already logged in</h2>
+    <ol><li>Go to Account → Security</li><li>Click Change password</li><li>Enter your current password, then your new password</li><li>Click Save changes</li></ol>`},
+
+  'contact':{title:'How to Contact Customer Support',cat:'service',catName:'Service Status & Support',priority:false,
+    summary:'The fastest ways to reach our support team and what to expect in terms of response times.',
+    related:['what-to-include','hours','report','service-down'],
+    toc:['Contact options','What to include','Response times'],
+    body:`<h2>Contact options</h2>
+    <div class="dv-grid"><div class="dv-card"><h4>Live Chat</h4><ol><li>Click the chat icon at the bottom-right of any page</li><li>Available Mon–Sun, 8am–10pm CET</li><li>Average response: under 3 minutes</li><li>Best for urgent issues during live events</li></ol></div><div class="dv-card"><h4>Email</h4><ol><li>support@eurovolleytv.com</li><li>Monitored daily including weekends</li><li>Response within 24 business hours</li><li>Best for billing, refunds, and account issues</li></ol></div></div>
+    <h2>What to include for fastest resolution</h2>
+    <ul><li>Your account email address</li><li>Description of the issue — what happened and what you expected</li><li>Device type, browser or app name and version</li><li>Internet speed test result from speedtest.net</li><li>Screenshot or screen recording if the issue is visual</li><li>Exact error message or code if one appeared</li></ul>
+    <div class="note warn"><p><strong>Watching a live event right now?</strong> Use live chat — our team monitors all major events in real time and will prioritise your request.</p></div>`},
+
+  'smart-tv':{title:'Smart TV Setup Guide',cat:'devices',catName:'Devices & Apps',priority:false,
+    summary:'How to install and set up EuroVolley TV on supported Smart TVs.',
+    related:['smart-tv-broken','app-not-found','streaming-devices'],
+    toc:['Supported Smart TVs','Samsung','LG','Android TV'],
+    body:`<h2>Supported Smart TVs</h2>
+    <ul><li>Samsung — Tizen OS 4.0 and above (2018 models and newer)</li><li>LG — webOS 4.0 and above (2019 models and newer)</li><li>Android TV / Google TV — Android 8.0 and above</li><li>Amazon Fire TV — Fire OS 6 and above</li></ul>
+    <h2>Samsung</h2>
+    <ol><li>Press Home on the remote and go to Apps</li><li>Select the search icon and type "EuroVolley TV"</li><li>Select Install</li><li>Open the app and log in with your account credentials</li></ol>
+    <h2>LG</h2>
+    <ol><li>Press Home → open LG Content Store</li><li>Search "EuroVolley TV"</li><li>Select Install then Launch</li></ol>
+    <h2>Android TV / Google TV</h2>
+    <ol><li>Open Google Play Store on your TV</li><li>Search "EuroVolley TV"</li><li>Select Install</li><li>Open the app and log in, or use the activation code at eurovolley.tv/activate</li></ol>
+    <div class="note info"><p><strong>Purchases must be made on the website.</strong> You cannot buy a subscription from within the Smart TV app. Subscribe at eurovolley.tv first, then log in on your TV.</p></div>`},
+
+  'geo':{title:'Content Not Available in My Country',cat:'content',catName:'Content & Rights',priority:false,
+    summary:'Why certain content is region-restricted and what options are available to you.',
+    related:['vpn','blackout','rights'],
+    toc:['Why content is restricted','Supported regions','VPN policy'],
+    body:`<h2>Why content is region-restricted</h2>
+    <p>Broadcast and streaming rights are sold on a territory-by-territory basis. EuroVolley TV can only legally stream content in territories where it holds the broadcast rights. This is a legal requirement — not a technical limitation.</p>
+    <h2>Supported regions</h2>
+    <ul><li>All European Union member states</li><li>United Kingdom, Norway, Switzerland, Iceland, Liechtenstein</li><li>Select additional markets — check our coverage page for full territory details</li></ul>
+    <p>Contact support to confirm exact coverage for your territory, as some competitions may have different regional arrangements.</p>
+    <h2>VPN policy</h2>
+    <div class="note warn"><p><strong>Using a VPN to bypass geographic restrictions violates our Terms of Service</strong> and may result in account suspension. If you're receiving a VPN error when not using one, see our <a onclick="showArticle('vpn')">VPN error article</a>.</p></div>`}
+};
+
+const SI=[
+  {id:'buffering',t:'Stream buffering or freezing',c:'Streaming',k:['buffer','freeze','lag','stutter','pause','slow','choppy','loading']},
+  {id:'black-screen',t:'Stream won\'t load / black screen',c:'Streaming',k:['black','blank','load','start','nothing','screen','dark']},
+  {id:'paid-no-access',t:'Charged but no access to content',c:'Billing',k:['paid','charged','access','locked','money','payment','bought','subscri']},
+  {id:'cancel',t:'How to cancel your subscription',c:'Billing',k:['cancel','stop','unsubscribe','end','terminat']},
+  {id:'service-down',t:'Is the service currently down?',c:'Service',k:['down','outage','broken','working','offline','not work']},
+  {id:'password',t:'How to reset your password',c:'Billing',k:['password','reset','forgot','locked','login','access']},
+  {id:'smart-tv',t:'Smart TV setup guide',c:'Devices',k:['smart tv','samsung','lg','television','tv setup']},
+  {id:'smart-tv-broken',t:'Stream not working on Smart TV',c:'Devices',k:['tv','samsung','lg','not working','smart tv broken']},
+  {id:'geo',t:'Content not available in my country',c:'Content',k:['country','region','geo','blocked','available','territory']},
+  {id:'vpn',t:'VPN or proxy detected error',c:'Content',k:['vpn','proxy','detected','error']},
+  {id:'contact',t:'How to contact customer support',c:'Service',k:['contact','support','help','chat','email','reach']},
+  {id:'login',t:'How to log in for the first time',c:'Getting Started',k:['login','sign in','access','log in']},
+  {id:'refund',t:'Refund policy',c:'Billing',k:['refund','money back','return','policy']},
+  {id:'payment-failed',t:'Payment failed or declined',c:'Billing',k:['payment','failed','declined','card','rejected']},
+  {id:'loading',t:'Video stuck on loading screen',c:'Streaming',k:['loading','spinner','stuck','circle','spinning']},
+  {id:'no-sound',t:'No sound or commentary missing',c:'Streaming',k:['sound','audio','commentary','muted','silent','no sound']},
+  {id:'create-account',t:'How to create an account',c:'Getting Started',k:['create','register','sign up','new account','join']},
+  {id:'plans',t:'Subscription plans and pricing',c:'Getting Started',k:['plans','pricing','cost','price','subscribe','how much']},
+  {id:'download-app',t:'How to download the app',c:'Getting Started',k:['download','install','app','get']},
+  {id:'browser',t:'Stream not working in browser',c:'Devices',k:['browser','chrome','firefox','safari','edge','computer','pc','mac']},
+  {id:'change-email',t:'How to change your email address',c:'Billing',k:['email','change','update','address']},
+  {id:'schedule',t:'Where to find the live event schedule',c:'Content',k:['schedule','upcoming','when','match','fixture','calendar']},
+  {id:'event-locked',t:'Event shown as unavailable or locked',c:'Content',k:['locked','unavailable','event','can\'t access','access denied']},
+];
+
+function goHome(){
+  showView('home');
+}
+function showView(n){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('v-'+n).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function showCat(id){
+  const c=CATS[id];if(!c)return;
+  document.getElementById('bc-cat-name').textContent=c.name;
+  let sb=`<div class="cat-sb-head" onclick="goHome()">Help Center</div>`;
+  c.sections.forEach(s=>{
+    sb+=`<div class="sb-sec"><div class="sb-sec-lbl">${s.name}</div>`;
+    s.arts.forEach(a=>{sb+=`<a class="sb-lnk" onclick="showArticle('${a.id}')">${a.title}</a>`});
+    sb+=`</div>`;
+  });
+  document.getElementById('cat-sb').innerHTML=sb;
+  let body=`<div class="cat-main-hd"><h2>${c.name}</h2><p>${c.desc}</p></div>`;
+  c.sections.forEach(s=>{
+    body+=`<div class="art-section"><h3>${s.name}</h3>`;
+    s.arts.forEach(a=>{
+      body+=`<div class="art-row" onclick="showArticle('${a.id}')">
+        <div><div class="art-row-title">${a.title}${a.hot?`<span class="hot-tag">High volume</span>`:''}</div><div class="art-row-desc">${a.desc}</div></div>
+        <span class="art-row-arr">→</span></div>`;
+    });
+    body+=`</div>`;
+  });
+  document.getElementById('cat-main').innerHTML=body;
+  showView('category');
+}
+function showArticle(id){
+  const a=ARTS[id];
+  if(!a){showCat('streaming');return;}
+  const bc=document.getElementById('bc-art-cat');
+  bc.textContent=a.catName;bc.onclick=()=>showCat(a.cat);
+  document.getElementById('bc-art-title').textContent=a.title;
+  document.getElementById('art-main').innerHTML=`
+    <div class="art-meta">
+      <a class="art-cat-lnk" onclick="showCat('${a.cat}')">${a.catName}</a>
+      <span style="color:var(--gray5)">·</span>
+      <span class="art-date">Updated May 2026</span>
+      ${a.priority?'<span class="art-priority">High volume</span>':''}
+    </div>
+    <h1>${a.title}</h1>
+    <p class="art-lead">${a.summary}</p>
+    <div class="art-content">${a.body}</div>
+    <div class="esc">
+      <h3>Still need help?</h3>
+      <p>If the steps above haven't resolved the issue, contact our support team and include:</p>
+      <ul><li>Your device type, model, and operating system</li><li>Browser or app name and version</li><li>Speed test result from speedtest.net</li><li>The exact error message or time the issue occurred</li></ul>
+      <button class="btn" onclick="toggleBeacon()">Contact support</button>
+    </div>`;
+  const rels=(a.related||[]).map(id=>{const r=ARTS[id];return r?`<div class="rel-link" onclick="showArticle('${id}')"><span>${r.title}</span><span class="rel-link-arr">→</span></div>`:''}).join('');
+  const toc=(a.toc||[]).map((t,i)=>`<a class="toc-link${i===0?' on':''}">${t}</a>`).join('');
+  document.getElementById('art-sb').innerHTML=`
+    <div class="art-sb-section"><h4>On this page</h4><div class="toc-links">${toc}</div></div>
+    ${rels?`<div class="art-sb-section"><h4>Related articles</h4>${rels}</div>`:''}
+    <div class="helpful"><p>Was this article helpful?</p><div class="helpful-btns"><button class="helpful-btn" onclick="this.textContent='Yes — thanks!';this.style.borderColor='var(--black)'">Yes</button><button class="helpful-btn" onclick="this.closest('.helpful').innerHTML='<p style=color:var(--gray3);font-size:13px>Thanks for the feedback.</p>'">No</button></div></div>`;
+  showView('article');
+}
+function doSearch(q){
+  if(!q||q.length<2)return[];
+  const ql=q.toLowerCase();
+  return SI.filter(a=>a.t.toLowerCase().includes(ql)||a.k.some(k=>k.includes(ql))).slice(0,7);
+}
+function renderSR(res,elId){
+  const el=document.getElementById(elId);
+  if(!res.length){el.classList.remove('show');return;}
+  el.innerHTML=res.map(r=>`<div class="sr-item" onclick="showArticle('${r.id}')"><span>${r.t}</span><span class="sr-item-cat">${r.c}</span></div>`).join('');
+  el.classList.add('show');
+}
+function hSearch(q){renderSR(doSearch(q),'hRes')}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.search-wrap'))document.getElementById('hRes').classList.remove('show');
+});
+let _b=false;
+function toggleBeacon(){_b=!_b;document.getElementById('bP').classList.toggle('open',_b)}
+</script>
+</body>
+</html>
